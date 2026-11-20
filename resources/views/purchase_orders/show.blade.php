@@ -33,10 +33,49 @@
                             <span>Email PO</span>
                         </button>
                     @endif
+                    @if($purchaseOrder->status === 'draft')
+                        <form method="POST" action="{{ route('purchase-orders.submit', $purchaseOrder) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #2563eb !important; color: #ffffff !important;">
+                                <span>Submit for Approval</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if($purchaseOrder->status === 'pending_approval' && auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('purchase-orders.approve', $purchaseOrder) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #16a34a !important; color: #ffffff !important;">
+                                <span>Approve PO</span>
+                            </button>
+                        </form>
+                        <button type="button" onclick="document.getElementById('rejectModal').classList.remove('hidden')" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #dc2626 !important; color: #ffffff !important;">
+                            <span>Reject PO</span>
+                        </button>
+                    @endif
+
+                    @if($purchaseOrder->status === 'approved')
+                        <form method="POST" action="{{ route('purchase-orders.mark-sent', $purchaseOrder) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-secondary">
+                                Mark as Sent
+                            </button>
+                        </form>
+                    @endif
+
+                    @if($purchaseOrder->status === 'received')
+                        <form method="POST" action="{{ route('purchase-orders.close', $purchaseOrder) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-secondary">
+                                Close Order
+                            </button>
+                        </form>
+                    @endif
+
                     <a href="{{ route('suppliers.show', $purchaseOrder->supplier) }}" class="btn-secondary">
                         Supplier Profile
                     </a>
-                    @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                    @if((auth()->user()->isAdmin() || auth()->user()->isStaff()) && $purchaseOrder->canBeEdited())
                         <a href="{{ route('purchase-orders.edit', $purchaseOrder) }}" class="btn-secondary">
                             Edit
                         </a>
@@ -72,19 +111,30 @@
             </div>
         @endif
 
-        {{-- Section 1: PO Overview Two-Column Table (5.5) --}}
+        {{-- Section 1: PO Overview Two-Column Table --}}
         <div class="crm-section">
             <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
                 <h3 class="m-0 border-0 pb-0">Purchase Order Details</h3>
                 <form method="POST" action="{{ route('purchase-orders.updateStatus', $purchaseOrder) }}" class="flex items-center gap-2">
                     @csrf
                     @method('PATCH')
-                    <select aria-label="Status" name="status" class="crm-select text-xs py-1" style="height: 38px; width: 140px;">
-                        <option value="draft" @selected($purchaseOrder->status === 'draft')>Draft</option>
-                        <option value="ordered" @selected($purchaseOrder->status === 'ordered')>Ordered</option>
-                        <option value="cancelled" @selected($purchaseOrder->status === 'cancelled')>Cancelled</option>
-                    </select>
-                    <button type="submit" class="btn-secondary">Save</button>
+                    @php
+                        $allowedTransitions = array_filter(
+                            \App\Models\PurchaseOrder::TRANSITIONS[$purchaseOrder->status] ?? [],
+                            fn($s) => $s !== \App\Models\PurchaseOrder::STATUS_RECEIVED
+                        );
+                    @endphp
+                    @if(count($allowedTransitions) > 0)
+                        <select aria-label="Status" name="status" class="crm-select text-xs py-1" style="height: 38px; width: 170px;">
+                            <option value="{{ $purchaseOrder->status }}" selected disabled>{{ ucfirst(str_replace('_', ' ', $purchaseOrder->status)) }} (Current)</option>
+                            @foreach($allowedTransitions as $target)
+                                <option value="{{ $target }}">&rarr; Move to {{ ucfirst(str_replace('_', ' ', $target)) }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn-secondary">Update</button>
+                    @else
+                        <span class="text-xs text-slate-400 font-medium">Status Locked ({{ ucfirst(str_replace('_', ' ', $purchaseOrder->status)) }})</span>
+                    @endif
                 </form>
             </div>
 
@@ -94,6 +144,33 @@
                         <td class="w-1/3 text-slate-500 font-bold">PO Number</td>
                         <td class="w-2/3 text-slate-900 dark:text-white font-mono">{{ $purchaseOrder->po_number }}</td>
                     </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Status</td>
+                        <td class="text-slate-900 dark:text-white">
+                            <span class="font-bold text-xs uppercase px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                {{ ucfirst(str_replace('_', ' ', $purchaseOrder->status)) }}
+                            </span>
+                        </td>
+                    </tr>
+                    @if($purchaseOrder->approvedBy)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Approved By</td>
+                            <td class="text-emerald-700 dark:text-emerald-400 font-semibold">
+                                ✓ {{ $purchaseOrder->approvedBy->name }} on {{ $purchaseOrder->approved_at?->format('d M Y, h:i A') }}
+                            </td>
+                        </tr>
+                    @endif
+                    @if($purchaseOrder->rejectedBy)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Rejected By</td>
+                            <td class="text-rose-600 dark:text-rose-400 font-semibold">
+                                ✕ {{ $purchaseOrder->rejectedBy->name }} on {{ $purchaseOrder->rejected_at?->format('d M Y, h:i A') }}
+                                @if($purchaseOrder->rejection_reason)
+                                    <div class="text-xs font-normal text-slate-600 dark:text-slate-400 mt-0.5">Reason: {{ $purchaseOrder->rejection_reason }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-slate-500 font-bold">Supplier</td>
                         <td class="text-slate-900 dark:text-white">
@@ -216,12 +293,34 @@
             </div>
         </div>
 
-        {{-- Section 3: Inwarding Stock (if applicable) --}}
-        @if(in_array($purchaseOrder->status, ['ordered', 'partially_received']))
+        {{-- Section 3: Inwarding Stock (Goods Receipt) --}}
+        @if(in_array($purchaseOrder->status, ['sent', 'ordered', 'partially_received']))
             <div class="crm-section">
-                <h3>Inward Received Stock</h3>
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div>
+                        <h3 class="mb-0">Inward Received Stock (GRN)</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Quickly receive items into central warehouse stock ledger and generate a Goods Receipt Note.</p>
+                    </div>
+                    <div>
+                        <a href="{{ route('goods-receipts.create', ['purchase_order_id' => $purchaseOrder->id]) }}" class="btn-secondary text-xs">
+                            Full GRN Form with Serial Tracking &rarr;
+                        </a>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ route('purchase-orders.receive', $purchaseOrder) }}">
                     @csrf
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Delivery Note / DC #</label>
+                            <input type="text" name="delivery_note_no" placeholder="e.g. DC-2026-001" class="crm-input w-full text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Received Date</label>
+                            <input type="date" name="received_date" value="{{ date('Y-m-d') }}" class="crm-input w-full text-xs">
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto mb-4">
                         <table class="crm-table">
                             <thead>
@@ -236,7 +335,12 @@
                             <tbody>
                                 @foreach($purchaseOrder->items as $item)
                                 <tr>
-                                    <td class="font-bold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
+                                    <td class="font-bold text-slate-900 dark:text-white">
+                                        {{ $item->item_name }}
+                                        @if($item->product?->track_serial)
+                                            <span class="text-[10px] text-indigo-600 font-normal ml-1">(Serial Tracked)</span>
+                                        @endif
+                                    </td>
                                     <td class="nowrap">{{ $item->quantity_ordered }}</td>
                                     <td class="nowrap">{{ $item->quantity_received }}</td>
                                     <td class="nowrap font-bold">{{ $item->pendingQuantity() }}</td>
@@ -255,10 +359,64 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">
-                            Save
+                            Inward Stock & Generate GRN
                         </button>
                     </div>
                 </form>
+            </div>
+        @endif
+
+        {{-- Goods Receipts History Section --}}
+        @if($purchaseOrder->goodsReceipts->isNotEmpty())
+            <div class="crm-section">
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div>
+                        <h3 class="mb-0">Goods Receipt Notes (GRN History)</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Verification receipts and delivery documents recorded against this Purchase Order.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <table class="crm-table">
+                        <thead>
+                            <tr>
+                                <th>GRN Number</th>
+                                <th>Received Date</th>
+                                <th>Delivery Note #</th>
+                                <th>Received By</th>
+                                <th class="text-center">Accepted Units</th>
+                                <th class="text-center">Rejected Units</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($purchaseOrder->goodsReceipts as $grn)
+                                <tr>
+                                    <td class="font-mono font-bold">
+                                        <a href="{{ route('goods-receipts.show', $grn) }}" class="text-blue-600 hover:underline">
+                                            {{ $grn->grn_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $grn->received_date?->format('d M Y') }}</td>
+                                    <td class="font-mono text-xs">{{ $grn->delivery_note_no ?: '-' }}</td>
+                                    <td class="text-xs">{{ $grn->receivedBy?->name ?? 'Storekeeper' }}</td>
+                                    <td class="text-center font-bold text-emerald-600">{{ $grn->totalReceivedQty() }}</td>
+                                    <td class="text-center font-bold {{ $grn->totalRejectedQty() > 0 ? 'text-rose-600' : 'text-slate-400' }}">
+                                        {{ $grn->totalRejectedQty() }}
+                                    </td>
+                                    <td class="text-right space-x-2">
+                                        <a href="{{ route('goods-receipts.show', $grn) }}" class="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:underline">
+                                            View
+                                        </a>
+                                        <a href="{{ route('goods-receipts.pdf', $grn) }}" target="_blank" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                            PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         @endif
 
@@ -656,4 +814,22 @@
             }
         });
     </script>
+    {{-- Reject PO Modal (Admin Only) --}}
+    <div id="rejectModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">Reject Purchase Order #{{ $purchaseOrder->po_number }}</h3>
+            <p class="text-xs text-slate-500 mb-4">Please provide a reason for rejecting this procurement request so staff can revise it.</p>
+            <form method="POST" action="{{ route('purchase-orders.reject', $purchaseOrder) }}">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Rejection Reason</label>
+                    <textarea name="rejection_reason" rows="3" class="crm-input text-xs w-full" placeholder="e.g. Budget limit exceeded, wrong pricing, requires renegotiation..."></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition shadow-xs cursor-pointer">Confirm Rejection</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-app-layout>

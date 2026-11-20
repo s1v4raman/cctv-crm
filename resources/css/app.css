@@ -598,7 +598,7 @@ html.dark .saas-card {
 /* Button Presets & Dynamic Accent Integration */
 .btn-primary, .btn-blue {
     background-color: var(--crm-accent, #2563eb);
-    color: var(--text-main) !important;
+    color: #ffffff !important;
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.625rem 1.25rem;
@@ -674,7 +674,7 @@ html.dark .btn-dark:hover {
 
 .btn-amber, .btn-primary {
     background-color: var(--crm-accent, #be123c);
-    color: var(--text-main) !important;
+    color: #ffffff !important;
     font-weight: 700;
     font-size: 0.9375rem;
     min-height: 44px;

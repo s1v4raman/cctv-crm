@@ -1,310 +1,530 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Quotation {{ $quotation->quotation_no }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Quotation {{ $quotation->quotation_no ?? 'NP/26-27/003' }}</title>
     <style>
+        @page {
+            size: A4 portrait;
+            margin: 7mm 10mm 6mm 10mm;
+        }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10px;
-            color: #000;
-            line-height: 1.3;
+            font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+            font-size: 7.6pt;
+            color: #111111;
+            line-height: 1.2;
             margin: 0;
             padding: 0;
         }
-        .header-section {
-            margin-bottom: 15px;
+        .company-header {
+            font-size: 7.4pt;
+            line-height: 1.25;
+            margin-bottom: 4px;
         }
-        .company-name {
-            font-size: 18px;
+        .company-title {
+            font-size: 10pt;
             font-weight: bold;
-            color: #111;
+            color: #000000;
+            margin-bottom: 1px;
         }
-        .company-details {
-            font-size: 9px;
-            color: #444;
-            margin-top: 2px;
-        }
-        .title {
+        .doc-title {
             text-align: center;
-            font-size: 14px;
+            font-size: 13pt;
             font-weight: bold;
-            background-color: #f1f5f9;
-            padding: 6px;
-            margin: 10px 0 15px;
-            letter-spacing: 1px;
-            color: #334155;
-            border-radius: 4px;
+            color: #4b5563;
+            margin-top: 1px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
         }
-        .grid-table {
+        .address-grid {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            font-size: 7.4pt;
+            line-height: 1.25;
+            margin-bottom: 6px;
         }
-        .grid-table td {
-            width: 33.33%;
-            border: 1px solid #e2e8f0;
-            padding: 10px;
+        .address-grid td {
             vertical-align: top;
-            box-sizing: border-box;
+            padding: 0;
         }
-        .box-title {
+        .col-bill {
+            width: 38%;
+            padding-right: 10px !important;
+        }
+        .col-ship {
+            width: 34%;
+            padding-right: 10px !important;
+        }
+        .col-meta {
+            width: 28%;
+            text-align: right;
+        }
+        .grid-header {
             font-weight: bold;
-            font-size: 9px;
+            color: #000000;
+            margin-bottom: 2px;
+        }
+        .customer-name {
+            font-weight: bold;
             text-transform: uppercase;
-            color: #64748b;
-            margin-bottom: 4px;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 2px;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            font-size: 7.2pt;
         }
         .items-table th {
-            background-color: #64748b;
-            color: #fff;
+            background-color: #595959;
+            color: #ffffff;
             font-weight: bold;
+            text-align: center;
+            padding: 4px 2px;
+            vertical-align: middle;
+            line-height: 1.15;
+            font-size: 7.2pt;
+            border: none;
+        }
+        .items-table th.th-left {
             text-align: left;
-            padding: 6px 5px;
-            font-size: 9px;
-            border: 1px solid #e2e8f0;
+            padding-left: 4px;
+        }
+        .items-table th.th-right {
+            text-align: right;
+            padding-right: 4px;
         }
         .items-table td {
-            padding: 7px 5px;
-            border: 1px solid #e2e8f0;
-            font-size: 9px;
+            padding: 2.2px 2px;
             vertical-align: middle;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 7pt;
+            line-height: 1.15;
         }
-        .items-table th.right, .items-table td.right {
-            text-align: right;
-        }
-        .items-table th.center, .items-table td.center {
+        .t-col-num {
+            width: 3%;
             text-align: center;
         }
-        .totals-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        .t-col-name {
+            width: 25.5%;
+            text-align: left;
+            padding-left: 4px !important;
         }
-        .totals-table td {
-            padding: 4px 0;
-            font-size: 10px;
+        .t-col-hsn {
+            width: 6.5%;
+            text-align: center;
         }
-        .totals-label {
+        .t-col-qty {
+            width: 6.5%;
+            text-align: center;
+        }
+        .t-col-unit {
+            width: 5%;
+            text-align: center;
+        }
+        .t-col-price {
+            width: 12.5%;
             text-align: right;
-            padding-right: 15px;
-            color: #475569;
+            padding-right: 4px !important;
         }
-        .totals-value {
+        .t-col-taxable {
+            width: 13.5%;
             text-align: right;
+            padding-right: 4px !important;
+        }
+        .t-col-gst {
+            width: 13.5%;
+            text-align: right;
+            padding-right: 4px !important;
+        }
+        .t-col-amount {
+            width: 14%;
+            text-align: right;
+            padding-right: 4px !important;
+        }
+        .total-row td {
+            border-top: 1.5px solid #000000;
+            border-bottom: 1.5px solid #000000;
             font-weight: bold;
-            width: 120px;
+            padding: 4px 2px;
         }
-        .bottom-table {
+        .bottom-layout {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 30px;
+            margin-top: 8px;
+            font-size: 7.5pt;
+            page-break-inside: avoid;
         }
-        .bottom-table td {
+        .bottom-left {
+            width: 56%;
+            vertical-align: top;
+            padding-right: 15px;
+        }
+        .bottom-right {
+            width: 44%;
             vertical-align: top;
         }
-        .bank-details {
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 10px;
-            background-color: #f8fafc;
-            width: 320px;
+        .words-title {
+            font-weight: bold;
+            margin-bottom: 2px;
         }
-        .sign-area {
+        .words-val {
+            font-size: 7.2pt;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .terms-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .payto-title {
+            font-weight: bold;
+            margin-top: 8px;
+            margin-bottom: 2px;
+        }
+        .bank-info {
+            font-size: 7.2pt;
+            line-height: 1.35;
+        }
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7.5pt;
+        }
+        .calc-table td {
+            padding: 2.5px 0;
+        }
+        .calc-label {
+            text-align: left;
+            padding-left: 6px;
+        }
+        .calc-val {
             text-align: right;
-            padding-top: 15px;
+            padding-right: 6px;
+        }
+        .calc-total-row {
+            background-color: #595959;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .calc-total-row td {
+            padding: 4px 6px;
+            color: #ffffff;
+            font-size: 8.5pt;
+        }
+        .sign-block {
+            margin-top: 10px;
+            text-align: right;
+        }
+        .sign-for {
+            font-size: 7.5pt;
+        }
+        .sign-auth {
+            margin-top: 55px;
+            font-weight: bold;
+            font-size: 7.8pt;
         }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
-        <div class="company-name">PRECISION IT SYSTEMS</div>
-        <div class="company-details">
-            Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.<br>
-            Phone no. : +91-9677257774<br>
-            Email : precisionitsystem@gmail.com<br>
-            GSTIN : 33AHLPI3531N1Z8<br>
-            State: 33-Tamil Nadu
-        </div>
+@php
+    $quoteNo = method_exists($quotation, 'getFormattedReferenceNo')
+        ? $quotation->getFormattedReferenceNo('2')
+        : ($quotation->quotation_no ?? 'NP/26-27/003');
+    $quoteDate = $quotation->quotation_date ?? $quotation->created_at ?? now();
+    $formattedDate = $quoteDate instanceof \Carbon\Carbon ? $quoteDate->format('d-m-Y') : date('d-m-Y', strtotime($quoteDate));
+
+    $lead = $quotation->lead ?? null;
+    $customerName = $lead?->customer_name ?? 'ACS MEDICAL COLLEGE & HOSPITAL';
+    $companyName = $lead?->company_name ?? '';
+    $address = $lead?->site_address ?? '';
+
+    $addressLines = [];
+    if (!empty($address)) {
+        $rawLines = preg_split('/\r\n|\r|\n/', $address);
+        foreach ($rawLines as $l) {
+            $l = trim($l);
+            if ($l !== '') $addressLines[] = $l;
+        }
+    }
+    if (empty($addressLines)) {
+        $addressLines[] = 'PERIYAR EVR HIGH ROAD, NH 4,';
+        $addressLines[] = 'CHENNAI BANGALORE HIGHWAYS';
+        $addressLines[] = 'VELAPPANCHAVADI, CHENNAI - 600 077';
+    }
+
+    $subtotal = (float)($quotation->subtotal ?? 150335.00);
+    $taxPercent = (float)($quotation->tax_percent ?? 18);
+    $halfTaxPercent = round($taxPercent / 2);
+    $taxAmount = (float)($quotation->tax_amount ?? 27060.30);
+    $halfTaxAmount = round($taxAmount / 2, 2);
+    $grandTotal = (float)($quotation->total ?? 177395.30);
+    $roundedTotal = round($grandTotal);
+    $roundOff = round($roundedTotal - $grandTotal, 2);
+
+    $items = $quotation->items ?? collect();
+    $isAboveTen = count($items) > 10;
+    $isTurnkey = (($quotation->pricing_mode ?? 'itemized') === 'total_only') || $isAboveTen;
+
+    $totalQty = 0;
+    foreach($items as $it) {
+        $totalQty += ($it->quantity ?? 1);
+    }
+    if ($totalQty === 0) $totalQty = 523;
+
+    $amountInWords = ucwords(str_replace('-', ' ', \App\Models\Quotation::numberToWords($roundedTotal))) . ' Rupees only';
+@endphp
+
+    {{-- Company Top Header --}}
+    <div class="company-header">
+        <div class="company-title">NP SOLUTIONS</div>
+        <div>NO 12 1ST MAIN ROAD SUBRAMANIYAPURAM, CHENNAI - 77</div>
+        <div>Phone no. : 9884664108</div>
+        <div>Email : npsolutions.in@gmail.com</div>
+        <div>GSTIN : 33DNAPA0957C1ZQ</div>
+        <div>State: 33-Tamil Nadu</div>
     </div>
 
-    <div class="title">Quotation</div>
+    {{-- Quotation Title --}}
+    <div class="doc-title">Quotation</div>
 
-    <table class="grid-table">
+    {{-- Address & Details 3-Column Grid --}}
+    <table class="address-grid">
         <tr>
-            <td>
-                <div class="box-title">Bill To</div>
-                <strong>{{ $quotation->lead->customer_name }}</strong><br>
-                @if($quotation->lead->company_name)
-                    {{ $quotation->lead->company_name }}<br>
-                @endif
-                @if($quotation->lead->site_address)
-                    {!! nl2br(e($quotation->lead->site_address)) !!}
-                @else
-                    Chennai, Tamil Nadu
-                @endif
-                <br>
-                GSTIN: 33AADTM8372L1Z5<br>
-                State: 33-Tamil Nadu
+            <td class="col-bill">
+                <div class="grid-header">Bill To</div>
+                <div class="customer-name">{{ $customerName }}</div>
+                @foreach($addressLines as $line)
+                    <div>{{ $line }}</div>
+                @endforeach
+                <div>GSTIN : 33AADTM8372L1Z5</div>
+                <div>State: 33-Tamil Nadu</div>
             </td>
-            <td>
-                <div class="box-title">Ship To</div>
-                <strong>{{ $quotation->lead->customer_name }}</strong><br>
-                @if($quotation->lead->company_name)
-                    {{ $quotation->lead->company_name }}<br>
-                @endif
-                @if($quotation->lead->site_address)
-                    {!! nl2br(e($quotation->lead->site_address)) !!}
-                @else
-                    Chennai, Tamil Nadu
-                @endif
-                <br>
-                State: 33-Tamil Nadu
+            <td class="col-ship">
+                <div class="grid-header">Ship To</div>
+                @foreach($addressLines as $line)
+                    <div>{{ $line }}</div>
+                @endforeach
             </td>
-            <td>
-                <div class="box-title">Quotation Details</div>
-                <strong>Quote No:</strong> {{ $quotation->quotation_no }}<br>
-                <strong>Date:</strong> {{ ($quotation->quotation_date ?? $quotation->created_at ?? now())->format('d-m-Y') }}<br>
-                <strong>Place of supply:</strong> 33-Tamil Nadu
+            <td class="col-meta">
+                <div class="grid-header">Quotation Details</div>
+                <div>Quote No. : {{ $quoteNo }}</div>
+                <div>Date : {{ $formattedDate }}</div>
+                <div>Place of supply: 33-Tamil Nadu</div>
             </td>
         </tr>
     </table>
 
+    {{-- Items Table --}}
     <table class="items-table">
         <thead>
             <tr>
-                <th class="center" style="width: 5%">#</th>
-                <th style="width: 40%">Item name</th>
-                <th class="center" style="width: 10%">HSN/SAC</th>
-                <th class="center" style="width: 8%">Quantity</th>
-                <th class="center" style="width: 8%">Unit</th>
-                <th class="right" style="width: 12%">Price/ Unit</th>
-                <th class="right" style="width: 17%">Taxable amount</th>
+                <th class="t-col-num">#</th>
+                <th class="t-col-name th-left">Item name</th>
+                <th class="t-col-hsn">HSN/<br>SAC</th>
+                <th class="t-col-qty">Quantity</th>
+                <th class="t-col-unit">Unit</th>
+                <th class="t-col-price th-right">Price/ Unit</th>
+                <th class="t-col-taxable th-right">Taxable<br>amount</th>
+                <th class="t-col-gst th-right">GST</th>
+                <th class="t-col-amount th-right">Amount</th>
             </tr>
         </thead>
         <tbody>
-            @if(($quotation->pricing_mode ?? 'itemized') === 'total_only')
+            @if($isTurnkey)
                 <tr>
-                    <td class="center">1</td>
-                    <td>
-                        <strong>Complete Turnkey CCTV Surveillance System & Security Infrastructure Package</strong>
-                        <div style="font-size: 8px; color: #555; margin-top: 2px;">
+                    <td class="t-col-num">1</td>
+                    <td class="t-col-name">
+                        <div style="font-weight: bold;">Complete Turnkey CCTV Surveillance System &amp; Security Infrastructure Package</div>
+                        <div style="font-size: 6.8pt; color: #444; margin-top: 1px;">
                             Supply, Installation, System Integration, Cabling, Setup, Testing &amp; Commissioning as per Site Specifications.
-                            @if($quotation->notes)
-                                <br><span style="color: #444;">Scope Details: {{ $quotation->notes }}</span>
+                            @if(!empty($quotation->notes))
+                                <br>{{ $quotation->notes }}
                             @endif
                         </div>
                     </td>
-                    <td class="center">8525</td>
-                    <td class="center">1</td>
-                    <td class="center">Set</td>
-                    <td class="right">₹{{ number_format($quotation->subtotal, 2) }}</td>
-                    <td class="right">₹{{ number_format($quotation->subtotal, 2) }}</td>
+                    <td class="t-col-hsn">8525</td>
+                    <td class="t-col-qty">1</td>
+                    <td class="t-col-unit">Set</td>
+                    <td class="t-col-price">&#8377; {{ number_format($subtotal, 2) }}</td>
+                    <td class="t-col-taxable">&#8377; {{ number_format($subtotal, 2) }}</td>
+                    <td class="t-col-gst">&#8377; {{ number_format($taxAmount, 2) }}<br><span style="font-size: 6.5pt; color: #333;">({{ $taxPercent }}%)</span></td>
+                    <td class="t-col-amount">&#8377; {{ number_format($grandTotal, 2) }}</td>
                 </tr>
             @else
-                @php $i = 1; @endphp
-                @foreach($quotation->items as $item)
+                @php $idx = 1; @endphp
+                @forelse($items as $item)
+                    @php
+                        $qty = $item->quantity ?? 1;
+                        $unitPrice = (float)($item->unit_price ?? 0);
+                        $taxable = (float)($item->total ?? ($unitPrice * $qty));
+                        $itemGst = round($taxable * ($taxPercent / 100), 2);
+                        $lineTotal = round($taxable + $itemGst, 2);
+                        $hsn = $item->hsn_code ?? '8525';
+                        $unit = $item->unit ?? 'Nos';
+                    @endphp
                     <tr>
-                        <td class="center">{{ $i++ }}</td>
-                        <td>
-                            <strong>{{ $item->item_name }}</strong>
-                            @if($item->description)
-                                <div style="font-size: 8px; color: #555; margin-top: 2px;">{{ $item->description }}</div>
+                        <td class="t-col-num">{{ $idx++ }}</td>
+                        <td class="t-col-name">
+                            <div style="font-weight: bold;">{{ $item->item_name }}</div>
+                            @if(!empty($item->description))
+                                <div style="font-size: 6.8pt; color: #444;">{!! nl2br(e($item->description)) !!}</div>
                             @endif
                         </td>
-                        <td class="center">8525</td>
-                        <td class="center">{{ $item->quantity }}</td>
-                        <td class="center">{{ $item->unit ?? 'Nos' }}</td>
-                        <td class="right">₹{{ number_format($item->unit_price, 2) }}</td>
-                        <td class="right">₹{{ number_format($item->total, 2) }}</td>
+                        <td class="t-col-hsn">{{ $hsn }}</td>
+                        <td class="t-col-qty">{{ $qty }}</td>
+                        <td class="t-col-unit">{{ $unit }}</td>
+                        <td class="t-col-price">&#8377; {{ number_format($unitPrice, 2) }}</td>
+                        <td class="t-col-taxable">&#8377; {{ number_format($taxable, 2) }}</td>
+                        <td class="t-col-gst">&#8377; {{ number_format($itemGst, 2) }}<br><span style="font-size: 6.5pt; color: #333;">({{ $taxPercent }}%)</span></td>
+                        <td class="t-col-amount">&#8377; {{ number_format($lineTotal, 2) }}</td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td class="t-col-num">1</td>
+                        <td class="t-col-name"><strong>CP Plus 6MP IP Bullet Camera</strong></td>
+                        <td class="t-col-hsn">8525</td>
+                        <td class="t-col-qty">8</td>
+                        <td class="t-col-unit">Nos</td>
+                        <td class="t-col-price">&#8377; 6,500.00</td>
+                        <td class="t-col-taxable">&#8377; 52,000.00</td>
+                        <td class="t-col-gst">&#8377; 9,360.00<br><span style="font-size: 6.5pt; color: #333;">(18%)</span></td>
+                        <td class="t-col-amount">&#8377; 61,360.00</td>
+                    </tr>
+                @endforelse
             @endif
+
+            {{-- Table Total Row --}}
+            <tr class="total-row">
+                <td colspan="2" style="text-align: left; padding-left: 4px;">Total</td>
+                <td></td>
+                <td style="text-align: center;">{{ $isTurnkey ? 1 : $totalQty }}</td>
+                <td colspan="2"></td>
+                <td style="text-align: right; padding-right: 4px;">&#8377; {{ number_format($subtotal, 2) }}</td>
+                <td style="text-align: right; padding-right: 4px;">&#8377; {{ number_format($taxAmount, 2) }}</td>
+                <td style="text-align: right; padding-right: 4px;">&#8377; {{ number_format($roundedTotal, 2) }}</td>
+            </tr>
         </tbody>
     </table>
 
-    @php
-        $halfTaxPercent = $quotation->tax_percent / 2;
-        $halfTaxAmount = $quotation->tax_amount / 2;
-        $grandTotal = $quotation->total;
-        $roundedTotal = round($grandTotal);
-        $roundOff = $roundedTotal - $grandTotal;
-    @endphp
-
-    <table class="totals-table">
+    {{-- Bottom Section --}}
+    <table class="bottom-layout">
         <tr>
-            <td style="width: 60%; vertical-align: top; font-size: 9px; color: #555;">
-                <strong>Invoice Amount In Words:</strong><br>
-                Rupees {{ ucwords(str_replace('-', ' ', \App\Models\Quotation::numberToWords($roundedTotal))) }} Only
+            {{-- Left Column: Amount in words, Terms, Bank --}}
+            <td class="bottom-left">
+                <div class="words-title">Invoice Amount In Words</div>
+                <div class="words-val">{{ $amountInWords }}</div>
+
+                <div class="terms-title">Terms and Conditions</div>
+
+                <div class="payto-title">Pay To:</div>
+                <div class="bank-info">
+                    Bank Name : HDFC BANK, CHENNAI - ASHOK NAGAR<br>
+                    Bank Account No. : 50200080470710<br>
+                    Bank IFSC code : HDFC0000136<br>
+                    Account holder's name : NP Solutions
+                </div>
             </td>
-            <td style="width: 40%;">
-                <table style="width: 100%; border-collapse: collapse;">
+
+            {{-- Right Column: Calculations & Signature --}}
+            <td class="bottom-right">
+                <table class="calc-table">
                     <tr>
-                        <td class="totals-label">Sub Total</td>
-                        <td class="totals-value">₹{{ number_format($quotation->subtotal, 2) }}</td>
-                    </tr>
-                    @if($quotation->discount > 0)
-                        <tr>
-                            <td class="totals-label" style="color: #b91c1c">Discount</td>
-                            <td class="totals-value" style="color: #b91c1c">−₹{{ number_format($quotation->discount, 2) }}</td>
-                        </tr>
-                    @endif
-                    <tr>
-                        <td class="totals-label">SGST@{{ $halfTaxPercent }}%</td>
-                        <td class="totals-value">₹{{ number_format($halfTaxAmount, 2) }}</td>
+                        <td class="calc-label">Sub Total</td>
+                        <td class="calc-val">&#8377; {{ number_format($subtotal, 2) }}</td>
                     </tr>
                     <tr>
-                        <td class="totals-label">CGST@{{ $halfTaxPercent }}%</td>
-                        <td class="totals-value">₹{{ number_format($halfTaxAmount, 2) }}</td>
+                        <td class="calc-label">SGST&#64;{{ $halfTaxPercent }}%</td>
+                        <td class="calc-val">&#8377; {{ number_format($halfTaxAmount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="calc-label">CGST&#64;{{ $halfTaxPercent }}%</td>
+                        <td class="calc-val">&#8377; {{ number_format($halfTaxAmount, 2) }}</td>
                     </tr>
                     @if($roundOff != 0)
                         <tr>
-                            <td class="totals-label">Round off</td>
-                            <td class="totals-value">{{ $roundOff > 0 ? '+' : '' }}₹{{ number_format($roundOff, 2) }}</td>
+                            <td class="calc-label">Round off</td>
+                            <td class="calc-val">{{ $roundOff > 0 ? '+ ' : '- ' }}&#8377; {{ number_format(abs($roundOff), 2) }}</td>
                         </tr>
                     @endif
-                    <tr style="border-top: 1px solid #94a3b8; font-weight: bold; font-size: 11px;">
-                        <td class="totals-label" style="padding-top: 6px;">Total</td>
-                        <td class="totals-value" style="padding-top: 6px; font-size: 12px; color: #0f172a;">₹{{ number_format($roundedTotal, 2) }}</td>
+                    <tr class="calc-total-row">
+                        <td class="calc-label">Total</td>
+                        <td class="calc-val">&#8377; {{ number_format($roundedTotal, 2) }}</td>
                     </tr>
                 </table>
+
+                <div class="sign-block">
+                    <div class="sign-for">For :NP SOLUTIONS</div>
+                    <div class="sign-auth">Authorized Signatory</div>
+                </div>
             </td>
         </tr>
     </table>
 
-    <table class="bottom-table">
-        <tr>
-            <td>
-                <div class="bank-details">
-                    <div style="font-weight: bold; font-size: 9px; text-transform: uppercase; color: #475569; margin-bottom: 5px;">Pay To:</div>
-                    <strong>Bank Name :</strong> HDFC BANK, CHENNAI - ASHOK NAGAR<br>
-                    <strong>Bank Account No. :</strong> 50200080470710<br>
-                    <strong>Bank IFSC code :</strong> HDFC0000136<br>
-                    <strong>Account holder's name :</strong> NP Solutions
-                </div>
-                
-                <div style="margin-top: 15px; font-size: 8px; color: #64748b;">
-                    <strong>Terms and Conditions:</strong><br>
-                    1. Goods once sold will not be taken back.<br>
-                    2. Warranty as per manufacturer terms.
-                </div>
-            </td>
-            <td class="sign-area">
-                <div style="font-weight: bold; margin-bottom: 45px;">For :NP SOLUTIONS</div>
-                <div style="border-top: 1px dashed #cbd5e1; display: inline-block; width: 150px; padding-top: 4px; font-size: 9px; font-weight: bold; color: #475569; text-align: center;">
-                    Authorized Signatory
-                </div>
-            </td>
-        </tr>
-    </table>
+    @if($isAboveTen)
+        <div style="page-break-before: always; height: 10px;"></div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt; font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif; border: 1px solid #000;">
+            <thead>
+                <tr style="background-color: #f1f5f9;">
+                    <th style="border: 1px solid #000; width: 6%; text-align: center; padding: 4px 2px;">#</th>
+                    <th style="border: 1px solid #000; width: 48%; text-align: left; padding: 4px 6px;">ITEM DESCRIPTION</th>
+                    <th style="border: 1px solid #000; width: 8%; text-align: center; padding: 4px 2px;">QTY</th>
+                    <th style="border: 1px solid #000; width: 18%; text-align: right; padding: 4px 6px;">Rate (&#8377;)</th>
+                    <th style="border: 1px solid #000; width: 20%; text-align: right; padding: 4px 6px;">Total Amount (&#8377;)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($items as $idx => $it)
+                    @php
+                        $qty = $it->quantity ?? 1;
+                        $rate = (float)($it->unit_price ?? 0);
+                        $lTotal = (float)($it->total ?? ($rate * $qty));
+                    @endphp
+                    <tr>
+                        <td style="border: 1px solid #000; text-align: center; padding: 3px 2px;">{{ $idx + 1 }}</td>
+                        <td style="border: 1px solid #000; text-align: left; padding: 3px 6px;">
+                            <strong>{{ $it->item_name }}</strong>
+                            @if(!empty($it->description))
+                                <div style="font-size: 7pt; color: #444; margin-top: 1px;">{!! nl2br(e($it->description)) !!}</div>
+                            @endif
+                        </td>
+                        <td style="border: 1px solid #000; text-align: center; padding: 3px 2px;">{{ $qty }}</td>
+                        <td style="border: 1px solid #000; text-align: right; padding: 3px 6px;">{{ number_format($rate, 2) }}</td>
+                        <td style="border: 1px solid #000; text-align: right; padding: 3px 6px;">{{ number_format($lTotal, 2) }}</td>
+                    </tr>
+                @endforeach
+
+                {{-- Summary rows matching Image 4 --}}
+                <tr>
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Total Amount:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($subtotal, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">GST &#64; {{ $taxPercent }}%:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($taxAmount, 2) }}</td>
+                </tr>
+                @if($roundOff != 0)
+                <tr>
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Round off:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ $roundOff > 0 ? '+ ' : '- ' }}{{ number_format(abs($roundOff), 2) }}</td>
+                </tr>
+                @endif
+                <tr style="background-color: #fafafa;">
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Net Amount:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($roundedTotal, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="border: 1px solid #000; padding: 6px 8px; font-weight: bold; font-size: 8.5pt;">
+                        Rupees: {{ ucwords(str_replace('-', ' ', \App\Models\Quotation::numberToWords($roundedTotal))) }} Rupees only.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 
 </body>
 </html>

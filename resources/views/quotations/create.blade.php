@@ -107,7 +107,7 @@
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             <label class="flex items-start gap-3 p-3.5 rounded-xl border border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 cursor-pointer text-xs transition">
                                 <input type="radio" name="pdf_format" value="1" @checked(old('pdf_format', '1') === '1') class="accent-blue-600 mt-0.5 shrink-0">
                                 <div>
@@ -127,8 +127,8 @@
                             <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
                                 <input type="radio" name="pdf_format" value="3" @checked(old('pdf_format') === '3') class="accent-blue-600 mt-0.5 shrink-0">
                                 <div>
-                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3 &bull; Business letterhead terms</div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Linepix GST Invoice</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3 &bull; Blue GST table & bank details</div>
                                 </div>
                             </label>
                         </div>
@@ -346,9 +346,9 @@
                         @endif
                     </div>
 
-                    <div class="form-actions mt-8 flex items-center justify-end gap-3">
+                    <div class="form-actions mt-8 flex items-center justify-end gap-3 flex-wrap">
                         <a href="{{ $isTechnician ? route('technician.dashboard') : route('leads.show', $lead) }}" 
-                           class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm transition shadow-2xs">
+                           class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition shadow-2xs">
                             {{ __('Cancel') }}
                         </a>
 
@@ -357,12 +357,10 @@
                                     class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
                                     style="background-color: #059669 !important; color: #ffffff !important;">
                                 <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Submit for Admin Approval') }}</span>
-                                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                             </button>
                         @else
-                            <button type="submit" class="btn-primary text-xs sm:text-sm font-bold inline-flex items-center gap-2">
-                                <span>{{ __('Save Quotation') }}</span>
-                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <button type="submit" name="action" value="save" class="btn-primary text-sm font-bold px-6 py-2.5 rounded-xl shadow-sm cursor-pointer transition" style="background-color: #2563eb !important; color: #ffffff !important;">
+                                <span>{{ __('Save') }}</span>
                             </button>
                         @endif
                     </div>

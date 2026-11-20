@@ -1083,6 +1083,23 @@
                 white-space: nowrap !important;
                 flex-shrink: 0 !important;
             }
+
+            /* Universal Clean Buttons: Remove decorative icons inside buttons across all pages for all users */
+            button:not(.btn-icon):not(.allow-brand-icon):not(#header-theme-toggle-btn):not(#header-notification-btn):not([aria-label*="close" i]):not([aria-label*="Close"]):not(.crm-toast__close):not(.pwa-close):not([class*="close"]) > svg,
+            a[class*="btn"]:not(.btn-icon):not(.allow-brand-icon):not([aria-label*="close" i]):not([class*="close"]) > svg,
+            .btn-primary svg,
+            .btn-secondary svg,
+            .btn-danger svg,
+            .btn-blue svg,
+            .btn-white svg,
+            .btn-amber svg,
+            .crm-btn-primary svg,
+            .crm-btn-secondary svg,
+            .btn-submit-primary svg,
+            .btn-cancel svg,
+            .btn-head-secondary svg {
+                display: none !important;
+            }
         </style>
 
         <script>
@@ -1491,24 +1508,17 @@
                             <button @click="toggleThemeMode()" 
                                     type="button" 
                                     id="header-theme-toggle-btn"
-                                    class="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 shadow-2xs" 
+                                    class="btn-icon relative inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer shrink-0 shadow-2xs" 
                                     :title="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'" 
                                     aria-label="Toggle dark/light mode">
                                 {{-- Sun Icon (shown when dark mode is active) --}}
-                                <svg x-show="isDarkMode" x-cloak class="w-4 h-4 text-amber-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="5" fill="currentColor"/>
-                                    <line x1="12" y1="1" x2="12" y2="3"/>
-                                    <line x1="12" y1="21" x2="12" y2="23"/>
-                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                                    <line x1="1" y1="12" x2="3" y2="12"/>
-                                    <line x1="21" y1="12" x2="23" y2="12"/>
-                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                <svg x-show="isDarkMode" x-cloak class="w-4 h-4 text-amber-500 pointer-events-none transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="4" fill="currentColor" fill-opacity="0.25"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
                                 </svg>
                                 {{-- Moon Icon (shown when light mode is active) --}}
-                                <svg x-show="!isDarkMode" class="w-4 h-4 text-slate-700 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                <svg x-show="!isDarkMode" class="w-4 h-4 text-slate-700 dark:text-slate-200 pointer-events-none transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor" fill-opacity="0.18"/>
                                 </svg>
                             </button>
 
@@ -1519,10 +1529,10 @@
                                  x-init="window.addEventListener('crm:pwa-state', e => { pwa = e.detail; })"
                                  x-show="pwa.canInstall && !pwa.isDismissed && !pwa.isStandalone"
                                  x-cloak
-                                 class="hidden sm:inline-flex items-center rounded-[6px] border border-blue-500/30 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 shadow-2xs overflow-hidden shrink-0">
+                                 class="hidden sm:inline-flex items-center rounded-xl border border-blue-500/30 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 shadow-2xs overflow-hidden shrink-0 h-9">
                                 <button type="button"
                                         @click="window.crmPwa?.install()"
-                                        class="inline-flex items-center gap-1.5 px-2.5 h-8 text-xs font-semibold hover:bg-blue-100/80 dark:hover:bg-blue-900/60 transition cursor-pointer"
+                                        class="inline-flex items-center gap-1.5 px-2.5 h-full text-xs font-semibold hover:bg-blue-100/80 dark:hover:bg-blue-900/60 transition cursor-pointer"
                                         title="{{ __('Install Precision IT Field App') }}">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/>
@@ -1531,7 +1541,7 @@
                                 </button>
                                 <button type="button"
                                         @click="window.crmPwa?.dismiss()"
-                                        class="inline-flex items-center justify-center w-6 h-8 text-blue-500/80 hover:text-blue-700 dark:hover:text-blue-200 hover:bg-blue-100/80 dark:hover:bg-blue-900/60 border-l border-blue-500/20 transition cursor-pointer"
+                                        class="inline-flex items-center justify-center w-6 h-full text-blue-500/80 hover:text-blue-700 dark:hover:text-blue-200 hover:bg-blue-100/80 dark:hover:bg-blue-900/60 border-l border-blue-500/20 transition cursor-pointer"
                                         aria-label="{{ __('Dismiss install prompt') }}"
                                         title="{{ __('Dismiss') }}">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1569,15 +1579,15 @@
                                         aria-haspopup="true"
                                         aria-controls="crm-notif-panel"
                                         :aria-expanded="notifOpen.toString()"
-                                        class="relative inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 shadow-2xs" 
+                                        class="btn-icon relative inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer shrink-0 shadow-2xs" 
                                         title="Notifications & System Alerts" 
                                         aria-label="View notifications">
-                                    <svg class="w-4 h-4 text-[var(--text-main)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-slate-700 dark:text-slate-200 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                     <span x-show="unreadCount > 0" 
                                           x-text="unreadCount" 
-                                          class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[11px] font-black text-white bg-rose-500 rounded-[4px] leading-none shadow-xs">
+                                          class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-rose-500 rounded-full leading-none shadow-xs ring-2 ring-white dark:ring-slate-900 pointer-events-none">
                                     </span>
                                 </button>
 
@@ -1704,7 +1714,7 @@
                                         aria-controls="crm-user-panel"
                                         :aria-expanded="userMenuOpen.toString()"
                                         aria-label="{{ __('Account menu for :name', ['name' => Auth::user()->name]) }}"
-                                        class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
+                                        class="flex items-center gap-2 pl-1.5 pr-2.5 h-9 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
                                     @if(Auth::user()->avatar_url)
                                         <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
                                         <div class="w-7 h-7 rounded-full text-white items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb); display: none;">
@@ -2131,6 +2141,9 @@
 
         {{-- Universal Searchable Select Combobox Engine for All CRM Modules --}}
         <x-crm-searchable-script />
+
+        {{-- Universal Contact Saver Engine (Mobile Android Intent / iOS / Desktop Google Contacts & .vcf) --}}
+        <x-contact-saver />
 
     </body>
 </html>

@@ -33,7 +33,23 @@
     .ld-above nav { margin-bottom: 0 !important; }
     .ld-band { background: var(--ld-card); border-bottom: 1px solid var(--ld-border); }
     .ld-views { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--ld-border); }
-    .ld-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 4px; background: var(--ld-chip); font-size: 13px; font-weight: 600; color: var(--ld-text); }
+    .ld-chip {
+        display: inline-flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    html.dark .ld-chip {
+        background: #1e293b;
+        border-color: #334155;
+        color: #f8fafc;
+    }
     .ld-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; min-height: 48px; flex-wrap: wrap; }
     
     /* Native Scrollbar Silencing for Clean App View */
@@ -104,14 +120,61 @@
         }
     }
 
-    .ld-tool { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 6px; font-size: 13px; color: var(--ld-text); background: transparent; border: 0; cursor: pointer; white-space: nowrap !important; flex-shrink: 0 !important; }
-    .ld-tool:hover, .ld-tool[aria-expanded="true"] { background: var(--ld-grey-btn); }
-    .ld-tool.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
-    .ld-tool svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .ld-tool {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        height: 32px !important;
+        padding: 0 12px !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        transition: all 0.15s ease !important;
+    }
+    .ld-tool:hover, .ld-tool[aria-expanded="true"] {
+        background: #f1f5f9 !important;
+        border-color: #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+    .ld-tool.is-on {
+        background: #eff6ff !important;
+        border-color: #bfdbfe !important;
+        color: #1d4ed8 !important;
+    }
+    html.dark .ld-tool {
+        color: #cbd5e1 !important;
+    }
+    html.dark .ld-tool:hover, html.dark .ld-tool[aria-expanded="true"] {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    html.dark .ld-tool.is-on {
+        background: rgba(37, 99, 235, 0.2) !important;
+        border-color: rgba(37, 99, 235, 0.4) !important;
+        color: #93c5fd !important;
+    }
+    .ld-tool svg,
+    .ld-icon-btn svg,
+    .ld-outline svg,
+    .ld-menu svg,
+    .ld-view-switcher svg {
+        display: inline-block !important;
+        width: 16px !important;
+        height: 16px !important;
+        flex-shrink: 0 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
     .ld-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; color: var(--ld-muted); flex-shrink: 0 !important; }
     .ld-icon-btn:hover { background: var(--ld-grey-btn); color: var(--ld-text); }
     .ld-icon-btn.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
-    .ld-icon-btn svg { width: 18px; height: 18px; }
     .ld-sep { width: 1px; height: 22px; background: var(--ld-border); margin: 0 4px; }
 
     .ld-accent { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; min-height: 38px !important; height: auto !important; padding: 8px 16px !important; background: var(--ld-accent) !important; color: #fff !important; font-size: 13px !important; font-weight: 700 !important; border: 1px solid var(--ld-accent-edge) !important; border-radius: 12px !important; text-decoration: none !important; cursor: pointer !important; white-space: nowrap !important; flex-shrink: 0 !important; line-height: 1.25 !important; }
@@ -257,14 +320,19 @@
     }
     .ld-root .ld-scroll table.ld-table { width: 100%; border: 0 !important; border-collapse: separate !important; border-spacing: 0 !important; }
     .ld-root .ld-scroll table.ld-table thead, .ld-root .ld-scroll table.ld-table thead tr { background: transparent !important; border: 0 !important; }
-    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 10; background: var(--ld-card) !important; height: 38px; padding: 0 12px; text-align: left; font-size: 13px; font-weight: 600; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
-    .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 var(--ld-border); }
+    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 10; background: #f8fafc !important; height: 38px; padding: 0 12px; text-align: left; font-size: 12.5px; font-weight: 600; color: #475569; white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 #e2e8f0, inset -1px 0 0 #f1f5f9; }
+    .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 #e2e8f0; }
+    html.dark .ld-root .ld-scroll table.ld-table th { background: #0f172a !important; color: #94a3b8; box-shadow: inset 0 -1px 0 #1e293b, inset -1px 0 0 #1e293b; }
+    html.dark .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 #1e293b; }
     .ld-root .ld-scroll table.ld-table td { padding: 9px 12px; font-size: 13.5px; color: var(--ld-text); vertical-align: middle; line-height: 1.4; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
     .ld-root .ld-scroll table.ld-table tbody tr:hover td { background: var(--ld-hover) !important; }
-    .ld-root .ld-scroll table.ld-table tbody tr.is-picked td { background: var(--ld-accent-soft) !important; }
+    .ld-root .ld-scroll table.ld-table tbody tr.is-picked td { background: rgba(37, 99, 235, 0.08) !important; }
     .ld-root .ld-scroll table.ld-table .ld-box { width: 44px; min-width: 44px !important; padding-left: 14px; padding-right: 0; }
     .ld-root .ld-scroll table.ld-table .ld-box input { width: 14px; height: 14px; border: 1px solid #9aa3af; border-radius: 2px; accent-color: var(--ld-accent); cursor: pointer; }
-    .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--link-color) !important; font-size: 13.5px !important; font-weight: 600 !important; }
+    .ld-root .ld-scroll table.ld-table td a.ld-name { color: #0f172a !important; font-size: 13.5px !important; font-weight: 600 !important; text-decoration: none !important; }
+    .ld-root .ld-scroll table.ld-table td a.ld-name:hover { color: #2563eb !important; text-decoration: underline !important; }
+    html.dark .ld-root .ld-scroll table.ld-table td a.ld-name { color: #f8fafc !important; }
+    html.dark .ld-root .ld-scroll table.ld-table td a.ld-name:hover { color: #60a5fa !important; }
     .ld-root .ld-scroll table.ld-table td a.ld-name:hover { color: var(--link-hover) !important; text-decoration: underline !important; }
     .ld-root .ld-wrap { overflow-wrap: anywhere; max-width: 240px; }
     .ld-root .ld-row-actions { display: flex; justify-content: flex-end; gap: 2px; opacity: 0; }

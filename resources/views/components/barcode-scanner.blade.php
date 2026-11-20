@@ -36,118 +36,34 @@
             <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" />
         </div>
 
-        {{-- Mode Selector Tabs: Barcode Scanner vs Mobile Scanner --}}
-        <div class="hidden sm:flex bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 items-center gap-1.5">
-            <button type="button" id="{{ $modalId }}-tab-laptop" onclick="switchScannerMode('{{ $modalId }}', 'laptop')"
-                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs"
-                    style="background-color: var(--crm-accent, #2563eb); color: #ffffff;">
-                <span id="{{ $modalId }}-tab-laptop-text" class="font-bold text-white">{{ __('Barcode Scanner') }}</span>
-            </button>
+        {{-- Clean Modern Dual-Mode Selector Tabs: Mobile Based Scan vs Barcode Machine Scan --}}
+        <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 select-none text-xs sm:text-sm">
             <button type="button" id="{{ $modalId }}-tab-mobile" onclick="switchScannerMode('{{ $modalId }}', 'mobile')"
-                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60"
+                    class="py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs"
+                    style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
+                <span id="{{ $modalId }}-tab-mobile-text" class="font-bold" style="color: #ffffff !important;">📱 {{ __('Mobile Based Scan') }}</span>
+            </button>
+            <button type="button" id="{{ $modalId }}-tab-laptop" onclick="switchScannerMode('{{ $modalId }}', 'machine')"
+                    class="py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60"
                     style="color: #334155;">
-                <span id="{{ $modalId }}-tab-mobile-text" class="font-bold text-slate-700 dark:text-slate-300" style="color: #334155;">{{ __('Mobile Scanner') }}</span>
+                <span id="{{ $modalId }}-tab-laptop-text" class="font-bold text-slate-700 dark:text-slate-300" style="color: #334155;">⚡ {{ __('Barcode Machine Scan') }}</span>
             </button>
         </div>
 
-        {{-- PANE 1: Laptop Cam Local Video Stream --}}
-        <div id="{{ $modalId }}-laptop-pane" class="space-y-4">
-            {{-- Camera Viewport Container --}}
-            <div class="relative bg-slate-950 rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-800 shadow-inner">
-                <video id="{{ $modalId }}-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                <canvas id="{{ $modalId }}-canvas" style="display:none;"></canvas>
-
-                {{-- Scanning Reticle & Aim Animation --}}
-                <div class="absolute w-[240px] h-[150px] border-2 border-dashed border-white/40 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.6)]">
-                    <div class="flex justify-between">
-                        <div class="w-4 h-4 border-t-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-tl-lg"></div>
-                        <div class="w-4 h-4 border-t-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-tr-lg"></div>
-                    </div>
-                    <div class="laser-scanner-line w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee] animate-pulse"></div>
-                    <div class="flex justify-between">
-                        <div class="w-4 h-4 border-b-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-bl-lg"></div>
-                        <div class="w-4 h-4 border-b-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-br-lg"></div>
-                    </div>
-                </div>
-
-                {{-- Camera Status Overlay Pill --}}
-                <div id="{{ $modalId }}-status"
-                     class="absolute bottom-3 inset-x-4 text-center bg-slate-900/90 backdrop-blur-md text-slate-100 text-xs font-medium py-2 px-3.5 rounded-xl border border-slate-700/80 shadow-lg mx-auto max-w-sm">
-                    {{ __('Initializing camera...') }}
-                </div>
-            </div>
-
-            {{-- Camera Controls & Photo Upload --}}
-            <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
-                <div class="flex items-center gap-2">
-                    <button type="button" id="{{ $modalId }}-torch-btn" onclick="toggleTorch('{{ $modalId }}')"
-                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <span>{{ __('Torch') }}</span>
-                    </button>
-                    <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
-                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <span>{{ __('Flip Cam') }}</span>
-                    </button>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
-                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <span>{{ __('Snap Frame') }}</span>
-                    </button>
-                    <label class="px-4 py-2 rounded-xl text-white text-xs font-semibold shadow-xs transition cursor-pointer inline-flex items-center justify-center"
-                           style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
-                        <span style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
-                        <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
-                    </label>
-                </div>
-            </div>
-
-            {{-- Direct Hardware Barcode Scanner & Manual Input Row inside Modal --}}
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 space-y-2">
-                <div class="flex items-center justify-between">
-                    <label for="{{ $modalId }}-manual-input" class="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                        {{ __('Hardware Barcode Scanner Gun / Serial or MAC Input') }}
-                    </label>
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        {{ __('Scanner Gun Ready') }}
-                    </span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="{{ $modalId }}-manual-input"
-                           placeholder="{{ __('Scan barcode with USB scanner gun or type barcode / MAC...') }}"
-                           onkeydown="if(event.key === 'Enter') { event.preventDefault(); const val = this.value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); } }"
-                           class="flex-1 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-[var(--crm-accent,#2563eb)] font-mono">
-                    <button type="button"
-                            onclick="const val = document.getElementById('{{ $modalId }}-manual-input').value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); }"
-                            class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer shrink-0"
-                            style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
-                        <span style="color: #ffffff !important;">{{ __('Apply') }}</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        {{-- PANE 2: Mobile Phone Cam Wireless Sync --}}
-        <div id="{{ $modalId }}-mobile-pane" style="display:none;" class="space-y-4 text-center py-2">
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                
-                {{-- Fast alternative button on laptop --}}
-                <div class="pb-1 border-b border-slate-200 dark:border-slate-700">
-                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'laptop')"
-                            class="w-full py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span>⚡ Switch to Barcode Scanner on Laptop (Instant &middot; No Phone Needed)</span>
-                    </button>
-                </div>
-
-                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+        {{-- ═══════════════════════════════════════════════════════════ --}}
+        {{-- PANE 1: MOBILE BASED SCAN (PHONE QR SYNC / CAMERA)         --}}
+        {{-- ═══════════════════════════════════════════════════════════ --}}
+        <div id="{{ $modalId }}-mobile-pane" class="space-y-4">
+            
+            {{-- Laptop / Desktop View: Clean QR Code Pairing Card --}}
+            <div id="{{ $modalId }}-mobile-desktop-view" class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-center space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-xs text-xl">
+                    📱
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Scan with Mobile Phone Camera') }}</h4>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Scan Hardware with Smartphone Camera') }}</h4>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                        {{ __('Scan this QR code with your smartphone camera to wirelessly scan camera barcodes, serials, and MAC addresses.') }}
+                        {{ __('Scan this QR code with your mobile camera. Point your phone at the hardware device, barcode, or S/N sticker — data will automatically appear on this webpage for analysis & save.') }}
                     </p>
                 </div>
 
@@ -163,7 +79,7 @@
                 </div>
 
                 {{-- Host / IP Configuration --}}
-                <div class="mt-2 p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-left space-y-2 border border-slate-200 dark:border-slate-700/80">
+                <div class="mt-2 p-3 bg-white dark:bg-slate-900/80 rounded-xl text-left space-y-2 border border-slate-200 dark:border-slate-700/80">
                     <div class="flex items-center justify-between">
                         <label for="{{ $modalId }}-custom-ip" class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
                             {{ __('Server Wi-Fi Address / Host:') }}
@@ -173,27 +89,108 @@
                     <div class="flex items-center gap-1.5">
                         <input type="text" id="{{ $modalId }}-custom-ip" value="{{ $lanIp }}:{{ request()->getPort() ?: 8000 }}"
                                placeholder="e.g. 192.168.29.168:8000"
-                               class="flex-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 font-mono text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500">
+                               class="flex-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 font-mono text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500">
                         <button type="button" onclick="updateScannerQrUrl('{{ $modalId }}')"
-                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shrink-0">
-                            {{ __('Update QR') }}
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition cursor-pointer shrink-0"
+                                style="background-color: #2563eb !important; color: #ffffff !important;">
+                            <span>{{ __('Update QR') }}</span>
                         </button>
                     </div>
-                    <p class="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 p-2 rounded-lg border border-amber-200 dark:border-amber-800/60 leading-relaxed">
-                        <strong>⚠️ Why "This site can't be reached" occurs:</strong><br>
-                        1. Phone and laptop must be connected to the exact same Wi-Fi router.<br>
-                        2. If running locally with artisan, ensure the server listens on all network interfaces:<br>
-                        <code class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 block mt-1 bg-amber-100/70 dark:bg-amber-900/50 p-1 rounded">php artisan serve --host=0.0.0.0 --port=8000</code>
+                    <div class="pt-1 flex items-center justify-between text-xs flex-wrap gap-2">
+                        <a id="{{ $modalId }}-direct-mobile-link" href="#" target="_blank"
+                           class="text-blue-600 dark:text-blue-400 font-bold hover:underline inline-flex items-center gap-1">
+                            <span>{{ __('Open Mobile Scanner Directly in New Tab') }} &rarr;</span>
+                        </a>
+                        <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'machine')" class="text-slate-600 dark:text-slate-400 hover:underline cursor-pointer">
+                            {{ __('Using a Barcode Scanner Gun?') }} &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Mobile Phone Direct View: Native Camera Trigger --}}
+            <div id="{{ $modalId }}-mobile-phone-view" style="display:none;" class="space-y-3">
+                <input type="file" id="{{ $modalId }}-phone-camera-input" accept="image/*" capture="environment" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" class="hidden">
+                <div onclick="document.getElementById('{{ $modalId }}-phone-camera-input').click()"
+                     class="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 text-center select-none cursor-pointer flex flex-col items-center justify-center space-y-3 shadow-inner">
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
+                        📷
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white mb-1">{{ __('Tap to Open Phone Camera') }}</div>
+                        <div class="text-xs text-slate-300 max-w-[240px] mx-auto">{{ __('Point phone camera directly at CCTV hardware barcode or S/N sticker') }}</div>
+                    </div>
+                    <button type="button" onclick="event.stopPropagation(); document.getElementById('{{ $modalId }}-phone-camera-input').click();"
+                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-xs shadow-lg inline-flex items-center gap-1.5 cursor-pointer">
+                        <span>📷 {{ __('Open Camera & Scan Tag') }}</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- ═══════════════════════════════════════════════════════════ --}}
+        {{-- PANE 2: BARCODE MACHINE SCAN (USB / BLUETOOTH SCANNER GUN)  --}}
+        {{-- ═══════════════════════════════════════════════════════════ --}}
+        <div id="{{ $modalId }}-laptop-pane" style="display:none;" class="space-y-4">
+            
+            <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-4 text-center">
+                
+                {{-- Scanner Gun Icon --}}
+                <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-xs text-2xl">
+                    ⚡
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Barcode Machine & Scanner Gun Station') }}</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+                        {{ __('Connect your USB or Bluetooth barcode scanner machine / gun (Honeywell, Zebra, TVS, etc.). Pull the trigger on the hardware barcode to scan instantly into the webpage.') }}
                     </p>
                 </div>
 
-                <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
-                    <a id="{{ $modalId }}-direct-mobile-link" href="#" target="_blank"
-                       class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
-                        <span>{{ __('Open Mobile Scanner Directly in New Tab') }} &rarr;</span>
-                    </a>
+                {{-- Dedicated High-Speed Scanner Gun Input Box --}}
+                <div class="max-w-md mx-auto space-y-2">
+                    <div class="relative">
+                        <input type="text" id="{{ $modalId }}-manual-input"
+                               placeholder="{{ __('Pull scanner gun trigger or type S/N...') }}"
+                               onkeydown="if(event.key === 'Enter') { event.preventDefault(); const val = this.value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); } }"
+                               class="w-full text-center font-mono font-bold text-sm sm:text-base py-3 px-4 rounded-xl border-2 border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm focus:ring-4 focus:ring-blue-500/20 focus:outline-none tracking-wider">
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2">
+                        <button type="button"
+                                onclick="const val = document.getElementById('{{ $modalId }}-manual-input').value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); }"
+                                class="px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs transition cursor-pointer inline-flex items-center gap-1.5 text-white"
+                                style="background-color: #2563eb !important; color: #ffffff !important;">
+                            <span>{{ __('Apply Barcode / S/N') }} &rarr;</span>
+                        </button>
+                        <button type="button" onclick="const el = document.getElementById('{{ $modalId }}-manual-input'); if(el) { el.value = ''; el.focus(); }"
+                                class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">
+                            <span>{{ __('Clear') }}</span>
+                        </button>
+                    </div>
                 </div>
+
+                {{-- Active Listener Status Badge --}}
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>{{ __('Barcode Machine Listener Active — Ready for Trigger Pull') }}</span>
+                </div>
+
+                {{-- Photo Fallback Button --}}
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs flex-wrap gap-2">
+                    <label class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 cursor-pointer inline-flex items-center gap-1.5 transition">
+                        <span>📁 {{ __('Upload Barcode Photo / Image') }}</span>
+                        <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
+                    </label>
+
+                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'mobile')" class="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
+                        <span>📱 {{ __('Switch to Mobile Phone Scan') }} &rarr;</span>
+                    </button>
+                </div>
+
             </div>
+
         </div>
 
         {{-- Scanned Result Preview & Multi-Attribute Feedback --}}
@@ -437,10 +434,10 @@ function openBarcodeScanner(modalId, targetInputId = null, onDetectedCallback = 
     const detectedPill = document.getElementById(`${modalId}-detected-pill`);
     if (detectedPill) detectedPill.style.display = 'none';
 
-    if (defaultTab === 'mobile' && !isMobileScannerDevice()) {
-        switchScannerMode(modalId, 'mobile');
+    if (defaultTab === 'hardware' || defaultTab === 'machine' || defaultTab === 'laptop') {
+        switchScannerMode(modalId, 'machine');
     } else {
-        switchScannerMode(modalId, 'laptop');
+        switchScannerMode(modalId, 'mobile');
     }
 }
 
@@ -460,8 +457,6 @@ function closeBarcodeScanner(modalId) {
             state.stream = null;
         }
         state.track = null;
-        const video = document.getElementById(`${modalId}-video`);
-        if (video) video.srcObject = null;
         if (state.pollInterval) {
             clearInterval(state.pollInterval);
             state.pollInterval = null;
@@ -472,18 +467,22 @@ function closeBarcodeScanner(modalId) {
 function switchScannerMode(modalId, mode) {
     const state = window.barcodeScannerState[modalId];
     if (!state) return;
-    state.activeTab = (mode === 'hardware') ? 'laptop' : mode;
+    const isMachine = (mode === 'machine' || mode === 'hardware' || mode === 'laptop');
+    state.activeTab = isMachine ? 'machine' : 'mobile';
 
     const laptopTab = document.getElementById(`${modalId}-tab-laptop`);
     const mobileTab = document.getElementById(`${modalId}-tab-mobile`);
     const laptopPane = document.getElementById(`${modalId}-laptop-pane`);
     const mobilePane = document.getElementById(`${modalId}-mobile-pane`);
+    const desktopView = document.getElementById(`${modalId}-mobile-desktop-view`);
+    const phoneView = document.getElementById(`${modalId}-mobile-phone-view`);
 
-    if (mode === 'laptop' || mode === 'hardware') {
+    if (isMachine) {
+        // Machine / Scanner Gun Tab Active
         if (laptopTab) {
-            laptopTab.style.backgroundColor = 'var(--crm-accent, #2563eb)';
+            laptopTab.style.backgroundColor = '#2563eb';
             laptopTab.style.color = '#ffffff';
-            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs";
+            laptopTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs bg-blue-600 text-white";
             const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
             if (ltText) {
                 ltText.style.color = '#ffffff';
@@ -493,7 +492,7 @@ function switchScannerMode(modalId, mode) {
         if (mobileTab) {
             mobileTab.style.backgroundColor = 'transparent';
             mobileTab.style.color = '#334155';
-            mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
+            mobileTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
             const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
             if (mbText) {
                 mbText.style.color = '#334155';
@@ -507,7 +506,6 @@ function switchScannerMode(modalId, mode) {
             clearInterval(state.pollInterval);
             state.pollInterval = null;
         }
-        startBarcodeCamera(modalId);
 
         // Auto-focus hardware barcode scanner gun input
         setTimeout(() => {
@@ -516,13 +514,13 @@ function switchScannerMode(modalId, mode) {
                 manualInp.focus();
                 manualInp.select();
             }
-        }, 150);
+        }, 120);
     } else {
-        // Mobile Sync Tab
+        // Mobile Based Scan Tab Active
         if (laptopTab) {
             laptopTab.style.backgroundColor = 'transparent';
             laptopTab.style.color = '#334155';
-            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
+            laptopTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
             const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
             if (ltText) {
                 ltText.style.color = '#334155';
@@ -530,7 +528,27 @@ function switchScannerMode(modalId, mode) {
             }
         }
         if (mobileTab) {
-            mobileTab.style.backgroundColor = 'var(--crm-accent, #2563eb)';
+            mobileTab.style.backgroundColor = '#2563eb';
+            mobileTab.style.color = '#ffffff';
+            mobileTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs bg-blue-600 text-white";
+            const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
+            if (mbText) {
+                mbText.style.color = '#ffffff';
+                mbText.className = "font-bold text-white";
+            }
+        }
+        if (laptopPane) laptopPane.style.display = 'none';
+        if (mobilePane) mobilePane.style.display = 'block';
+
+        // Check if on a mobile browser or laptop/desktop
+        const onMobileDevice = isMobileScannerDevice();
+        if (onMobileDevice) {
+            if (desktopView) desktopView.style.display = 'none';
+            if (phoneView) phoneView.style.display = 'block';
+        } else {
+            if (desktopView) desktopView.style.display = 'block';
+            if (phoneView) phoneView.style.display = 'none';
+        }
             mobileTab.style.color = '#ffffff';
             mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs";
             const mbText = document.getElementById(`${modalId}-tab-mobile-text`);

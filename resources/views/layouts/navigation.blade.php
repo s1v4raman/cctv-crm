@@ -298,6 +298,24 @@
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Suppliers & Vendors</span>
                     </a>
+
+                    {{-- Purchase Returns & Debit Notes --}}
+                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('purchase-returns.index') }}" 
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('purchase-returns.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('purchase-returns.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Purchase Returns</span>
+                    </a>
+
+                    {{-- Procurement & Inventory Reports --}}
+                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('reports.procurement.index') }}" 
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('reports.procurement.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('reports.procurement.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Procurement Reports</span>
+                    </a>
                 </div>
             </div>
 

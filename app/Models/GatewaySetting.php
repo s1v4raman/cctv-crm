@@ -17,6 +17,9 @@ class GatewaySetting extends Model
         'company_state',
         'company_state_code',
         'company_address',
+        'po_auto_approve_limit',
+        'po_receiving_tolerance_percent',
+        'po_alert_on_goods_received',
         'active_sms_gateway',
         'twilio_account_sid',
         'twilio_auth_token',
@@ -55,6 +58,9 @@ class GatewaySetting extends Model
         'otp_expiry_minutes'            => 'integer',
         'auto_receipt_whatsapp_enabled' => 'boolean',
         'auto_receipt_email_enabled'    => 'boolean',
+        'po_auto_approve_limit'         => 'decimal:2',
+        'po_receiving_tolerance_percent'=> 'decimal:2',
+        'po_alert_on_goods_received'    => 'boolean',
     ];
 
     /**

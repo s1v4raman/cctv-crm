@@ -141,20 +141,13 @@ class InstalledEquipmentController extends Controller
             if ($deductStock && !empty($validated['product_id'])) {
                 $product = Product::find($validated['product_id']);
                 if ($product && $product->stock_quantity > 0) {
-                    $product->decrement('stock_quantity', 1);
-                    $product->refresh();
-                    $deductedProduct = $product;
-
-                    StockMovement::create([
-                        'product_id' => $product->id,
-                        'type' => 'job_installation',
-                        'quantity' => -1,
-                        'balance_after' => $product->stock_quantity,
+                    app(\App\Services\StockService::class)->recordIssue($product, 1, [
                         'reference_type' => InstalledEquipment::class,
-                        'reference_id' => $equipment->id,
-                        'notes' => "Deployed at {$equipment->lead->customer_name} (S/N: {$equipment->serial_number})",
-                        'user_id' => auth()->id(),
+                        'reference_id'   => $equipment->id,
+                        'note'           => "Deployed at {$equipment->lead->customer_name} (S/N: {$equipment->serial_number})",
+                        'created_by'     => auth()->id(),
                     ]);
+                    $deductedProduct = $product;
                 }
             }
         });

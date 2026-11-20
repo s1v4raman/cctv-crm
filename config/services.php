@@ -41,6 +41,14 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
+    // WhatsApp Business Cloud API Configuration
+    'whatsapp' => [
+        'phone_number_id'     => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'access_token'        => env('WHATSAPP_ACCESS_TOKEN'),
+        'business_account_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
+        'api_version'         => env('WHATSAPP_API_VERSION', 'v20.0'),
+    ],
+
     // Company pages shown as icons in the public website footer (an icon is hidden until its address is set)
     'social' => [
         'facebook' => env('SOCIAL_FACEBOOK_URL'),

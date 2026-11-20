@@ -65,8 +65,10 @@
                         <div>
                             <label class="crm-label">Initial PO Status</label>
                             <select aria-label="Initial PO Status" name="status" class="crm-select">
-                                <option value="ordered" @selected(old('status', 'ordered') === 'ordered')>Ordered</option>
-                                <option value="draft" @selected(old('status') === 'draft')>Draft</option>
+                                <option value="draft" @selected(old('status', 'draft') === 'draft')>Draft (Default - Requires Approval)</option>
+                                @if(auth()->user()->isAdmin())
+                                    <option value="approved" @selected(old('status') === 'approved')>Approved (Admin Override)</option>
+                                @endif
                             </select>
                         </div>
                         <div>

@@ -60,6 +60,14 @@ class ProductController extends Controller
         };
         $products = $query->paginate($this->listPerPage($request))->withQueryString();
 
+        $user = $request->user() ?: Auth::user();
+        if ($user?->isTechnician() || $user?->isWorker()) {
+            $products->getCollection()->makeHidden(['cost_price']);
+            $products->getCollection()->each(function ($p) {
+                $p->cost_price = 0;
+            });
+        }
+
         $allProducts = Product::select('id', 'name', 'sku', 'status')
             ->orderBy('name')
             ->get();
@@ -88,14 +96,12 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         if ($product->stock_quantity > 0) {
-            \App\Models\StockMovement::create([
-                'product_id' => $product->id,
-                'type' => 'in',
-                'quantity' => $product->stock_quantity,
-                'balance_after' => $product->stock_quantity,
-                'notes' => 'Initial opening stock',
-                'user_id' => auth()->id(),
-            ]);
+            app(\App\Services\StockService::class)->recordOpening(
+                $product,
+                $product->stock_quantity,
+                (float) $product->cost_price,
+                auth()->id()
+            );
         }
 
         return redirect()
@@ -179,14 +185,12 @@ class ProductController extends Controller
         ]);
 
         if ($stockQty > 0) {
-            \App\Models\StockMovement::create([
-                'product_id'    => $product->id,
-                'type'          => 'in',
-                'quantity'      => $stockQty,
-                'balance_after' => $stockQty,
-                'notes'         => 'Initial opening stock from on-the-fly product creation',
-                'user_id'       => Auth::id(),
-            ]);
+            app(\App\Services\StockService::class)->recordOpening(
+                $product,
+                (int) $stockQty,
+                (float) $costPrice,
+                Auth::id()
+            );
         }
 
         return response()->json([
@@ -335,10 +339,11 @@ class ProductController extends Controller
             ]);
 
         $user = $request->user() ?: Auth::user();
-        if ($user?->isTechnician()) {
-            $products->makeHidden(['unit_price']);
+        if ($user?->isTechnician() || $user?->isWorker()) {
+            $products->makeHidden(['unit_price', 'cost_price']);
             $products->each(function ($p) {
                 $p->unit_price = 0;
+                $p->cost_price = 0;
             });
         }
 

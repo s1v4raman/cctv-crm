@@ -90,7 +90,8 @@ class QuotationController extends Controller
                 'total' => $grandTotal,
                 'status' => $status,
                 'notes' => $data['notes'] ?? null,
-                'pdf_format' => $data['pdf_format'] ?? '1',
+                'pdf_format' => in_array($data['pdf_format'] ?? '1', ['1', '2', '3', '4']) ? $data['pdf_format'] : '1',
+                'pricing_mode' => $data['pricing_mode'] ?? 'itemized',
             ]);
 
             foreach ($processedItems as $entry) {
@@ -122,7 +123,7 @@ class QuotationController extends Controller
             return $quotation;
         });
 
-        // Notify Admin & Employee teams immediately
+        // Notify Admin & Employee teams immediately if technician submitted scope
         if ($isTech) {
             \App\Services\HeaderNotificationService::notifyAdminAndStaffOfQuotation($quotation, Auth::user());
 
@@ -133,7 +134,7 @@ class QuotationController extends Controller
 
         return redirect()
             ->route('quotations.show', $quotation)
-            ->with('status', 'Quotation created successfully.');
+            ->with('status', "Quotation #{$quotation->quotation_no} created successfully.");
     }
 
     public function show(Quotation $quotation): View
@@ -145,10 +146,33 @@ class QuotationController extends Controller
             'statusHistories.changedBy',
         ]);
 
-        return view('quotations.show', compact('quotation'));
+        $whatsappMonthlyCount = \App\Models\NotificationLog::where('channel', 'whatsapp')
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        return view('quotations.show', compact('quotation', 'whatsappMonthlyCount'));
     }
 
-    public function downloadPdf(Quotation $quotation, ?string $format = null)
+    public function previewPage(Request $request, Quotation $quotation, ?string $format = null): View
+    {
+        $quotation->load([
+            'lead',
+            'items.product',
+        ]);
+
+        if (!$format || !in_array($format, ['1', '2', '3'])) {
+            $format = in_array($quotation->pdf_format ?? '1', ['1', '2', '3']) ? $quotation->pdf_format : '1';
+        }
+
+        $pricingMode = $request->query('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (!in_array($pricingMode, ['itemized', 'total_only'])) {
+            $pricingMode = 'itemized';
+        }
+
+        return view('quotations.preview', compact('quotation', 'format', 'pricingMode'));
+    }
+
+    public function downloadPdf(Request $request, Quotation $quotation, ?string $format = null)
     {
         if (Auth::user()?->isTechnician() && $quotation->status === 'pending_approval') {
             return redirect()
@@ -158,8 +182,13 @@ class QuotationController extends Controller
 
         $quotation->load(['lead', 'items']);
 
-        if (!$format || !in_array($format, ['1', '2', '3'])) {
-            $format = $quotation->pdf_format ?? '1';
+        if (!$format || !in_array($format, ['1', '2', '3', '4'])) {
+            $format = in_array($quotation->pdf_format ?? '1', ['1', '2', '3', '4']) ? $quotation->pdf_format : '1';
+        }
+
+        $pricingMode = $request->query('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (in_array($pricingMode, ['itemized', 'total_only'])) {
+            $quotation->pricing_mode = $pricingMode;
         }
 
         $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
@@ -170,17 +199,29 @@ class QuotationController extends Controller
         return $pdf->download($filename);
     }
 
-    public function publicPdf(Quotation $quotation, ?string $format = '1')
+    public function publicPdf(Request $request, Quotation $quotation, ?string $format = '1')
     {
         $quotation->load(['lead', 'items']);
 
-        if (!in_array($format, ['1', '2', '3'])) {
+        if (!in_array($format, ['1', '2', '3', '4'])) {
+            $format = in_array($quotation->pdf_format ?? '1', ['1', '2', '3', '4']) ? $quotation->pdf_format : '1';
+        }
+
+        if (!in_array($format, ['1', '2', '3', '4'])) {
             $format = '1';
+        }
+
+        $pricingMode = $request->query('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (in_array($pricingMode, ['itemized', 'total_only'])) {
+            $quotation->pricing_mode = $pricingMode;
         }
 
         $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
 
-        return $pdf->stream($quotation->quotation_no . '_format_' . $format . '.pdf');
+        $safeCustomer = \Illuminate\Support\Str::slug($quotation->lead?->customer_name ?? 'customer', '_');
+        $filename = 'Quotation_' . $quotation->quotation_no . ($safeCustomer ? '_' . $safeCustomer : '') . '_format' . $format . '.pdf';
+
+        return $pdf->stream($filename);
     }
 
     /**
@@ -191,8 +232,20 @@ class QuotationController extends Controller
         $quotation->load(['lead', 'items.product']);
 
         $format = $request->input('format', '1');
-        if (!in_array($format, ['1', '2', '3'])) {
+        if (!in_array($format, ['1', '2', '3', '4'])) {
             $format = '1';
+        }
+
+        $pricingMode = $request->input('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (!in_array($pricingMode, ['itemized', 'total_only'])) {
+            $pricingMode = 'itemized';
+        }
+
+        if ($quotation->pdf_format !== $format || $quotation->pricing_mode !== $pricingMode) {
+            $quotation->update([
+                'pdf_format'   => $format,
+                'pricing_mode' => $pricingMode,
+            ]);
         }
 
         $customPhone = $request->input('phone');
@@ -229,7 +282,7 @@ class QuotationController extends Controller
 
         $customMsg = $request->input('custom_message');
         $phone = $quotation->getWhatsAppPhone($customPhone);
-        $message = $customMsg ?: $quotation->getWhatsAppFormattedMessage($format);
+        $message = $customMsg ?: $quotation->getWhatsAppFormattedMessage($format, $pricingMode);
 
         if (in_array($quotation->status, ['draft', 'approved'])) {
             $prevStatus = $quotation->status;
@@ -242,14 +295,14 @@ class QuotationController extends Controller
                 'changed_by'  => Auth::id(),
                 'from_status' => $prevStatus,
                 'to_status'   => 'sent',
-                'notes'       => "Quotation PDF (Format {$format}) shared with customer via WhatsApp (" . ($phone ?: 'No Phone') . ").",
+                'notes'       => "Quotation PDF (Format {$format}, {$pricingMode}) shared with customer via WhatsApp (" . ($phone ?: 'No Phone') . ").",
             ]);
         } else {
             $quotation->statusHistories()->create([
                 'changed_by'  => Auth::id(),
                 'from_status' => $quotation->status,
                 'to_status'   => $quotation->status,
-                'notes'       => "Quotation PDF (Format {$format}) re-shared with customer via WhatsApp (" . ($phone ?: 'No Phone') . ").",
+                'notes'       => "Quotation PDF (Format {$format}, {$pricingMode}) re-shared with customer via WhatsApp (" . ($phone ?: 'No Phone') . ").",
             ]);
         }
 
@@ -264,7 +317,7 @@ class QuotationController extends Controller
                 'recipient_email' => $quotation->lead?->email,
                 'subject'         => "Quotation #{$quotation->quotation_no} (Format {$format})",
                 'message_body'    => $message,
-                'action_url'      => URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $format]),
+                'action_url'      => URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $format, 'pricing_mode' => $pricingMode]),
                 'status'          => 'sent',
                 'reference_type'  => get_class($quotation),
                 'reference_id'    => $quotation->id,
@@ -275,14 +328,18 @@ class QuotationController extends Controller
             \Illuminate\Support\Facades\Log::warning("Quotation WhatsApp NotificationLog write failed: " . $e->getMessage());
         }
 
-        $whatsappUrl = $quotation->getWhatsAppUrl($format, $customPhone, $customMsg);
-        $webUrl = $quotation->getWhatsAppWebUrl($format, $customPhone, $customMsg);
-        $appUrl = $quotation->getWhatsAppAppUrl($format, $customPhone, $customMsg);
+        $whatsappUrl = $quotation->getWhatsAppUrl($format, $customPhone, $customMsg, $pricingMode);
+        $webUrl = $quotation->getWhatsAppWebUrl($format, $customPhone, $customMsg, $pricingMode);
+        $appUrl = $quotation->getWhatsAppAppUrl($format, $customPhone, $customMsg, $pricingMode);
         $smsUrl = $quotation->getSmsUrl($format, $customPhone, $customMsg);
-        $pdfUrl = route('quotations.pdf', ['quotation' => $quotation, 'format' => $format]);
+        $pdfUrl = route('quotations.pdf', ['quotation' => $quotation, 'format' => $format, 'pricing_mode' => $pricingMode]);
         $vcardUrl = route('quotations.vcard', $quotation);
 
         if ($request->expectsJson() || $request->ajax()) {
+            $monthlyCount = \App\Models\NotificationLog::where('channel', 'whatsapp')
+                ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                ->count();
+
             return response()->json([
                 'success'        => true,
                 'whatsapp_url'   => $whatsappUrl,
@@ -296,6 +353,7 @@ class QuotationController extends Controller
                 'customer_name'  => $quotation->lead?->customer_name ?? 'Customer',
                 'message'        => $message,
                 'is_saved'       => !empty($phone),
+                'monthly_count'  => $monthlyCount,
             ]);
         }
 
@@ -303,25 +361,70 @@ class QuotationController extends Controller
     }
 
     /**
-     * Send Quotation to customer via email with PDF document attached.
+     * Dispatch Quotation PDF Document directly into customer WhatsApp chat via Cloud API.
+     * Meta Policy: First 1,000 non-template messages inside 24h window are free (₹0).
      */
-    public function sendEmail(Request $request, Quotation $quotation): RedirectResponse
+    public function sendWhatsAppDocument(Request $request, Quotation $quotation): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'email'          => ['required', 'email'],
-            'subject'        => ['nullable', 'string', 'max:255'],
-            'custom_message' => ['nullable', 'string', 'max:2000'],
-            'pdf_format'     => ['nullable', 'in:1,2,3'],
+            'phone'          => ['required', 'string'],
+            'customer_name'  => ['nullable', 'string'],
+            'format'         => ['nullable', 'in:1,2,3,4'],
             'pricing_mode'   => ['nullable', 'in:itemized,total_only'],
+            'custom_message' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $recipientEmail = $validated['email'];
-        $subject        = $validated['subject'] ?? null;
-        $customMessage  = $validated['custom_message'] ?? null;
-        $pdfFormat      = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
-        $pricingMode    = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
+        $phone = $validated['phone'];
+        $format = $validated['format'] ?? $quotation->pdf_format ?? '1';
+        $pricingMode = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
+        $caption = $validated['custom_message'] ?? null;
 
-        // Persist any updated format or pricing mode selected on modal
+        // Auto-save phone to customer profile if provided/updated
+        if ($quotation->lead && !empty($phone)) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+            if ($quotation->lead->phone !== $cleanPhone && $quotation->lead->phone !== $phone) {
+                $quotation->lead->update(['phone' => $phone]);
+            }
+            if (!empty($validated['customer_name']) && $quotation->lead->customer_name !== $validated['customer_name']) {
+                $quotation->lead->update(['customer_name' => $validated['customer_name']]);
+            }
+        }
+
+        $result = \App\Services\WhatsAppCloudService::sendQuotationDocument($quotation, $phone, $caption, $format, $pricingMode);
+
+        $monthlyCount = \App\Models\NotificationLog::where('channel', 'whatsapp')
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        return response()->json([
+            'success'        => $result['success'],
+            'error'          => $result['error'],
+            'message_id'     => $result['message_id'],
+            'requires_setup' => $result['requires_setup'],
+            'rate_used'      => 'First 1,000 non-template messages per business number each month are free',
+            'cost'           => '₹0',
+            'window'         => 'Inside 24-hour window (after customer messaged first)',
+            'monthly_count'  => $monthlyCount,
+        ]);
+    }
+
+    /**
+     * Dispatch Quotation Email with automatic PDF attachment.
+     *
+     * @return array{success: bool, error: ?string}
+     */
+    public function dispatchQuotationEmail(
+        Quotation $quotation,
+        string $recipientEmail,
+        ?string $subject = null,
+        ?string $customMessage = null,
+        ?string $pdfFormat = null,
+        ?string $pricingMode = null
+    ): array {
+        $pdfFormat = $pdfFormat ?: ($quotation->pdf_format ?? '1');
+        $pricingMode = $pricingMode ?: ($quotation->pricing_mode ?? 'itemized');
+
+        // Persist any updated format or pricing mode selected
         if ($quotation->pdf_format !== $pdfFormat || $quotation->pricing_mode !== $pricingMode) {
             $quotation->update([
                 'pdf_format'   => $pdfFormat,
@@ -337,12 +440,49 @@ class QuotationController extends Controller
         // 2. Apply Dynamic SMTP Configuration & Dispatch Email with Attached PDF
         \App\Services\MailConfigService::applyDynamicMailConfig();
 
+        $isLiveSmtp = \App\Services\MailConfigService::isSmtpConfigured();
+
+        if (!$isLiveSmtp) {
+            // Write to log for local file audit/troubleshooting
+            try {
+                \Illuminate\Support\Facades\Mail::to($recipientEmail)
+                    ->send(new \App\Mail\QuotationEmailWithPdf($quotation, $customMessage, $subject, $pdfFormat, $pricingMode));
+            } catch (\Throwable $e) {
+                // ignore local log driver errors
+            }
+
+            // Record in Notification Log as 'logged_only'
+            \App\Models\NotificationLog::create([
+                'channel'         => 'email',
+                'event_type'      => 'quotation_sent',
+                'recipient_type'  => 'customer',
+                'recipient_name'  => $quotation->lead?->customer_name ?? 'Customer',
+                'recipient_phone' => $quotation->lead?->phone,
+                'recipient_email' => $recipientEmail,
+                'subject'         => $subject ?: "Official Quotation #{$quotation->quotation_no}",
+                'message_body'    => $customMessage ?: "Quotation #{$quotation->quotation_no} with PDF attached.",
+                'action_url'      => URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $pdfFormat]),
+                'status'          => 'failed',
+                'error_message'   => 'Live SMTP server is not configured in Settings. Email was saved to local log instead of customer inbox.',
+                'reference_type'  => get_class($quotation),
+                'reference_id'    => $quotation->id,
+                'sent_at'         => now(),
+                'created_by'      => Auth::id(),
+            ]);
+
+            return [
+                'success'     => false,
+                'is_log_mode' => true,
+                'error'       => 'Live SMTP is not configured in CRM Settings. Please configure SMTP in Settings > Alert Gateways, or use Gmail Web to dispatch directly from your browser.',
+            ];
+        }
+
         $emailStatus = 'sent';
         $errorMessage = null;
 
         try {
             \Illuminate\Support\Facades\Mail::to($recipientEmail)
-                ->send(new \App\Mail\QuotationEmailWithPdf($quotation, $customMessage, $subject, $pdfFormat));
+                ->send(new \App\Mail\QuotationEmailWithPdf($quotation, $customMessage, $subject, $pdfFormat, $pricingMode));
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("Quotation email dispatch failed to {$recipientEmail}: " . $e->getMessage());
             $emailStatus = 'failed';
@@ -368,41 +508,87 @@ class QuotationController extends Controller
             'created_by'      => Auth::id(),
         ]);
 
+        if ($emailStatus === 'sent') {
+            // Update status to 'sent' if currently 'draft' or 'approved'
+            if (in_array($quotation->status, ['draft', 'approved'])) {
+                $prevStatus = $quotation->status;
+                $quotation->update([
+                    'status'  => 'sent',
+                    'sent_at' => now(),
+                ]);
+
+                $quotation->statusHistories()->create([
+                    'changed_by'  => Auth::id(),
+                    'from_status' => $prevStatus,
+                    'to_status'   => 'sent',
+                    'notes'       => "Quotation PDF automatically emailed to customer ({$recipientEmail}).",
+                ]);
+            } else {
+                $quotation->statusHistories()->create([
+                    'changed_by'  => Auth::id(),
+                    'from_status' => $quotation->status,
+                    'to_status'   => $quotation->status,
+                    'notes'       => "Quotation PDF re-emailed to customer ({$recipientEmail}).",
+                ]);
+            }
+
+            return ['success' => true, 'error' => null];
+        }
+
+        return ['success' => false, 'error' => $errorMessage];
+    }
+
+    /**
+     * Send Quotation to customer via email with PDF document attached.
+     */
+    public function sendEmail(Request $request, Quotation $quotation): RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        $validated = $request->validate([
+            'email'          => ['required', 'email'],
+            'subject'        => ['nullable', 'string', 'max:255'],
+            'custom_message' => ['nullable', 'string', 'max:2000'],
+            'pdf_format'     => ['nullable', 'in:1,2,3,4'],
+            'pricing_mode'   => ['nullable', 'in:itemized,total_only'],
+        ]);
+
         if ($quotation->status === 'pending_approval' && Auth::user()->isTechnician()) {
             return back()->with('error', 'This quotation is pending Admin pricing and product approval. Once approved, you will be able to share it with the customer.');
         }
 
-        if ($emailStatus === 'failed') {
-            return back()->with('error', "Failed to send email to {$recipientEmail}: {$errorMessage}. Please check your SMTP mail settings in .env.");
+        $recipientEmail = $validated['email'];
+        $subject        = $validated['subject'] ?? null;
+        $customMessage  = $validated['custom_message'] ?? null;
+        $pdfFormat      = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
+        $pricingMode    = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
+
+        $result = $this->dispatchQuotationEmail(
+            $quotation,
+            $recipientEmail,
+            $subject,
+            $customMessage,
+            $pdfFormat,
+            $pricingMode
+        );
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'     => $result['success'],
+                'is_log_mode' => $result['is_log_mode'] ?? false,
+                'message'     => $result['success']
+                    ? "Official Quotation #{$quotation->quotation_no} with attached PDF has been successfully dispatched to {$recipientEmail}!"
+                    : ($result['error'] ?? 'SMTP delivery error'),
+                'error'       => $result['error'],
+            ]);
         }
 
-        // 4. Update status to 'sent' if currently 'draft' or 'approved'
-        if (in_array($quotation->status, ['draft', 'approved'])) {
-            $prevStatus = $quotation->status;
-            $quotation->update([
-                'status'  => 'sent',
-                'sent_at' => now(),
-            ]);
-
-            $quotation->statusHistories()->create([
-                'changed_by'  => Auth::id(),
-                'from_status' => $prevStatus,
-                'to_status'   => 'sent',
-                'notes'       => "Quotation PDF emailed to customer ({$recipientEmail}).",
-            ]);
-        } else {
-            $quotation->statusHistories()->create([
-                'changed_by'  => Auth::id(),
-                'from_status' => $quotation->status,
-                'to_status'   => $quotation->status,
-                'notes'       => "Quotation PDF re-emailed to customer ({$recipientEmail}).",
-            ]);
+        if (!$result['success']) {
+            return back()->with('error', "Failed to send email to {$recipientEmail}: {$result['error']}. Please check your SMTP mail settings in .env.");
         }
 
         $mailer = config('mail.default', 'log');
         $note = $mailer === 'log' ? ' (Note: MAIL_MAILER=log in .env, email was written to log file. Configure SMTP in .env to deliver real emails to inbox).' : '';
 
-        return back()->with('status', "Quotation #{$quotation->quotation_no} with attached PDF has been successfully dispatched to {$recipientEmail}!{$note}");
+        return back()->with('status', "Official Quotation #{$quotation->quotation_no} with attached PDF has been successfully emailed to {$recipientEmail}!{$note}");
     }
 
     /**
@@ -420,7 +606,7 @@ class QuotationController extends Controller
 
         $oldStatus = $quotation->status;
         $chosenFormat = $request->input('pdf_format', $quotation->pdf_format ?? '1');
-        if (!in_array($chosenFormat, ['1', '2', '3'])) {
+        if (!in_array($chosenFormat, ['1', '2', '3', '4'])) {
             $chosenFormat = '1';
         }
         $chosenPricingMode = $request->input('pricing_mode', $quotation->pricing_mode ?? 'itemized');
@@ -591,7 +777,7 @@ class QuotationController extends Controller
 
     public function edit(Quotation $quotation): View|RedirectResponse
     {
-        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent'])) {
             return redirect()
                 ->route('quotations.show', $quotation)
                 ->with('status', 'This quotation cannot be edited.');
@@ -613,7 +799,7 @@ class QuotationController extends Controller
         StoreQuotationRequest $request,
         Quotation $quotation
     ): RedirectResponse {
-        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent'])) {
             return redirect()
                 ->route('quotations.show', $quotation)
                 ->with('status', 'This quotation cannot be edited.');
@@ -685,22 +871,38 @@ class QuotationController extends Controller
 
         $request->validate([
             'items' => ['required', 'array'],
-            'items.*.id' => ['required', 'integer', 'exists:quotation_items,id'],
+            'items.*.id' => ['nullable', 'integer', 'exists:quotation_items,id'],
+            'items.*.item_name' => ['nullable', 'string', 'max:255'],
+            'items.*.description' => ['nullable', 'string'],
+            'items.*.unit' => ['nullable', 'string', 'max:30'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'discount' => ['nullable', 'numeric', 'min:0'],
-            'pdf_format' => ['nullable', 'string', 'in:1,2,3'],
+            'pdf_format' => ['nullable', 'string', 'in:1,2,3,4'],
         ]);
 
         DB::transaction(function () use ($request, $quotation) {
             foreach ($request->input('items') as $itemData) {
-                $qItem = $quotation->items()->find($itemData['id']);
-                if ($qItem) {
-                    $qty = (float) $itemData['quantity'];
-                    $price = (float) $itemData['unit_price'];
-                    $qItem->update([
+                $qty = (float) $itemData['quantity'];
+                $price = (float) $itemData['unit_price'];
+
+                if (!empty($itemData['id'])) {
+                    $qItem = $quotation->items()->find($itemData['id']);
+                    if ($qItem) {
+                        $qItem->update([
+                            'quantity' => $qty,
+                            'unit_price' => $price,
+                            'total' => $qty * $price,
+                        ]);
+                    }
+                } elseif (!empty($itemData['item_name'])) {
+                    $quotation->items()->create([
+                        'product_id' => $itemData['product_id'] ?? null,
+                        'item_name' => trim($itemData['item_name']),
+                        'description' => $itemData['description'] ?? null,
                         'quantity' => $qty,
+                        'unit' => $itemData['unit'] ?? 'Nos',
                         'unit_price' => $price,
                         'total' => $qty * $price,
                     ]);
@@ -745,7 +947,7 @@ class QuotationController extends Controller
     public function updateFormat(Request $request, Quotation $quotation): RedirectResponse
     {
         $validated = $request->validate([
-            'pdf_format'   => ['nullable', 'string', 'in:1,2,3'],
+            'pdf_format'   => ['nullable', 'string', 'in:1,2,3,4'],
             'pricing_mode' => ['nullable', 'string', 'in:itemized,total_only'],
         ]);
 
@@ -989,13 +1191,17 @@ class QuotationController extends Controller
     /**
      * Download customer contact as vCard (.vcf) directly from Quotation screen.
      */
-    public function downloadVcard(Quotation $quotation, \App\Services\VcardExportService $vcardService)
+    public function downloadVcard(Request $request, Quotation $quotation, \App\Services\VcardExportService $vcardService)
     {
         $lead = $quotation->lead;
         if (!$lead) {
             abort(404, 'Associated customer lead not found.');
         }
 
-        return $vcardService->downloadResponse($lead);
+        $overridePhone = $request->query('phone') ?: $quotation->getWhatsAppPhone();
+        $overrideName  = $request->query('name');
+        $disposition   = $request->query('mode', 'attachment');
+
+        return $vcardService->downloadResponse($lead, $overridePhone, $overrideName, $disposition);
     }
 }

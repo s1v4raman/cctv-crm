@@ -8,25 +8,27 @@ class StorePurchaseOrderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isStaff());
+        return auth()->check() && auth()->user()->isOffice();
     }
 
     public function rules(): array
     {
         return [
-            'supplier_id' => ['required', 'exists:suppliers,id'],
-            'order_date' => ['required', 'date'],
-            'expected_delivery_date' => ['nullable', 'date'],
-            'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'shipping_cost' => ['nullable', 'numeric', 'min:0'],
-            'status' => ['nullable', 'in:draft,ordered'],
-            'notes' => ['nullable', 'string'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['nullable', 'exists:products,id'],
-            'items.*.item_name' => ['required', 'string', 'max:255'],
-            'items.*.sku' => ['nullable', 'string', 'max:100'],
-            'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
+            'supplier_id'              => ['required', 'exists:suppliers,id'],
+            'order_date'               => ['required', 'date'],
+            'expected_delivery_date'   => ['nullable', 'date'],
+            'tax_percent'              => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'shipping_cost'            => ['nullable', 'numeric', 'min:0'],
+            'status'                   => ['nullable', 'string', 'in:draft,pending_approval,approved,ordered'],
+            'notes'                    => ['nullable', 'string'],
+            'items'                    => ['required', 'array', 'min:1'],
+            'items.*.product_id'       => ['nullable', 'exists:products,id'],
+            'items.*.item_name'        => ['required', 'string', 'max:255'],
+            'items.*.sku'              => ['nullable', 'string', 'max:100'],
+            'items.*.hsn_code'         => ['nullable', 'string', 'max:20'],
+            'items.*.unit_cost'        => ['required', 'numeric', 'min:0'],
             'items.*.quantity_ordered' => ['required', 'integer', 'min:1'],
+            'items.*.tax_rate'         => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 }

@@ -3,10 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
+    public const TYPE_MANUFACTURER = 'manufacturer';
+    public const TYPE_DISTRIBUTOR = 'distributor';
+    public const TYPE_LOCAL_SHOP = 'local_shop';
+    public const TYPE_SERVICE_PROVIDER = 'service_provider';
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+
     public const CATEGORIES = [
         'CCTV Cameras & Recorders',
         'Hard Drives & Storage',
@@ -17,6 +26,7 @@ class Supplier extends Model
 
     protected $fillable = [
         'name',
+        'name_key',
         'company_name',
         'contact_person',
         'email',
@@ -26,6 +36,9 @@ class Supplier extends Model
         'city',
         'state',
         'payment_terms',
+        'type',
+        'status',
+        'created_by',
         'bank_name',
         'bank_account_number',
         'bank_ifsc',
@@ -37,6 +50,38 @@ class Supplier extends Model
         'is_active',
         'notes',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Supplier $supplier) {
+            if (!empty($supplier->name)) {
+                $supplier->name = self::cleanName($supplier->name);
+                if (empty($supplier->name_key)) {
+                    $baseKey = self::normalizeNameKey($supplier->name);
+                    if ($baseKey === '') {
+                        $baseKey = 'supplier';
+                    }
+                    $candidate = $baseKey;
+                    $counter = 1;
+                    while (self::where('name_key', $candidate)->where('id', '!=', $supplier->id ?? 0)->exists()) {
+                        $candidate = "{$baseKey}-{$counter}";
+                        $counter++;
+                    }
+                    $supplier->name_key = $candidate;
+                }
+            }
+        });
+    }
+
+    public static function normalizeNameKey(?string $name): string
+    {
+        return strtolower(trim(preg_replace('/\s+/', ' ', $name ?? '')));
+    }
+
+    public static function cleanName(?string $name): string
+    {
+        return trim(preg_replace('/\s+/', ' ', $name ?? ''));
+    }
 
     protected function casts(): array
     {
@@ -61,29 +106,86 @@ class Supplier extends Model
         return $this->hasMany(VendorPayment::class)->latest('payment_date');
     }
 
+    public function vendorBills(): HasMany
+    {
+        return $this->hasMany(VendorBill::class)->latest('invoice_date');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function projectMaterials(): HasMany
+    {
+        return $this->hasMany(ProjectMaterial::class);
+    }
+
+    public function purchaseReturns(): HasMany
+    {
+        return $this->hasMany(PurchaseReturn::class)->latest();
+    }
+
+    public function debitNotes(): HasMany
+    {
+        return $this->hasMany(SupplierDebitNote::class)->latest();
+    }
+
     public function totalPurchaseVolume(): float
     {
+        $validStatuses = ['approved', 'sent', 'partially_received', 'received', 'closed', 'ordered'];
+
         if ($this->relationLoaded('purchaseOrders')) {
             return (float) $this->purchaseOrders
-                ->whereIn('status', ['ordered', 'partially_received', 'received'])
+                ->whereIn('status', $validStatuses)
                 ->sum('total');
         }
 
         return (float) $this->purchaseOrders()
-            ->whereIn('status', ['ordered', 'partially_received', 'received'])
+            ->whereIn('status', $validStatuses)
             ->sum('total');
     }
 
     public function balancePayable(): float
     {
+        $debitNotesTotal = (float) $this->debitNotes()->where('status', 'active')->sum('total_amount');
+
+        // Based on vendor bills and payments
+        if ($this->vendorBills()->whereNotIn('status', [VendorBill::STATUS_DRAFT, VendorBill::STATUS_CANCELLED])->exists()) {
+            $bills = $this->vendorBills()->whereNotIn('status', [VendorBill::STATUS_DRAFT, VendorBill::STATUS_CANCELLED])->get();
+            $totalBilled = (float) $bills->sum('total');
+            $totalPaidOnBills = (float) $bills->sum('amount_paid');
+            return max(0.0, ($totalBilled - $totalPaidOnBills) - $debitNotesTotal);
+        }
+
+        // Backward compatibility fallback for legacy POs
+        $payableStatuses = ['partially_received', 'received', 'closed'];
+
         $orders = $this->relationLoaded('purchaseOrders')
-            ? $this->purchaseOrders->whereIn('status', ['ordered', 'partially_received', 'received'])
-            : $this->purchaseOrders()->whereIn('status', ['ordered', 'partially_received', 'received'])->get();
+            ? $this->purchaseOrders->whereIn('status', $payableStatuses)
+            : $this->purchaseOrders()->whereIn('status', $payableStatuses)->get();
 
         $total = (float) $orders->sum('total');
         $paid = (float) $orders->sum('amount_paid');
 
-        return max(0.0, $total - $paid);
+        return max(0.0, ($total - $paid) - $debitNotesTotal);
+    }
+
+    /**
+     * Compute open purchase commitments (active POs not yet converted to vendor bills).
+     */
+    public function openPoCommitments(): float
+    {
+        $activeStatuses = ['approved', 'sent', 'partially_received', 'received'];
+        $pos = $this->purchaseOrders()->whereIn('status', $activeStatuses)->get();
+
+        $commitment = 0.0;
+        foreach ($pos as $po) {
+            $billedTotal = (float) $po->vendorBills()->whereNotIn('status', [VendorBill::STATUS_CANCELLED])->sum('total');
+            $commitment += max(0.0, (float) $po->total - $billedTotal);
+        }
+
+        return round($commitment, 2);
     }
 
     /**

@@ -53,34 +53,38 @@
                         <span>{{ __('Awaiting Admin Price Approval (Sharing Locked)') }}</span>
                     </div>
                 @else
-                    {{-- PDF Downloads: Active format default + format quick picks --}}
-                    <div class="inline-flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs overflow-hidden">
-                        <a href="{{ route('quotations.pdf', [$quotation, $quotation->pdf_format ?? '1']) }}" title="{{ __('Download Active Format PDF (:name)', ['name' => $quotation->pdf_format_name]) }}" class="px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/60 inline-flex items-center gap-1.5 transition">
-                            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6h6"/></svg>
-                            <span>{{ __('PDF (Format :fmt)', ['fmt' => $quotation->pdf_format ?? '1']) }}</span>
-                        </a>
-                        <span class="w-[1px] h-4 bg-slate-200 dark:bg-slate-700"></span>
-                        <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '1' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 1: Executive Modern">F1</a>
-                        <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '2' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 2: Technical Detailed">F2</a>
-                        <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '3' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 3: Classic Formal">F3</a>
-                    </div>
+                    {{-- Direct Preview Button: Navigates cleanly to dedicated preview page --}}
+                    <a href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?? '1']) }}" 
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" 
+                       style="background-color: var(--crm-accent, #2563eb) !important; color: #ffffff !important;" 
+                       title="{{ __('Preview Quotation in Live Page') }}">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span style="color: #ffffff !important; font-weight: 700;">{{ __('Preview') }}</span>
+                    </a>
+
+                    <a href="{{ route('quotations.download-pdf', [$quotation, $quotation->pdf_format ?? '1']) }}" 
+                       class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold" 
+                       title="{{ __('Download Active Format PDF') }}">
+                        <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>{{ __('Download PDF') }}</span>
+                    </a>
 
                     {{-- Action Modals & Links --}}
-                    <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                        <x-icon.whatsapp class="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Share on WhatsApp</span>
+                    <button type="button" onclick="openWhatsAppModal()" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" style="background-color: #059669 !important; color: #ffffff !important;" title="Send Quotation via WhatsApp">
+                        <span style="color: #ffffff !important; font-weight: 700;">Send WhatsApp PDF (₹0 Direct)</span>
                     </button>
-                    <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                        <x-icon.email class="w-4 h-4 text-blue-600 shrink-0" />
-                        <span>Email</span>
+                    <button type="button" onclick="openEmailModal()" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" style="background-color: #0284c7 !important; color: #ffffff !important;" title="Email Quotation with Attached PDF">
+                        <span style="color: #ffffff !important; font-weight: 700;">Email Quotation (PDF Attached)</span>
                     </button>
                 @endif
 
-                {{-- Save Contact (vCard) for Admin & Technician --}}
-                <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold" title="Save customer contact to your phone/WhatsApp">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    <span>Save Contact</span>
-                </a>
+                {{-- Save Contact to Phone (Google Contacts Web Auto-Sync) --}}
+                <button type="button"
+                   onclick="openCustomerGoogleContacts()"
+                   class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold"
+                   title="Save contact directly to Google Contacts to auto-sync with Phone & WhatsApp">
+                    <span>Save Contact to Phone</span>
+                </button>
 
                 {{-- Admin & Staff Approval Action: Only visible when a field technician submitted a quotation request awaiting approval --}}
                 @if($isTechnicianRequest && auth()->user()->isOffice())
@@ -93,12 +97,12 @@
                     </form>
                 @endif
 
-                @if(in_array($quotation->status, ['draft', 'pending_approval']) && (auth()->user()->isOffice() || auth()->id() === $quotation->created_by))
-                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                @if(in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']) && (auth()->user()->isOffice() || auth()->id() === $quotation->created_by))
+                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold">
                         <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         <span>Edit Scope</span>
                     </a>
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->isAdmin() && in_array($quotation->status, ['draft', 'pending_approval']))
                     <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
                           data-confirm="Delete {{ $quotation->quotation_no }}?" class="inline">
                         @csrf @method('DELETE')
@@ -282,145 +286,34 @@
                 </div>
             @endif
 
-            {{-- Quotation PDF Format & Document Layout Section --}}
-            <div class="crm-section">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            {{-- Clean Quotation Preview Action Strip (Card design moved to dedicated Preview Page) --}}
+            <div class="crm-section flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-800 border-blue-200/60 dark:border-slate-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
                     <div>
-                        <h3 class="!mb-0 flex items-center gap-2">
-                            <span>{{ __('Quotation Format & Pricing Mode') }}</span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $quotation->isTotalCostOnly() ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800' }}">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Quotation Document') }}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                Format {{ $quotation->pdf_format ?? '1' }}: {{ $quotation->pdf_format_name }}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $quotation->isTotalCostOnly() ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' }}">
                                 {{ $quotation->pricing_mode_name }}
                             </span>
-                        </h3>
+                        </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {{ __('Choose your visual layout format, then choose whether to send itemized product prices or a turnkey total cost only quotation to the customer.') }}
+                            {{ __('Click Preview to view full quotation, switch presentation format, and select pricing breakdown mode.') }}
                         </p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        @if($isTechnicianRequest)
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                                {{ __('Technician Proposed: :name', ['name' => $quotation->pdf_format_name]) }}
-                            </span>
-                        @else
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                ✓ {{ __('Active: :name', ['name' => $quotation->pdf_format_name]) }}
-                            </span>
-                        @endif
-                        <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1 font-bold">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <span>{{ __('Preview PDF') }}</span>
-                        </a>
-                        <a href="{{ route('quotations.download-pdf', $quotation) }}" class="action-link text-xs inline-flex items-center gap-1 font-bold">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            <span>{{ __('Download PDF') }}</span>
-                        </a>
-                    </div>
                 </div>
-
-                <form method="POST" action="{{ route('quotations.set-format', $quotation) }}" id="quotation-format-form" class="space-y-4">
-                    @csrf
-                    
-                    {{-- Step 1: Layout Selection --}}
-                    <div>
-                        <div class="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
-                            <div class="inline-flex items-center gap-2 flex-nowrap whitespace-nowrap" style="display: inline-flex !important; flex-direction: row !important; align-items: center !important; white-space: nowrap !important;">
-                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-xs" style="display: inline-flex !important; flex-shrink: 0 !important; width: 20px !important; height: 20px !important;">1</span>
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200" style="display: inline-block !important; white-space: nowrap !important;">{{ __('Select Layout Presentation Style') }}</span>
-                            </div>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Click any card to apply</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            @foreach(\App\Models\Quotation::FORMATS as $key => $title)
-                                @php $isSelected = ($quotation->pdf_format ?? '1') == $key; @endphp
-                                <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isSelected ? 'border-amber-500 bg-amber-50/70 dark:bg-amber-950/30 shadow-xs ring-2 ring-amber-400/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-amber-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
-                                    <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isSelected ? 'border-amber-500 bg-amber-500 ring-2 ring-amber-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
-                                        @if($isSelected)
-                                            <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
-                                        @endif
-                                    </div>
-                                    <input type="radio" name="pdf_format" value="{{ $key }}" {{ $isSelected ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
-                                    <div class="space-y-1">
-                                        <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                                            <span>Format {{ $key }}: {{ $title }}</span>
-                                            @if($isSelected)
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500 text-white font-bold leading-none shadow-2xs">Active</span>
-                                            @endif
-                                        </div>
-                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                                            @if($key === '1') Executive Modern &bull; Hero brand header with clean itemized schedule
-                                            @elseif($key === '2') Technical Detailed &bull; Item-level specs, terms &amp; warranty badges
-                                            @else Classic Formal &bull; Standard corporate layout with bank &amp; seal details
-                                            @endif
-                                        </p>
-                                    </div>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- Step 2: Pricing Breakdown Mode --}}
-                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                        <div class="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
-                            <div class="inline-flex items-center gap-2 flex-nowrap whitespace-nowrap" style="display: inline-flex !important; flex-direction: row !important; align-items: center !important; white-space: nowrap !important;">
-                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-xs" style="display: inline-flex !important; flex-shrink: 0 !important; width: 20px !important; height: 20px !important;">2</span>
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200" style="display: inline-block !important; white-space: nowrap !important;">{{ __('Select Pricing Breakdown Mode for Customer') }}</span>
-                            </div>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Controls what the client sees</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {{-- Option 1: With Product Cost & Total --}}
-                            @php $isItemized = ($quotation->pricing_mode ?? 'itemized') === 'itemized'; @endphp
-                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isItemized ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/30 shadow-xs ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-blue-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
-                                <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isItemized ? 'border-blue-600 bg-blue-600 ring-2 ring-blue-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
-                                    @if($isItemized)
-                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
-                                    @endif
-                                </div>
-                                <input type="radio" name="pricing_mode" value="itemized" {{ $isItemized ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
-                                <div class="space-y-1">
-                                    <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                                        <span>With Product Cost &amp; Total</span>
-                                        @if($isItemized)
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-blue-600 text-white font-bold leading-none shadow-2xs">Selected</span>
-                                        @endif
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                                        Full transparency: lists each product, model specs, quantity, unit rate, tax breakdown, and grand total.
-                                    </p>
-                                </div>
-                            </label>
-
-                            {{-- Option 2: Total Cost Only --}}
-                            @php $isTotalOnly = ($quotation->pricing_mode ?? 'itemized') === 'total_only'; @endphp
-                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isTotalOnly ? 'border-purple-600 bg-purple-50/70 dark:bg-purple-950/30 shadow-xs ring-2 ring-purple-500/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-purple-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
-                                <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isTotalOnly ? 'border-purple-600 bg-purple-600 ring-2 ring-purple-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
-                                    @if($isTotalOnly)
-                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
-                                    @endif
-                                </div>
-                                <input type="radio" name="pricing_mode" value="total_only" {{ $isTotalOnly ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
-                                <div class="space-y-1">
-                                    <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                                        <span>Total Cost Only (Lump Sum / Turnkey)</span>
-                                        @if($isTotalOnly)
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-600 text-white font-bold leading-none shadow-2xs">Selected</span>
-                                        @endif
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                                        Turnkey package: hides individual camera/HDD line prices so customer cannot price-shop parts online; shows turnkey package scope and grand total only.
-                                    </p>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    @if(!$isTechnician || $quotation->status === 'pending_approval' || $quotation->status === 'draft')
-                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2">
-                            <span>{{ $isTechnician ? __('Click any format or pricing mode above to propose to management.') : __('Click any format or pricing mode above to immediately update customer quotation.') }}</span>
-                            <button type="submit" class="action-link text-xs font-bold">{{ __('Apply & Regenerate') }}</button>
-                        </div>
-                    @endif
-                </form>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?? '1']) }}" 
+                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>{{ __('Preview Quotation') }}</span>
+                    </a>
+                </div>
             </div>
 
             {{-- 1. Specifications & Overview: Two-column table inside standard section --}}
@@ -494,9 +387,8 @@
                     </div>
                     @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']))
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold">
-                                <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                <span>{{ __('Add / Full Edit Scope') }}</span>
+                            <a href="{{ route('quotations.edit', $quotation) }}" class="btn-primary text-xs font-bold px-4 py-2 rounded-xl shadow-xs" style="background-color: #2563eb !important; color: #ffffff !important;">
+                                <span>{{ __('Edit') }}</span>
                             </a>
                         </div>
                     @endif
@@ -771,120 +663,179 @@
         </div>
     </div>
 
-    {{-- Send PDF via Email & Outlook Modal --}}
-    <div id="email-pdf-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.25rem;">
-        <div class="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-7 max-w-xl w-full max-h-[90vh] overflow-y-auto text-slate-800 dark:text-slate-200">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
+    {{-- Send PDF via System Email App & SMTP Modal --}}
+    <div id="email-pdf-modal" style="display:none;"
+         class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full my-auto flex flex-col max-h-[90vh] overflow-hidden text-slate-800 dark:text-slate-200">
+            
+            {{-- Fixed Modal Header (Never cut off or hidden) --}}
+            <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-black dark:text-white shrink-0">
-                        <x-icon.email class="w-5 h-5 text-black dark:text-white" />
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">Email Quotation</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Server SMTP Delivery or Outlook Desktop Compose</p>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">{{ __('Email Quotation to Customer') }}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Send quotation proposal via your system email app (Outlook, Windows Mail) or server') }}</p>
                     </div>
                 </div>
                 <x-close-button onclick="closeEmailModal()" />
             </div>
 
-            {{-- 1-Click External Email Clients --}}
-            <div class="mb-5">
-                <label class="crm-label">
-                    <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    External Email Clients
-                </label>
-                <div class="grid grid-cols-2 gap-2.5 mb-2.5">
-                    <a href="{{ $quotation->getOutlookComposeUrl() }}" target="_blank" class="btn-secondary text-xs text-center py-2.5 px-3 flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        <span>Outlook 365</span>
-                    </a>
-                    <a href="{{ $quotation->getMailtoUrl() }}" class="btn-secondary text-xs text-center py-2.5 px-3 flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
-                        <span>Default Mail App</span>
-                    </a>
+            {{-- Scrollable Form Content Body --}}
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+                
+                {{-- Live Attached PDF Status Card --}}
+                <div class="p-4 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/90 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-800/80 flex items-start justify-between gap-3 flex-wrap">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-black shadow-xs shrink-0 mt-0.5">
+                            PDF
+                        </div>
+                        <div class="text-xs space-y-0.5">
+                            <div class="font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
+                                <span id="email-pdf-attached-name">Quotation_{{ $quotation->quotation_no }}.pdf</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                                    {{ __('Auto-Attached') }}
+                                </span>
+                            </div>
+                            <div class="text-slate-600 dark:text-slate-300" id="email-pdf-attached-desc">
+                                Format: <strong class="text-blue-600 dark:text-blue-400" id="email-active-format-label">{{ $quotation->pdf_format_name }} (Format {{ $quotation->pdf_format ?? '1' }})</strong> &bull; Total: <strong>₹{{ number_format((float)$quotation->total, 2) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 shrink-0 text-xs">
+                        <a id="btn-email-preview-pdf" href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?: '1']) }}"
+                           class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold border border-slate-300 dark:border-slate-600 shadow-xs inline-flex items-center gap-1 transition" title="Preview Live Webpage">
+                            <span>👁️ {{ __('Preview') }}</span>
+                        </a>
+                        <button type="button" onclick="downloadEmailModalPdf()"
+                                class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold border border-slate-300 dark:border-slate-600 shadow-xs inline-flex items-center gap-1 transition cursor-pointer" title="Download PDF to computer">
+                            <span>⬇️ {{ __('Download') }}</span>
+                        </button>
+                    </div>
                 </div>
-                <button type="button" onclick="copyQuotationEmailText()" id="btn-copy-email-text" class="btn-secondary text-xs w-full py-2.5 px-4 flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                    <span>Copy Email Message &amp; PDF Link</span>
-                </button>
-            </div>
 
-            <div class="relative flex items-center my-5">
-                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-                <span class="flex-shrink mx-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    Or Send via Direct SMTP
-                </span>
-                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-            </div>
-
-            <form method="POST" action="{{ route('quotations.send-email', $quotation) }}" class="space-y-4">
-                @csrf
-
+                {{-- Recipient Customer Email --}}
                 <div>
-                    <label class="crm-label">
-                        <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
-                        Recipient Email <span class="required-marker text-rose-500">*</span>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
+                        {{ __('Recipient Customer Email') }} <span class="text-rose-500">*</span>
                     </label>
-                    <input aria-label="Recipient Email" type="email" name="email" required value="{{ old('email', $quotation->lead->email) }}" placeholder="client@example.com" class="crm-input">
+                    <input type="email" id="email-modal-recipient" name="email" required 
+                           value="{{ old('email', $quotation->lead?->email) }}" 
+                           placeholder="customer@gmail.com" 
+                           class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
 
+                {{-- Subject Line --}}
                 <div>
-                    <label class="crm-label">
-                        <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                        Subject <span class="required-marker text-rose-500">*</span>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                        {{ __('Subject Line') }} <span class="text-rose-500">*</span>
                     </label>
-                    <input aria-label="Subject" type="text" name="subject" required value="{{ $quotation->getEmailSubject() }}" class="crm-input">
+                    <input type="text" id="email-modal-subject" name="subject" required 
+                           value="{{ $quotation->getEmailSubject() }}" 
+                           class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {{-- Quotation Format & Pricing Method Grid --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                        <label class="crm-label">
-                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            PDF Template Style
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            {{ __('PDF Template Style') }}
                         </label>
-                        <select aria-label="PDF Template Style" name="pdf_format" class="crm-select">
+                        <select id="email-modal-format" name="pdf_format" onchange="onEmailModalOptionsChange()"
+                                class="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                             <option value="1" {{ ($quotation->pdf_format ?? '1') == '1' ? 'selected' : '' }}>Executive Modern (Format 1)</option>
                             <option value="2" {{ ($quotation->pdf_format ?? '1') == '2' ? 'selected' : '' }}>Technical Detailed (Format 2)</option>
-                            <option value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'selected' : '' }}>Classic Formal (Format 3)</option>
+                            <option value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'selected' : '' }}>Linepix GST Invoice (Format 3)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="crm-label">
-                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Pricing Breakdown
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {{ __('Pricing Breakdown') }}
                         </label>
-                        <select aria-label="Pricing Breakdown" name="pricing_mode" class="crm-select">
+                        <select id="email-modal-pricing" name="pricing_mode" onchange="onEmailModalOptionsChange()"
+                                class="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                             <option value="itemized" {{ ($quotation->pricing_mode ?? 'itemized') == 'itemized' ? 'selected' : '' }}>With Product Cost &amp; Total (Itemized)</option>
                             <option value="total_only" {{ ($quotation->pricing_mode ?? 'itemized') == 'total_only' ? 'selected' : '' }}>Total Cost Only (Turnkey Package)</option>
                         </select>
                     </div>
                 </div>
 
+                {{-- Custom Cover Note --}}
                 <div>
-                    <label class="crm-label">
-                        <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        Custom Notes for Customer
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        {{ __('Custom Cover Note for Customer (Optional)') }}
                     </label>
-                    <textarea aria-label="Custom Notes for Customer" name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2.5"></textarea>
+                    <textarea id="email-modal-custom-note" rows="2" 
+                              placeholder="{{ __('e.g. As discussed during our site survey, includes 2-year warranty and free installation...') }}" 
+                              class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                 </div>
 
-                <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                    @if(auth()->user()->isAdmin())
-                    <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        <span>SMTP Settings</span>
-                    </a>
-                    @endif
-                    <div class="flex items-center gap-2.5">
-                        <button type="button" onclick="closeEmailModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                            <span>Send Email</span>
+                {{-- Quick Webmail & Email App Switcher Strip --}}
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-700 dark:text-slate-300">{{ __('Choose Where to Send:') }}</span>
+                        <span class="text-[11px] text-slate-500">{{ __('PDF automatically downloaded & ready') }}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5 text-xs">
+                        <button type="button" onclick="executeEmailAppDispatch('gmail')"
+                                class="allow-brand-icon py-2 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                            <svg class="w-4 h-4 shrink-0 allow-brand-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#4285F4" d="M45,16.2l-5,2.75v19.55c0,1.38-1.12,2.5-2.5,2.5h-5.5V26.8l13-9.6V16.2z"/>
+                                <path fill="#34A853" d="M16,41h-5.5c-1.38,0-2.5-1.12-2.5-2.5V18.95l-5-2.75V17.2l13,9.6V41z"/>
+                                <path fill="#FBBC05" d="M37.5,7h-27C9.12,7,8,8.12,8,9.5v5.5l16,11.8l16-11.8V9.5C40,8.12,38.88,7,37.5,7z"/>
+                                <path fill="#EA4335" d="M40,9.5L24,21.3L8,9.5V8.5C8,7.12,9.12,6,10.5,6h27C38.88,6,40,7.12,40,8.5V9.5z"/>
+                                <path fill="#C5221F" d="M24,26.8L8,15v3.95l16,11.85l16-11.85V15L24,26.8z"/>
+                            </svg>
+                            <span>{{ __('Gmail Web') }}</span>
+                        </button>
+                        <button type="button" onclick="executeEmailAppDispatch('default')"
+                                class="allow-brand-icon py-2 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                            <svg class="w-4 h-4 shrink-0 allow-brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="5" width="18" height="22" rx="3" fill="#0078D4"/>
+                                <path d="M11 11a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 7.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="#ffffff"/>
+                                <rect x="15" y="8" width="15" height="16" rx="2" fill="#28A8EA"/>
+                                <path d="M15 10l7.5 5.5L30 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>{{ __('Outlook') }}</span>
                         </button>
                     </div>
                 </div>
-            </form>
+
+            </div>
+
+            {{-- Fixed Modal Footer (Always visible, never clipped) --}}
+            <div class="p-4 sm:p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 flex items-center justify-between shrink-0 flex-wrap gap-2.5 rounded-b-2xl">
+                <div>
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1.5 text-slate-500 hover:text-blue-600">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span>{{ __('SMTP Settings') }}</span>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <button type="button" onclick="closeEmailModal()" class="btn-secondary py-2 px-4 text-xs font-semibold rounded-xl text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">
+                        {{ __('Cancel') }}
+                    </button>
+
+                    {{-- PRIMARY: Solution A - Direct Server Dispatch (100% Automatic Native PDF Attachment) --}}
+                    <button type="button" onclick="executeServerSmtpDispatch()" id="btn-server-smtp-dispatch"
+                            class="btn-primary py-2.5 px-6 rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer inline-flex items-center gap-2 transition"
+                            style="background-color: #2563eb !important; color: #ffffff !important;"
+                            title="Directly compile Quotation PDF and attach it to customer email via Server">
+                        <span style="color: #ffffff !important; font-weight: 700;">{{ __('Send Email (PDF Attached)') }}</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -906,128 +857,276 @@
                 <x-close-button onclick="closeWhatsAppModal()" />
             </div>
 
-            {{-- Step 1: Format Selection --}}
-            <div class="mb-5">
-                <div class="flex items-center justify-between mb-2.5">
-                    <label class="crm-label font-bold">
-                        <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
-                        1. Choose Quotation PDF Format &amp; Style
-                    </label>
-                    <a id="btn-preview-selected-pdf" href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span>Preview Live PDF</span>
-                    </a>
+            {{-- Meta WhatsApp Business Window & Pricing Rate Card --}}
+            <div class="mb-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/80 p-4 sm:p-5 space-y-3.5 shadow-2xs">
+                
+                <div class="flex items-start justify-between gap-3 flex-wrap">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                            WA
+                        </div>
+                        <div>
+                            <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <span>{{ __('WhatsApp Document Dispatch Policy & Pricing') }}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                                    {{ __('Official Meta Rate') }}
+                                </span>
+                            </h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                {{ __('Automatic Quotation PDF document delivery directly into customer chat with no link and no manual file attach') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/95 dark:bg-slate-900/95 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>{{ now()->format('M Y') }}: <strong id="wa-header-month-count" class="font-mono text-emerald-700 dark:text-emerald-400 font-black">{{ $whatsappMonthlyCount ?? 0 }}</strong> / 1,000 {{ __('sent') }}</span>
+                        </div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+                            <span>{{ __('₹0 Free Tier Active') }}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="wa-format-selector-grid">
-                    @php $activeFmt = $quotation->pdf_format ?? '1'; @endphp
-                    <label data-format="1" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '1' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} cursor-pointer text-xs transition">
-                        <input type="radio" name="wa_pdf_format" value="1" {{ $activeFmt == '1' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
-                        <div>
-                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 (Standard)</div>
+                {{-- Live Monthly Usage Tracker --}}
+                @php
+                    $monthSent = (int)($whatsappMonthlyCount ?? 0);
+                    $freeLimit = 1000;
+                    $freeRemaining = max(0, $freeLimit - $monthSent);
+                    $progressPct = min(100, max(1, round(($monthSent / $freeLimit) * 100)));
+                @endphp
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/80 p-3.5 shadow-2xs space-y-2">
+                    <div class="flex items-center justify-between text-xs flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                📊
+                            </span>
+                            <div>
+                                <div class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+                                    <span>{{ __('Messages Sent in WhatsApp this Month:') }}</span>
+                                    <strong class="font-mono text-emerald-600 dark:text-emerald-400 text-sm font-black" id="wa-banner-sent-count">{{ $monthSent }}</strong>
+                                    <span class="text-slate-500 font-normal">/ {{ number_format($freeLimit) }} ({{ now()->format('F Y') }})</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                                    {{ __('Every WhatsApp quotation message & document dispatched is automatically tracked and counted.') }}
+                                </div>
+                            </div>
                         </div>
-                    </label>
 
-                    <label data-format="2" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '2' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="2" {{ $activeFmt == '2' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
-                        <div>
-                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2</div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span class="px-2.5 py-1 rounded-full font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span id="wa-banner-remaining-count">{{ number_format($freeRemaining) }}</span> {{ __('Free Messages Remaining') }}
+                            </span>
                         </div>
-                    </label>
+                    </div>
 
-                    <label data-format="3" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '3' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="3" {{ $activeFmt == '3' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
-                        <div>
-                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3</div>
-                        </div>
-                    </label>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div id="wa-banner-progress-bar" class="h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500" style="width: {{ $progressPct }}%"></div>
+                    </div>
+                </div>
+
+                {{-- Official Rate Comparison Table --}}
+                <div class="overflow-x-auto rounded-xl border border-emerald-200 dark:border-emerald-800/70 bg-white dark:bg-slate-900 shadow-2xs">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-emerald-100/60 dark:bg-emerald-950/80 text-emerald-950 dark:text-emerald-200 font-extrabold border-b border-emerald-200 dark:border-emerald-800">
+                                <th class="py-2.5 px-3 sm:px-4">{{ __('How the PDF goes out') }}</th>
+                                <th class="py-2.5 px-3 sm:px-4">{{ __('Rate used') }}</th>
+                                <th class="py-2.5 px-3 sm:px-4 text-right">{{ __('Cost for 500 messages') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-emerald-100 dark:divide-emerald-900/50">
+                            <tr class="bg-emerald-50/40 dark:bg-emerald-950/20 font-medium">
+                                <td class="py-2.5 px-3 sm:px-4 text-slate-800 dark:text-slate-200">
+                                    <div class="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+                                        <span>✓</span>
+                                        <span>{{ __('Inside the 24-hour window, after the customer messaged you first') }}</span>
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                        {{ __('New customer sends "Hi" or messages your number: quotation PDF is sent directly as an attached document.') }}
+                                    </div>
+                                </td>
+                                <td class="py-2.5 px-3 sm:px-4 text-slate-700 dark:text-slate-300">
+                                    <span class="inline-block font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded text-[11px]">
+                                        {{ __('First 1,000 non-template messages per business number each month are free') }}
+                                    </span>
+                                    <div class="mt-1.5 flex items-center gap-2 text-[11px] font-semibold text-slate-700 dark:text-slate-200 flex-wrap">
+                                        <span class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                            <span>●</span>
+                                            <span>{{ __('Sent this month:') }}</span>
+                                            <strong id="wa-table-sent-count" class="font-mono font-bold">{{ $monthSent }}</strong>
+                                        </span>
+                                        <span class="text-slate-400 dark:text-slate-500">•</span>
+                                        <span class="text-slate-600 dark:text-slate-400">
+                                            {{ __('Remaining free:') }} <strong id="wa-table-remaining-count" class="font-mono text-emerald-600 dark:text-emerald-400">{{ number_format($freeRemaining) }}</strong>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="py-2.5 px-3 sm:px-4 text-right font-black text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                                    ₹0
+                                </td>
+                            </tr>
+                            <tr class="text-slate-600 dark:text-slate-400">
+                                <td class="py-2.5 px-3 sm:px-4">
+                                    <div class="font-semibold text-slate-800 dark:text-slate-200">{{ __('Device Direct App Share (Mobile / Desktop WhatsApp App)') }}</div>
+                                    <div class="text-[11px] text-slate-500">{{ __('Opens WhatsApp directly with the actual PDF document file attached ready to send.') }}</div>
+                                </td>
+                                <td class="py-2.5 px-3 sm:px-4">
+                                    {{ __('Direct peer-to-peer document transfer (Unlimited free)') }}
+                                </td>
+                                <td class="py-2.5 px-3 sm:px-4 text-right font-bold text-slate-700 dark:text-slate-300 font-mono">
+                                    ₹0
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- 24h Window Workflow Tip --}}
+                <div class="flex items-center gap-2 text-[11px] text-emerald-900 dark:text-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                    <span>
+                        <strong>{{ __('Auto-Attach Workflow:') }}</strong>
+                        {{ __('When a customer messages you "Hi" or you select a saved contact, click "Send Quotation PDF" to open their chat with the PDF document already attached. Hit send with zero links and zero manual file uploads.') }}
+                    </span>
+                </div>
+
+            </div>
+
+            {{-- Step 1: PDF Template Style & Pricing Breakdown Option Dropdowns (Image 1 Style) --}}
+            <div class="mb-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                {{ __('PDF Template Style') }}
+                            </span>
+                            <a id="btn-wa-preview-selected-pdf" href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?? '1', 'pricing_mode' => $quotation->pricing_mode ?? 'itemized']) }}" class="action-link text-[11px] font-semibold inline-flex items-center gap-1 normal-case tracking-normal text-blue-600 hover:text-blue-700" title="Preview Live Webpage">
+                                <span>👁️ {{ __('Preview') }}</span>
+                            </a>
+                        </label>
+                        <select id="wa-modal-format" name="wa_pdf_format" onchange="onWhatsAppOptionsChange()"
+                                class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition shadow-xs cursor-pointer">
+                            <option value="1" {{ ($quotation->pdf_format ?? '1') == '1' ? 'selected' : '' }}>Executive Modern (Format 1)</option>
+                            <option value="2" {{ ($quotation->pdf_format ?? '1') == '2' ? 'selected' : '' }}>Technical Detailed (Format 2)</option>
+                            <option value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'selected' : '' }}>Linepix GST Invoice (Format 3)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                {{ __('Pricing Breakdown') }}
+                            </span>
+                            <span id="wa-active-pricing-badge" class="text-[10px] px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                                {{ $quotation->pricing_mode_name }}
+                            </span>
+                        </label>
+                        <select id="wa-modal-pricing" name="wa_pricing_mode" onchange="onWhatsAppOptionsChange()"
+                                class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition shadow-xs cursor-pointer">
+                            <option value="itemized" {{ ($quotation->pricing_mode ?? 'itemized') == 'itemized' ? 'selected' : '' }}>With Product Cost &amp; Total (Itemized)</option>
+                            <option value="total_only" {{ ($quotation->pricing_mode ?? 'itemized') == 'total_only' ? 'selected' : '' }}>Total Cost Only (Turnkey Package)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            {{-- Step 2: Contact Details --}}
-            <div class="mb-5">
-                <label class="crm-label font-bold mb-2">
-                    <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    2. Customer Contact &amp; Target Mobile
-                </label>
+            {{-- Step 2: Customer Contact & Target Mobile --}}
+            <div class="mb-5 bg-slate-50/80 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        2. Customer Contact &amp; Target Mobile
+                    </label>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <span>Target:</span>
+                        <strong class="font-mono text-emerald-600 dark:text-emerald-400" id="wa-phone-preview-badge">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</strong>
+                    </div>
+                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="crm-label">
-                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            Customer Name
-                        </label>
+                        <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Customer Name</label>
                         <input aria-label="Customer Name" type="text" id="wa-customer-name" value="{{ $quotation->lead?->customer_name ?? 'Valued Customer' }}"
                                placeholder="e.g. John Doe"
                                oninput="onWhatsAppNameInput(this.value)"
-                               class="crm-input">
+                               class="crm-input text-xs py-2 bg-white dark:bg-slate-800">
                     </div>
                     <div>
-                        <label class="crm-label">
-                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
                             WhatsApp Phone <span class="required-marker text-rose-500">*</span>
                         </label>
                         <input aria-label="WhatsApp Phone" type="tel" id="wa-customer-phone" value="{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}" placeholder="e.g. 9876543210"
                                oninput="onWhatsAppPhoneInput(this.value)"
-                               class="crm-input">
+                               class="crm-input text-xs py-2 bg-white dark:bg-slate-800 font-mono">
                     </div>
                 </div>
+            </div>
 
-                <div class="flex items-center justify-between text-xs pt-1 flex-wrap gap-2">
-                    <span class="text-slate-500 dark:text-slate-400">Target Chat: <strong class="text-slate-800 dark:text-slate-200"><span id="wa-phone-preview-badge">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</span></strong></span>
+            {{-- Step 3: Message Text with Clickable Toggle (Default: PDF Only) --}}
+            <div class="mb-5 bg-white dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 shadow-2xs transition-all" id="wa-message-preview-container">
+                <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <label class="crm-label font-bold mb-0 flex items-center gap-1.5 text-xs text-slate-800 dark:text-slate-200">
+                            <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                            <span>3. WhatsApp Proposal Message Preview</span>
+                        </label>
+
+                        {{-- The Clickable Toggle Button: Default OFF (Quotation PDF Only) --}}
+                        <button type="button" 
+                                id="btn-toggle-include-msg" 
+                                onclick="toggleWhatsAppMessageInclusion()" 
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition border cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 shadow-2xs"
+                                title="{{ __('Toggle to include or exclude proposal text message on WhatsApp') }}">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-400" id="indicator-include-msg"></span>
+                            <span id="label-include-msg">Share Message: <strong class="text-slate-800 dark:text-slate-200">OFF (PDF Only Default)</strong></span>
+                        </button>
+                    </div>
+
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('quotations.vcard', $quotation) }}" download class="btn-secondary text-xs py-1.5 px-2.5 flex items-center justify-center gap-1.5" title="Save customer contact to your phone or contacts list">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            <span>Save to Phone (.vcf)</span>
-                        </a>
-                        <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="btn-secondary text-xs py-1.5 px-3 flex items-center justify-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                            <span>Save Contact</span>
+                        <button type="button" onclick="copyWhatsAppCustomText()" id="btn-copy-wa-text" class="action-link text-xs inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>Copy Message</span>
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {{-- Step 3: Message Text --}}
-            <div class="mb-5">
-                <div class="flex items-center justify-between mb-2">
-                    <label class="crm-label font-bold">
-                        <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                        3. WhatsApp Proposal Message Preview
-                    </label>
-                    <button type="button" onclick="copyWhatsAppCustomText()" id="btn-copy-wa-text" class="action-link text-xs inline-flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        <span>Copy Message</span>
-                    </button>
+                {{-- Status Banner showing Default PDF Only vs Message Included --}}
+                <div id="wa-mode-notice-banner" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span id="wa-mode-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">Default Mode</span>
+                        <span id="wa-mode-desc">Shares <strong>Quotation PDF File Only</strong> (clean chat without proposal text).</span>
+                    </div>
+                    <span id="wa-mode-hint" class="text-slate-400 dark:text-slate-500 text-[10px]">Click button above to include text</span>
                 </div>
-                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage($quotation->pdf_format ?: '1') }}</textarea>
+
+                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700">{{ $quotation->getWhatsAppFormattedMessage($quotation->pdf_format ?: '1') }}</textarea>
             </div>
 
-            {{-- Action Buttons --}}
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2.5">
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="openWhatsAppDirect('web')" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
-                        <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white" />
-                        <span>Web WhatsApp</span>
+            {{-- Action Buttons Footer --}}
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-3 rounded-lg text-slate-600 dark:text-slate-300">
+                        <span>Cancel</span>
                     </button>
-                    <button type="button" onclick="openWhatsAppDirect('app')" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
-                        <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white" />
-                        <span>Desktop App</span>
-                    </button>
-                    <button type="button" onclick="downloadSelectedPdfOnly()" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <button type="button" onclick="downloadSelectedPdfOnly()" class="btn-secondary text-xs py-2 px-3 rounded-lg flex items-center justify-center font-medium" title="Download quotation PDF file to disk">
                         <span>Download PDF</span>
                     </button>
+                    <button type="button" onclick="shareViaNativeWebShare()" class="btn-secondary text-xs py-2 px-3.5 rounded-lg flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:border-blue-300 transition" title="Share quotation PDF file directly via OS share dialog">
+                        <span class="font-bold">Share PDF File</span>
+                    </button>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
-                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
-                        <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white" />
-                        <span id="btn-wa-dispatch-text">Share PDF & Open WhatsApp Chat</span>
+                <div class="flex items-center gap-2 justify-end">
+                    <button type="button" id="btn-wa-web-dispatch" onclick="openWhatsAppDirect('web')" class="btn-primary text-xs sm:text-sm py-2 px-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer" style="background-color: #059669 !important; color: #ffffff !important;" title="Auto-copies quotation for Ctrl+V paste and opens customer chat on WhatsApp Web">
+                        <span style="color: #ffffff !important;">Web WhatsApp</span>
+                    </button>
+                    <button type="button" id="btn-wa-app-dispatch" onclick="openWhatsAppDirect('app')" class="btn-secondary text-xs sm:text-sm py-2 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:border-emerald-500 hover:text-emerald-600 transition shadow-xs cursor-pointer" title="Auto-copies quotation for Ctrl+V paste and opens customer chat on WhatsApp Desktop App">
+                        <span>Desktop App</span>
                     </button>
                 </div>
             </div>
@@ -1036,40 +1135,153 @@
     </div>
 
     <script>
+    @php
+        $waItemsJson = json_encode($quotation->items->map(function($it) {
+            return [
+                'name'  => (string) $it->item_name,
+                'qty'   => (float) $it->quantity,
+                'unit'  => '₹' . number_format((float) $it->unit_price, 2),
+                'total' => '₹' . number_format((float) $it->total_price, 2),
+            ];
+        })->values()->all(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+
+        $waCompanyJson = json_encode([
+            'name'  => $quotation->company?->trade_name ?? 'PRECISION IT SYSTEMS',
+            'phone' => $quotation->company?->phone ?? '96772 57774',
+            'email' => $quotation->company?->email ?? 'precisionitsystem@gmail.com',
+        ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+
+        $waSubtotalStr   = '₹' . number_format((float) $quotation->subtotal, 2);
+        $waTaxAmountStr  = '₹' . number_format((float) $quotation->tax_amount, 2);
+        $waGrandTotalStr = '₹' . number_format((float) $quotation->total, 2);
+    @endphp
+
     // State for Quotation WhatsApp Dispatcher
     const waQuotationData = {
         id: {{ $quotation->id }},
         quoteNo: @json($quotation->quotation_no),
         customerName: @json($quotation->lead?->customer_name ?? 'Customer'),
+        customerEmail: @json($quotation->lead?->email ?? ''),
+        customerAddress: @json($quotation->lead?->site_address ?? ''),
         defaultPhone: @json($quotation->getWhatsAppPhone()),
         selectedFormat: @json($quotation->pdf_format ?: '1'),
+        selectedPricing: @json($quotation->pricing_mode ?: 'itemized'),
+        date: @json($quotation->quotation_date?->format('d M Y') ?: now()->format('d M Y')),
+        validUntil: @json($quotation->valid_until?->format('d M Y') ?: ''),
+        subtotal: @json($waSubtotalStr),
+        taxPercent: @json($quotation->tax_percent . '%'),
+        taxAmount: @json($waTaxAmountStr),
+        grandTotal: @json($waGrandTotalStr),
+        items: {!! $waItemsJson !!},
+        company: {!! $waCompanyJson !!},
         messages: {
-            '1': @json($quotation->getWhatsAppFormattedMessage('1')),
-            '2': @json($quotation->getWhatsAppFormattedMessage('2')),
-            '3': @json($quotation->getWhatsAppFormattedMessage('3')),
-        },
-        pdfUrls: {
-            '1': @json(route('quotations.pdf', [$quotation, 1])),
-            '2': @json(route('quotations.pdf', [$quotation, 2])),
-            '3': @json(route('quotations.pdf', [$quotation, 3])),
-        },
-        previewUrls: {
-            '1': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1'])),
-            '2': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '2'])),
-            '3': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '3'])),
+            '1_itemized': @json($quotation->getWhatsAppFormattedMessage('1', 'itemized')),
+            '1_total_only': @json($quotation->getWhatsAppFormattedMessage('1', 'total_only')),
+            '2_itemized': @json($quotation->getWhatsAppFormattedMessage('2', 'itemized')),
+            '2_total_only': @json($quotation->getWhatsAppFormattedMessage('2', 'total_only')),
+            '3_itemized': @json($quotation->getWhatsAppFormattedMessage('3', 'itemized')),
+            '3_total_only': @json($quotation->getWhatsAppFormattedMessage('3', 'total_only')),
         },
         vcardUrl: @json(route('quotations.vcard', $quotation)),
         sendUrl: @json(route('quotations.send-whatsapp', $quotation))
     };
+
+    function onWhatsAppOptionsChange() {
+        const formatSelect = document.getElementById('wa-modal-format');
+        const pricingSelect = document.getElementById('wa-modal-pricing');
+        const format = formatSelect ? formatSelect.value : (waQuotationData.selectedFormat || '1');
+        const pricing = pricingSelect ? pricingSelect.value : (waQuotationData.selectedPricing || 'itemized');
+
+        waQuotationData.selectedFormat = format;
+        waQuotationData.selectedPricing = pricing;
+
+        // Update active pricing badge
+        const badge = document.getElementById('wa-active-pricing-badge');
+        if (badge) {
+            badge.innerText = pricing === 'total_only' ? 'Total Cost Only' : 'With Product Cost';
+        }
+
+        // Update live PDF Preview Link
+        const previewBtn = document.getElementById('btn-wa-preview-selected-pdf');
+        if (previewBtn) {
+            previewBtn.href = `/quotations/${waQuotationData.id}/preview/${format}?pricing_mode=${encodeURIComponent(pricing)}`;
+        }
+
+        // Update Message textarea
+        const key = `${format}_${pricing}`;
+        const msgBox = document.getElementById('wa-custom-message');
+        if (msgBox && waQuotationData.messages[key]) {
+            msgBox.value = waQuotationData.messages[key];
+        }
+    }
+
+    let waIncludeMessage = false; // Default: false (Quotation PDF file ONLY)
+
+    function toggleWhatsAppMessageInclusion() {
+        waIncludeMessage = !waIncludeMessage;
+        updateWhatsAppMessageToggleUI();
+    }
+
+    function updateWhatsAppMessageToggleUI() {
+        const btn = document.getElementById('btn-toggle-include-msg');
+        const indicator = document.getElementById('indicator-include-msg');
+        const label = document.getElementById('label-include-msg');
+        const bannerBadge = document.getElementById('wa-mode-badge');
+        const bannerDesc = document.getElementById('wa-mode-desc');
+        const bannerHint = document.getElementById('wa-mode-hint');
+        const msgBox = document.getElementById('wa-custom-message');
+        const container = document.getElementById('wa-message-preview-container');
+        const btnWeb = document.getElementById('btn-wa-web-dispatch');
+
+        if (waIncludeMessage) {
+            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition border cursor-pointer bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-500/20 shadow-xs';
+            if (indicator) indicator.className = 'w-2.5 h-2.5 rounded-full bg-white';
+            if (label) label.innerHTML = 'Share Message: <strong>ON (Text + PDF)</strong>';
+            if (bannerBadge) {
+                bannerBadge.innerText = 'Active';
+                bannerBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white';
+            }
+            if (bannerDesc) bannerDesc.innerHTML = 'Proposal message text will be pre-filled into WhatsApp chat alongside the PDF file.';
+            if (bannerHint) bannerHint.innerText = 'Click button above to switch to PDF only';
+            if (msgBox) {
+                msgBox.classList.remove('opacity-60', 'bg-slate-50/80', 'dark:bg-slate-800/60');
+                msgBox.classList.add('bg-white', 'dark:bg-slate-800');
+            }
+            if (container) {
+                container.classList.remove('border-slate-200', 'dark:border-slate-700/80');
+                container.classList.add('border-emerald-500/50', 'dark:border-emerald-500/50', 'ring-1', 'ring-emerald-500/20');
+            }
+            if (btnWeb) btnWeb.innerHTML = '<span style="color: #ffffff !important;">Web WhatsApp (Text + PDF)</span>';
+        } else {
+            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition border cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 shadow-2xs';
+            if (indicator) indicator.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
+            if (label) label.innerHTML = 'Share Message: <strong class="text-slate-800 dark:text-slate-200">OFF (PDF Only Default)</strong>';
+            if (bannerBadge) {
+                bannerBadge.innerText = 'Default Mode';
+                bannerBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+            }
+            if (bannerDesc) bannerDesc.innerHTML = 'Shares <strong>Quotation PDF File Only</strong> (clean chat without proposal text).';
+            if (bannerHint) bannerHint.innerText = 'Click button above to include text';
+            if (msgBox) {
+                msgBox.classList.add('opacity-60', 'bg-slate-50/80', 'dark:bg-slate-800/60');
+                msgBox.classList.remove('bg-white', 'dark:bg-slate-800');
+            }
+            if (container) {
+                container.classList.add('border-slate-200', 'dark:border-slate-700/80');
+                container.classList.remove('border-emerald-500/50', 'dark:border-emerald-500/50', 'ring-1', 'ring-emerald-500/20');
+            }
+            if (btnWeb) btnWeb.innerHTML = '<span style="color: #ffffff !important;">Web WhatsApp</span>';
+        }
+    }
 
     function openWhatsAppModal() {
         const modal = document.getElementById('whatsapp-share-modal');
         if (modal) {
             modal.style.display = 'flex';
             modal.classList.add('open');
-            if (waQuotationData.selectedFormat) {
-                onWhatsAppFormatChange(waQuotationData.selectedFormat);
-            }
+            waIncludeMessage = false;
+            updateWhatsAppMessageToggleUI();
+            onWhatsAppOptionsChange();
             syncCustomerStatusUI();
         }
     }
@@ -1087,33 +1299,11 @@
     }
 
     function onWhatsAppFormatChange(format) {
-        waQuotationData.selectedFormat = format;
-
-        // Ensure matching radio is checked
-        const radio = document.querySelector(`input[name="wa_pdf_format"][value="${format}"]`);
-        if (radio) radio.checked = true;
-
-        // Update card styles
-        document.querySelectorAll('#wa-format-selector-grid .wa-format-card').forEach(card => {
-            const cardFormat = card.getAttribute('data-format');
-            if (cardFormat === format) {
-                card.className = 'wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 cursor-pointer text-xs transition';
-            } else {
-                card.className = 'wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs';
-            }
-        });
-
-        // Update live PDF Preview Link
-        const previewBtn = document.getElementById('btn-preview-selected-pdf');
-        if (previewBtn && waQuotationData.previewUrls[format]) {
-            previewBtn.href = waQuotationData.previewUrls[format];
+        const formatSelect = document.getElementById('wa-modal-format');
+        if (formatSelect) {
+            formatSelect.value = format;
         }
-
-        // Update Message textarea
-        const msgBox = document.getElementById('wa-custom-message');
-        if (msgBox && waQuotationData.messages[format]) {
-            msgBox.value = waQuotationData.messages[format];
-        }
+        onWhatsAppOptionsChange();
     }
 
     function onWhatsAppNameInput(val) {
@@ -1164,42 +1354,61 @@
         }
     }
 
-    async function quickSaveCustomerContact() {
-        const btn = document.getElementById('btn-quick-save-contact');
-        const originalText = btn ? btn.innerHTML : '';
+    function openCustomerGoogleContacts() {
+        const contactData = {
+            name: @json($quotation->lead?->customer_name ?? 'Customer'),
+            phone: @json($quotation->getWhatsAppPhone() ?: ($quotation->lead?->phone ?? '')),
+            email: @json($quotation->lead?->email ?? ''),
+            address: @json($quotation->lead?->site_address ?? ''),
+            company: @json($quotation->company?->trade_name ?? config('app.name', 'Precision IT Systems'))
+        };
+
+        if (window.triggerSaveContactDirect) {
+            window.triggerSaveContactDirect(contactData);
+        } else {
+            const parts = (contactData.name || '').trim().split(/\s+/);
+            const firstName = parts[0] || '';
+            const lastName = parts.slice(1).join(' ') || '';
+            let phoneClean = (contactData.phone || '').trim();
+            if (phoneClean && !phoneClean.startsWith('+')) {
+                const digits = phoneClean.replace(/[^0-9]/g, '');
+                if (digits.length === 10) phoneClean = '+91' + digits;
+                else if (digits.length > 10) phoneClean = '+' + digits;
+            }
+            const params = new URLSearchParams();
+            if (firstName) params.set('givenname', firstName);
+            if (lastName) params.set('familyname', lastName);
+            if (phoneClean) params.set('phone', phoneClean);
+            if (contactData.email) params.set('email', contactData.email);
+
+            window.open('https://contacts.google.com/new?' + params.toString(), '_blank');
+        }
+    }
+    window.openCustomerGoogleContacts = openCustomerGoogleContacts;
+
+    function saveCustomerContactFromModal() {
         const phone = getNormalizedPhone();
         const nameInput = document.getElementById('wa-customer-name');
-        const name = nameInput ? nameInput.value.trim() : '';
+        const name = nameInput ? nameInput.value.trim() : (waQuotationData.customerName || 'Customer');
 
         if (!phone) {
-            crmAlert('Please enter a valid mobile number first.');
+            crmAlert('Please enter a valid customer phone number first.');
             return;
         }
 
-        if (btn) btn.innerHTML = '⏳ Saving...';
-
-        try {
-            const format = waQuotationData.selectedFormat || '1';
-            const params = new URLSearchParams({
-                format: format,
+        if (window.triggerSaveContactDirect) {
+            window.triggerSaveContactDirect({
+                name: name,
                 phone: phone,
-                customer_name: name
+                email: waQuotationData.customerEmail || '',
+                address: waQuotationData.customerAddress || '',
+                company: waQuotationData.company?.name || 'Precision IT Systems'
             });
-            const res = await fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            });
-            const data = await res.json();
-            if (data.success) {
-                if (btn) btn.innerHTML = '✓ Saved!';
-                syncCustomerStatusUI();
-                setTimeout(() => { if (btn) btn.innerHTML = originalText; }, 2000);
-            }
-        } catch (e) {
-            console.error('Save failed', e);
-            if (btn) btn.innerHTML = 'Error';
-            setTimeout(() => { if (btn) btn.innerHTML = originalText; }, 2000);
         }
     }
+
+    // Alias for backward compatibility
+    window.quickSaveCustomerContact = openCustomerGoogleContacts;
 
     async function copyWhatsAppCustomText() {
         const msgBox = document.getElementById('wa-custom-message');
@@ -1219,7 +1428,8 @@
 
     function downloadSelectedPdfOnly() {
         const format = waQuotationData.selectedFormat || '1';
-        const pdfUrl = waQuotationData.pdfUrls[format];
+        const pricing = waQuotationData.selectedPricing || 'itemized';
+        const pdfUrl = `/quotations/${waQuotationData.id}/pdf/${format}?pricing_mode=${encodeURIComponent(pricing)}`;
         const filename = getQuotationPdfFilename();
 
         const link = document.createElement('a');
@@ -1239,16 +1449,16 @@
         toast.id = 'wa-attachment-toast';
         toast.className = 'fixed bottom-6 right-6 z-[100] max-w-sm bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transition-all duration-300 transform translate-y-0 opacity-100';
         toast.innerHTML = `
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div class="flex-1 text-xs">
                 <div class="font-bold text-sm text-white flex items-center gap-2">
-                    <span>PDF Ready to Send</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Downloaded</span>
+                    <span>PDF Proposal Ready</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">Downloaded</span>
                 </div>
                 <p class="text-slate-300 mt-1 leading-relaxed">
-                    <span class="font-semibold text-white">${filename}</span> is downloaded. In WhatsApp chat, press <kbd class="px-1.5 py-0.5 bg-slate-800 text-amber-300 rounded border border-slate-600 font-mono text-[10px]">Ctrl + V</kbd> or drag the file into chat, then click <strong>Send</strong>.
+                    Customer chat is open! The official quotation PDF <strong class="text-emerald-300">${filename}</strong> is downloaded in your browser tray. Drag the PDF file directly into chat (or click 📎 Document) and click <strong>Send</strong>.
                 </p>
             </div>
             <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none">&times;</button>
@@ -1263,10 +1473,67 @@
         }, 12000);
     }
 
-    function executeWhatsAppShareWithPdf() {
+    async function sendViaWhatsAppCloudApi() {
+        const btn = document.getElementById('btn-cloud-api-dispatch');
+        const originalHtml = btn ? btn.innerHTML : '';
+        const format = waQuotationData.selectedFormat || '1';
+        const pricing = waQuotationData.selectedPricing || 'itemized';
+        const phone = getNormalizedPhone();
+
+        if (!phone || phone.length < 10) {
+            crmAlert('Please enter a valid WhatsApp phone number for the customer (e.g. 9876543210).');
+            return;
+        }
+
+        const msgBox = document.getElementById('wa-custom-message');
+        const caption = (msgBox ? msgBox.value : '') || waQuotationData.messages[`${format}_${pricing}`] || '';
+
+        if (btn) btn.innerHTML = `<span>⏳ Delivering PDF via Cloud API...</span>`;
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const res = await fetch(`/quotations/${waQuotationData.id}/send-whatsapp-document`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    format: format,
+                    pricing_mode: pricing,
+                    caption: caption
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (btn) btn.innerHTML = `<span>✓ PDF Delivered to Customer Chat!</span>`;
+                setTimeout(() => {
+                    closeWhatsAppModal();
+                    if (btn) btn.innerHTML = originalHtml;
+                }, 2200);
+            } else if (data.requires_setup) {
+                crmAlert('Meta WhatsApp Cloud API requires WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env.\n\nOpening direct customer chat with pre-downloaded PDF for immediate sending...');
+                if (btn) btn.innerHTML = originalHtml;
+                executeWhatsAppShareWithPdf();
+            } else {
+                crmAlert(data.error || data.message || 'WhatsApp Cloud API dispatch note. Opening direct customer WhatsApp chat with auto-downloaded PDF...');
+                if (btn) btn.innerHTML = originalHtml;
+                executeWhatsAppShareWithPdf();
+            }
+        } catch (e) {
+            if (btn) btn.innerHTML = originalHtml;
+            executeWhatsAppShareWithPdf();
+        }
+    }
+
+    async function executeWhatsAppShareWithPdf() {
         const btn = document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
+        const pricing = waQuotationData.selectedPricing || 'itemized';
         const phone = getNormalizedPhone();
 
         if (!phone || phone.length < 10) {
@@ -1283,22 +1550,50 @@
         const nameInput = document.getElementById('wa-customer-name');
         const name = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'Customer';
         const msgBox = document.getElementById('wa-custom-message');
-        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[format] || '';
+        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[`${format}_${pricing}`] || '';
         const filename = getQuotationPdfFilename();
         const encodedText = encodeURIComponent(message);
 
-        // Universal official WhatsApp API link: reliably opens chat for both saved and unsaved customer numbers across desktop & mobile
-        const targetUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
+        if (btn) btn.innerHTML = `<span>⏳ Preparing PDF & Opening Chat...</span>`;
 
-        // 1. Immediately open customer WhatsApp chat in a new tab using the user click event
+        // 1. Automatically download the PDF proposal file into browser downloads tray
+        downloadSelectedPdfOnly();
+
+        // 2. Fetch the PDF blob and prime clipboard so user can press Ctrl + V in chat
+        try {
+            const pdfResponse = await fetch(`/quotations/${waQuotationData.id}/pdf/${format}?pricing_mode=${encodeURIComponent(pricing)}`);
+            const pdfBlob = await pdfResponse.blob();
+            if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+                try {
+                    const item = new ClipboardItem({ [pdfBlob.type]: pdfBlob });
+                    await navigator.clipboard.write([item]);
+                } catch (clipErr) {
+                    if (message && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(message).catch(() => {});
+                    }
+                }
+            } else if (message && navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(message).catch(() => {});
+            }
+        } catch (e) {
+            if (message && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(message).catch(() => {});
+            }
+        }
+
+        // 3. Direct customer deep-link: opens chat for BOTH saved and brand new customers with zero search dialog!
+        const targetUrl = waIncludeMessage
+            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+            : `https://api.whatsapp.com/send?phone=${phone}`;
         let waTab = window.open(targetUrl, '_blank');
         if (!waTab) {
             window.location.href = targetUrl;
         }
 
-        // 2. Automatically save new/updated customer details into CRM contact list immediately
+        // 4. Automatically save/sync customer details into CRM contact list immediately
         const params = new URLSearchParams({
             format: format,
+            pricing_mode: pricing,
             phone: phone,
             customer_name: name,
             custom_message: message
@@ -1310,29 +1605,20 @@
                 waQuotationData.customerName = name;
                 waQuotationData.defaultPhone = phone;
                 syncCustomerStatusUI();
+                if (data.monthly_count !== undefined) {
+                    updateWhatsAppMonthlyCounters(data.monthly_count);
+                }
             }
         }).catch(e => console.warn('Contact sync skipped', e));
 
-        // 3. Trigger PDF download with slight delay so browser treats it as file download without blocking the WhatsApp tab
+        // 4. Trigger PDF download with slight delay so browser treats it as file download without blocking the WhatsApp tab
         setTimeout(() => {
             downloadSelectedPdfOnly();
         }, 500);
 
-        // 4. Automatically copy proposal text to clipboard
+        // 5. Automatically copy proposal text to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // 5. Auto-prime clipboard with PDF blob if browser ClipboardItem supports it
-        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
-            fetch(waQuotationData.pdfUrls[format])
-                .then(res => res.blob())
-                .then(blob => {
-                    navigator.clipboard.write([
-                        new ClipboardItem({ 'application/pdf': blob })
-                    ]).catch(() => {});
-                })
-                .catch(() => {});
         }
 
         // 6. Visual notification banner & button feedback
@@ -1346,8 +1632,35 @@
         }
     }
 
-    function openWhatsAppDirect(type) {
+    function updateWhatsAppMonthlyCounters(newCount) {
+        if (newCount === undefined || newCount === null) return;
+        const count = parseInt(newCount, 10);
+        const limit = 1000;
+        const remaining = Math.max(0, limit - count);
+        const percentage = Math.min(100, Math.max(1, Math.round((count / limit) * 100)));
+
+        const elHeader = document.getElementById('wa-header-month-count');
+        if (elHeader) elHeader.innerText = count;
+
+        const elBannerSent = document.getElementById('wa-banner-sent-count');
+        if (elBannerSent) elBannerSent.innerText = count;
+
+        const elBannerRemaining = document.getElementById('wa-banner-remaining-count');
+        if (elBannerRemaining) elBannerRemaining.innerText = remaining.toLocaleString();
+
+        const elProgressBar = document.getElementById('wa-banner-progress-bar');
+        if (elProgressBar) elProgressBar.style.width = percentage + '%';
+
+        const elTableSent = document.getElementById('wa-table-sent-count');
+        if (elTableSent) elTableSent.innerText = count;
+
+        const elTableRemaining = document.getElementById('wa-table-remaining-count');
+        if (elTableRemaining) elTableRemaining.innerText = remaining.toLocaleString();
+    }
+
+    async function openWhatsAppDirect(type) {
         const format = waQuotationData.selectedFormat || '1';
+        const pricing = waQuotationData.selectedPricing || 'itemized';
         const phone = getNormalizedPhone();
         if (!phone || phone.length < 10) {
             crmAlert('Please enter a valid WhatsApp phone number for the customer (e.g. 9876543210).');
@@ -1363,39 +1676,42 @@
         const nameInput = document.getElementById('wa-customer-name');
         const name = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'Customer';
         const msgBox = document.getElementById('wa-custom-message');
-        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[format] || '';
+        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[`${format}_${pricing}`] || '';
         const filename = getQuotationPdfFilename();
         const encodedText = encodeURIComponent(message);
 
-        let url = '';
-        if (type === 'web') {
-            url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
-        } else if (type === 'app') {
-            url = `whatsapp://send?phone=${phone}&text=${encodedText}`;
+        // 1. Automatically download the exact chosen Quotation PDF file (Format 1, 2, or 4) into browser downloads
+        downloadSelectedPdfOnly();
+
+        // 2. Copy the formatted proposal text to clipboard ONLY IF enabled
+        if (waIncludeMessage && message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
         }
 
-        // Open WhatsApp window
+        // 3. Open WhatsApp chat directly with customer's phone preloaded
+        let url = '';
+        if (type === 'web') {
+            url = waIncludeMessage
+                ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+                : `https://web.whatsapp.com/send?phone=${phone}`;
+        } else if (type === 'app') {
+            url = waIncludeMessage
+                ? `whatsapp://send?phone=${phone}&text=${encodedText}`
+                : `whatsapp://send?phone=${phone}`;
+        }
+
         const waTab = window.open(url, '_blank');
         if (!waTab && type === 'web') {
             window.location.href = url;
         }
 
-        // Trigger PDF download after slight delay
-        setTimeout(() => {
-            downloadSelectedPdfOnly();
-        }, 500);
-
-        // Copy text to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // Save customer and log status
+        // 4. Save customer to CRM contact list
         const params = new URLSearchParams({
             format: format,
+            pricing_mode: pricing,
             phone: phone,
             customer_name: name,
-            custom_message: message
+            custom_message: waIncludeMessage ? message : ''
         });
         fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
@@ -1404,18 +1720,317 @@
                 waQuotationData.customerName = name;
                 waQuotationData.defaultPhone = phone;
                 syncCustomerStatusUI();
+                if (data.monthly_count !== undefined) {
+                    updateWhatsAppMonthlyCounters(data.monthly_count);
+                }
             }
         }).catch(console.warn);
 
+        // 5. Show guidance toast
         showWhatsAppAttachmentBanner(filename);
     }
 
     async function shareViaNativeWebShare() {
-        return executeWhatsAppShareWithPdf();
+        const format = waQuotationData.selectedFormat || '1';
+        const pricing = waQuotationData.selectedPricing || 'itemized';
+        const filename = getQuotationPdfFilename();
+        const msgBox = document.getElementById('wa-custom-message');
+        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[`${format}_${pricing}`] || '';
+
+        try {
+            const pdfResponse = await fetch(`/quotations/${waQuotationData.id}/pdf/${format}?pricing_mode=${encodeURIComponent(pricing)}`);
+            const pdfBlob = await pdfResponse.blob();
+            const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+            const shareData = {
+                files: [pdfFile],
+                title: `Quotation #${waQuotationData.quoteNo}`
+            };
+            if (waIncludeMessage && message) {
+                shareData.text = message;
+            }
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+
+                // Log dispatch & update monthly count in CRM
+                const shareParams = new URLSearchParams({
+                    format: format,
+                    pricing_mode: pricing,
+                    phone: getNormalizedPhone() || waQuotationData.defaultPhone || '',
+                    customer_name: (document.getElementById('wa-customer-name')?.value || '').trim() || waQuotationData.customerName,
+                    custom_message: waIncludeMessage ? message : ''
+                });
+                fetch(`${waQuotationData.sendUrl}?${shareParams.toString()}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                }).then(res => res.json()).then(data => {
+                    if (data.monthly_count !== undefined) {
+                        updateWhatsAppMonthlyCounters(data.monthly_count);
+                    }
+                }).catch(() => {});
+            } else {
+                crmAlert('Native OS file sharing is not supported by this browser. Downloaded PDF automatically instead.');
+                downloadSelectedPdfOnly();
+            }
+        } catch (e) {
+            if (e.name !== 'AbortError') {
+                console.warn('Native share cancelled or failed', e);
+            }
+        }
     }
 
     function shareWhatsAppWithPdf(format = '1') {
         return executeWhatsAppShareWithPdf();
+    }
+
+    // Email Quotation Modal Management & Multi-Client Dispatch System
+    const emailQuotationData = {
+        id: {{ $quotation->id }},
+        quoteNo: @json($quotation->quotation_no),
+        customerName: @json($quotation->lead?->customer_name ?? 'Customer'),
+        defaultEmail: @json($quotation->lead?->email ?? ''),
+        formatNames: {
+            '1': 'Executive Modern (Format 1)',
+            '2': 'Technical Detailed (Format 2)',
+            '3': 'Linepix GST Invoice (Format 3)'
+        }
+    };
+
+    function onEmailModalOptionsChange() {
+        const formatSelect = document.getElementById('email-modal-format');
+        const pricingSelect = document.getElementById('email-modal-pricing');
+        const format = formatSelect ? formatSelect.value : '1';
+        const pricing = pricingSelect ? pricingSelect.value : 'itemized';
+
+        const formatLabel = document.getElementById('email-active-format-label');
+        if (formatLabel) {
+            const pricingLabel = pricing === 'total_only' ? 'Turnkey Total' : 'Itemized';
+            formatLabel.innerText = `${emailQuotationData.formatNames[format] || 'Format ' + format} &bull; ${pricingLabel}`;
+        }
+
+        const previewBtn = document.getElementById('btn-email-preview-pdf');
+        if (previewBtn) {
+            previewBtn.href = `/quotations/${emailQuotationData.id}/preview/${format}?pricing_mode=${encodeURIComponent(pricing)}`;
+        }
+    }
+
+    function downloadEmailModalPdf() {
+        const formatSelect = document.getElementById('email-modal-format');
+        const pricingSelect = document.getElementById('email-modal-pricing');
+        const format = formatSelect ? formatSelect.value : '1';
+        const pricing = pricingSelect ? pricingSelect.value : 'itemized';
+        const filename = `Quotation_${emailQuotationData.quoteNo}_${getCustomerSafeName()}.pdf`;
+
+        const link = document.createElement('a');
+        link.href = `/quotations/${emailQuotationData.id}/pdf/${format}?pricing_mode=${encodeURIComponent(pricing)}`;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => link.remove(), 500);
+    }
+
+    function showEmailAppGuideToast(email, filename) {
+        let existing = document.getElementById('email-app-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'email-app-toast';
+        toast.className = 'fixed bottom-6 right-6 z-[100] max-w-sm bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-blue-500/40 flex items-start gap-3 transition-all duration-300';
+        toast.innerHTML = `
+            <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 text-xs">
+                <div class="font-bold text-sm text-white flex items-center gap-1.5">
+                    <span>Email App Ready</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold">PDF Downloaded</span>
+                </div>
+                <p class="text-slate-300 mt-1 leading-relaxed">
+                    Opened email to <strong class="text-white">${email}</strong>. The quotation PDF <strong class="text-white">${filename}</strong> is in your Downloads. Simply attach or drop it into the email and click <strong>Send</strong>.
+                </p>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none">&times;</button>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast && toast.parentElement) {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 12000);
+    }
+
+    function executeEmailAppDispatch(clientType = 'default') {
+        const emailInput = document.getElementById('email-modal-recipient');
+        const email = emailInput ? emailInput.value.trim() : '';
+
+        if (!email || !email.includes('@')) {
+            crmAlert('Please enter a valid customer email address.');
+            if (emailInput) {
+                emailInput.focus();
+                emailInput.classList.add('ring-2', 'ring-rose-500');
+                setTimeout(() => emailInput.classList.remove('ring-2', 'ring-rose-500'), 3000);
+            }
+            return;
+        }
+
+        const subjectInput = document.getElementById('email-modal-subject');
+        const subject = subjectInput ? subjectInput.value.trim() : `Official CCTV Quotation #${emailQuotationData.quoteNo} - Precision IT Systems`;
+
+        const formatSelect = document.getElementById('email-modal-format');
+        const pricingSelect = document.getElementById('email-modal-pricing');
+        const format = formatSelect ? formatSelect.value : '1';
+        const pricingMode = pricingSelect ? pricingSelect.value : 'itemized';
+
+        const noteInput = document.getElementById('email-modal-custom-note');
+        const customNote = noteInput ? noteInput.value.trim() : '';
+
+        const filename = `Quotation_${emailQuotationData.quoteNo}_${getCustomerSafeName()}.pdf`;
+
+        // 1. Trigger automatic download of the exact chosen Quotation PDF
+        downloadEmailModalPdf();
+
+        // 2. Build formatted email message body
+        const publicPdfUrl = `${window.location.origin}/quotations/${emailQuotationData.id}/public-pdf/${format}?pricing_mode=${encodeURIComponent(pricingMode)}`;
+        const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        const formatName = emailQuotationData.formatNames[format] || `Format ${format}`;
+
+        let body = `Dear ${emailQuotationData.customerName || 'Valued Customer'},\n\n`
+                 + `Thank you for contacting us regarding your CCTV surveillance and security requirements.\n`
+                 + `Please find attached our official quotation proposal and pricing schedule:\n\n`
+                 + `Quotation Number: #${emailQuotationData.quoteNo}\n`
+                 + `Date: ${dateStr}\n`
+                 + `Proposal Style: ${formatName}\n`
+                 + `Pricing Breakdown: ${pricingMode === 'total_only' ? 'Turnkey Total Package' : 'Itemized with Product Costs'}\n\n`;
+
+        if (customNote) {
+            body += `Special Note from Engineering Team:\n${customNote}\n\n`;
+        }
+
+        body += `==============================================\n`
+              + `📄 View & Download Complete PDF Proposal:\n${publicPdfUrl}\n`
+              + `==============================================\n\n`
+              + `The signed PDF document has been automatically attached for your review and records.\n\n`
+              + `Please feel free to reply directly to this email or call us if you have any questions.\n\n`
+              + `Best Regards,\n`
+              + `Engineering & Sales Team\n`
+              + `Precision IT Systems`;
+
+        // 3. Open in System Email App or Webmail
+        if (clientType === 'gmail') {
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailUrl, '_blank');
+        } else {
+            // Default System Email App (Outlook / Windows Mail)
+            const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoUrl;
+        }
+
+        // 4. Copy email draft text to clipboard
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(body).catch(() => {});
+        }
+
+        // 5. Show toast guide
+        showEmailAppGuideToast(email, filename);
+
+        // 6. Background sync to CRM
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('subject', subject);
+        formData.append('pdf_format', format);
+        formData.append('pricing_mode', pricingMode);
+        formData.append('custom_message', customNote);
+
+        fetch(`/quotations/${emailQuotationData.id}/send-email`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        }).catch(() => {});
+
+        setTimeout(() => closeEmailModal(), 1200);
+    }
+
+    async function executeServerSmtpDispatch() {
+        const btn = document.getElementById('btn-server-smtp-dispatch');
+        const originalHtml = btn ? btn.innerHTML : '';
+        const emailInput = document.getElementById('email-modal-recipient');
+        const email = emailInput ? emailInput.value.trim() : '';
+
+        if (!email || !email.includes('@')) {
+            crmAlert('Please enter a valid customer email address.');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+
+        const subjectInput = document.getElementById('email-modal-subject');
+        const subject = subjectInput ? subjectInput.value.trim() : `Official CCTV Quotation #${emailQuotationData.quoteNo}`;
+        const formatSelect = document.getElementById('email-modal-format');
+        const pricingSelect = document.getElementById('email-modal-pricing');
+        const format = formatSelect ? formatSelect.value : '1';
+        const pricingMode = pricingSelect ? pricingSelect.value : 'itemized';
+        const noteInput = document.getElementById('email-modal-custom-note');
+        const customNote = noteInput ? noteInput.value.trim() : '';
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<span style="color:#ffffff !important;">Compiling & Sending PDF...</span>`;
+        }
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('subject', subject);
+            formData.append('pdf_format', format);
+            formData.append('pricing_mode', pricingMode);
+            formData.append('custom_message', customNote);
+
+            const res = await fetch(`/quotations/${emailQuotationData.id}/send-email`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                if (btn) btn.innerHTML = `<span style="color:#ffffff !important;">✓ Email Dispatched (PDF Attached)!</span>`;
+                setTimeout(() => {
+                    closeEmailModal();
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    }
+                    window.location.reload();
+                }, 1500);
+            } else {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+                if (data.is_log_mode) {
+                    crmAlert(data.message || 'Live SMTP is not configured in Settings. Opening Gmail Web to send immediately...');
+                    executeEmailAppDispatch('gmail');
+                } else {
+                    crmAlert(data.message || 'Server email dispatch failed. ' + (data.error || 'Please check SMTP settings.'));
+                }
+            }
+        } catch (e) {
+            crmAlert('Server email connection failed: ' + (e.message || 'Network error'));
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
     }
 
     function closeEmailModal() {
@@ -1431,6 +2046,7 @@
         if (modal) {
             modal.style.display = 'flex';
             modal.classList.add('open');
+            onEmailModalOptionsChange();
         }
     }
 
@@ -1471,6 +2087,12 @@
             openEmailModal();
         });
     });
+
+    @if(request()->has('open_email'))
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => openEmailModal(), 150);
+    });
+    @endif
     </script>
 
 </x-app-layout>

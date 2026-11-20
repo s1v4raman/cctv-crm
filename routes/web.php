@@ -16,6 +16,11 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InstalledEquipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\GoodsReceiptController;
+use App\Http\Controllers\StockLedgerController;
+use App\Http\Controllers\VendorBillController;
+use App\Http\Controllers\PurchaseReturnController;
+use App\Http\Controllers\ProcurementReportController;
 use App\Http\Controllers\JobCompletionReportController;
 use App\Http\Controllers\RmaClaimController;
 use App\Http\Controllers\AlertNotificationController;
@@ -40,6 +45,7 @@ use App\Http\Controllers\ModuleHubController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectBomPurchaseOrderController;
 use App\Http\Controllers\ProjectMaterialIssueController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
@@ -102,6 +108,12 @@ Route::get('/view-quotation/{quotation}/{format?}', [QuotationController::class,
     ->middleware(['signed', 'throttle:60,1'])
     ->name('quotations.public-pdf');
 
+// Direct Quotation PDF viewer & live previewer (accessible from WhatsApp & Email share modals)
+Route::get('/quotations/{quotation}/public-pdf/{format?}', [QuotationController::class, 'publicPdf'])
+    ->name('quotations.public-direct-pdf');
+Route::get('/quotations/{quotation}/preview-pdf/{format?}', [QuotationController::class, 'publicPdf'])
+    ->name('quotations.preview-pdf');
+
 // Public customer JCR PDF viewer (accessible from WhatsApp links)
 Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::class, 'publicPdf'])
     ->middleware(['signed', 'throttle:60,1'])
@@ -163,9 +175,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Inventory Stock Adjustments
         Route::post('/inventory/{product}/adjust', [InventoryController::class, 'adjustStock'])->name('inventory.adjust');
 
-        // Suppliers & Vendors Write
+        // Suppliers & Vendors
+        Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+        Route::get('/suppliers/suggest', [SupplierController::class, 'suggest'])->name('suppliers.suggest');
         Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
         Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+        Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
         Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
         Route::post('/suppliers/{supplier}/payments', [SupplierController::class, 'recordPayment'])->name('suppliers.recordPayment');
@@ -174,11 +189,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/vendor-payments/{payment}/share-whatsapp', [SupplierController::class, 'sharePaymentWhatsApp'])->name('vendor-payments.shareWhatsApp');
         Route::post('/vendor-payments/{payment}/send-email', [SupplierController::class, 'sendPaymentEmail'])->name('vendor-payments.sendEmail');
 
-        // Purchase Orders Write
+        // Purchase Orders
+        Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
         Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+        Route::get('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
         Route::get('/purchase-orders/{purchase_order}/edit', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
         Route::put('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'update'])->name('purchase-orders.update');
+        Route::post('/purchase-orders/{purchase_order}/submit', [PurchaseOrderController::class, 'submitForApproval'])->name('purchase-orders.submit');
+        Route::post('/purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+        Route::post('/purchase-orders/{purchase_order}/reject', [PurchaseOrderController::class, 'reject'])->name('purchase-orders.reject');
+        Route::post('/purchase-orders/{purchase_order}/mark-sent', [PurchaseOrderController::class, 'markSent'])->name('purchase-orders.mark-sent');
+        Route::post('/purchase-orders/{purchase_order}/close', [PurchaseOrderController::class, 'close'])->name('purchase-orders.close');
         Route::post('/purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receiveItems'])->name('purchase-orders.receive');
         Route::patch('/purchase-orders/{purchase_order}/status', [PurchaseOrderController::class, 'updateStatus'])->name('purchase-orders.updateStatus');
         Route::patch('/purchase-orders/{purchase_order}/payment', [PurchaseOrderController::class, 'updatePayment'])->name('purchase-orders.updatePayment');
@@ -186,6 +208,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/purchase-orders/{purchase_order}/send-email', [PurchaseOrderController::class, 'sendEmail'])->name('purchase-orders.sendEmail');
         Route::get('/purchase-orders/{purchase_order}/pdf', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase-orders.pdf');
         Route::get('/purchase-orders/{purchase_order}/stream-pdf', [PurchaseOrderController::class, 'streamPdf'])->name('purchase-orders.streamPdf');
+
+        // Goods Receipts (GRN) Management
+        Route::get('/goods-receipts', [GoodsReceiptController::class, 'index'])->name('goods-receipts.index');
+        Route::get('/goods-receipts/create', [GoodsReceiptController::class, 'create'])->name('goods-receipts.create');
+        Route::post('/goods-receipts', [GoodsReceiptController::class, 'store'])->name('goods-receipts.store');
+        Route::get('/goods-receipts/{goods_receipt}', [GoodsReceiptController::class, 'show'])->name('goods-receipts.show');
+        Route::get('/goods-receipts/{goods_receipt}/pdf', [GoodsReceiptController::class, 'pdf'])->name('goods-receipts.pdf');
+
+        // Vendor Bills & 3-Way Matching Management
+        Route::get('/vendor-bills', [VendorBillController::class, 'index'])->name('vendor-bills.index');
+        Route::get('/vendor-bills/create', [VendorBillController::class, 'create'])->name('vendor-bills.create');
+        Route::post('/vendor-bills', [VendorBillController::class, 'store'])->name('vendor-bills.store');
+        Route::get('/vendor-bills/{vendor_bill}', [VendorBillController::class, 'show'])->name('vendor-bills.show');
+        Route::post('/vendor-bills/{vendor_bill}/approve', [VendorBillController::class, 'approve'])->name('vendor-bills.approve');
+        Route::post('/vendor-bills/{vendor_bill}/reverify-match', [VendorBillController::class, 'reverifyMatch'])->name('vendor-bills.reverify-match');
+        Route::get('/vendor-bills/{vendor_bill}/invoice-file', [VendorBillController::class, 'downloadInvoiceFile'])->name('vendor-bills.invoice-file');
+        Route::post('/vendor-bills/{vendor_bill}/payments', [VendorBillController::class, 'storePayment'])->name('vendor-bills.payments.store');
+
+        // Purchase Returns & Supplier Debit Notes
+        Route::get('/purchase-returns', [PurchaseReturnController::class, 'index'])->name('purchase-returns.index');
+        Route::get('/purchase-returns/create', [PurchaseReturnController::class, 'create'])->name('purchase-returns.create');
+        Route::post('/purchase-returns', [PurchaseReturnController::class, 'store'])->name('purchase-returns.store');
+        Route::get('/purchase-returns/{purchase_return}', [PurchaseReturnController::class, 'show'])->name('purchase-returns.show');
+        Route::post('/purchase-returns/{purchase_return}/confirm', [PurchaseReturnController::class, 'confirm'])->name('purchase-returns.confirm');
+
+        // Procurement & Inventory Reports
+        Route::get('/reports/procurement', [ProcurementReportController::class, 'index'])->name('reports.procurement.index');
+        Route::get('/reports/procurement/stock-on-hand/csv', [ProcurementReportController::class, 'exportStockOnHandCsv'])->name('reports.procurement.stock-on-hand.csv');
+        Route::get('/reports/procurement/purchases/csv', [ProcurementReportController::class, 'exportPurchasesCsv'])->name('reports.procurement.purchases.csv');
+        Route::get('/reports/procurement/vendor-outstanding/csv', [ProcurementReportController::class, 'exportVendorOutstandingCsv'])->name('reports.procurement.vendor-outstanding.csv');
+        Route::get('/reports/procurement/project-material-cost/csv', [ProcurementReportController::class, 'exportProjectMaterialCostCsv'])->name('reports.procurement.project-material-cost.csv');
 
         // Attendance Admin Write (managing other employees' records)
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -369,6 +422,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
         Route::put('/projects/{project}/materials/{material}', [ProjectController::class, 'updateMaterial'])->name('projects.materials.update');
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
+        Route::get('/projects/{project}/purchase-orders/bom-preview', [ProjectBomPurchaseOrderController::class, 'preview'])->name('projects.purchase-orders.bom-preview');
+        Route::post('/projects/{project}/purchase-orders/from-bom', [ProjectBomPurchaseOrderController::class, 'generate'])->name('projects.purchase-orders.from-bom');
         Route::post('/projects/{project}/material-issues', [ProjectMaterialIssueController::class, 'store'])->name('projects.material-issues.store');
         Route::delete('/projects/{project}/material-issues/{issue}', [ProjectMaterialIssueController::class, 'destroy'])->name('projects.material-issues.destroy');
 
@@ -458,7 +513,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Quotations Read-Only
         Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
         Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+        Route::get('/quotations/{quotation}/preview/{format?}', [QuotationController::class, 'previewPage'])->name('quotations.preview');
         Route::get('/quotations/{quotation}/send-whatsapp', [QuotationController::class, 'sendWhatsApp'])->name('quotations.send-whatsapp');
+        Route::post('/quotations/{quotation}/send-whatsapp-document', [QuotationController::class, 'sendWhatsAppDocument'])->name('quotations.send-whatsapp-document');
         Route::get('/quotations/{quotation}/pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf');
         Route::get('/quotations/{quotation}/download-pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.download-pdf');
         Route::get('/quotations/{quotation}/vcard', [QuotationController::class, 'downloadVcard'])->name('quotations.vcard');
@@ -519,6 +576,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Inventory Management Read-Only (Stock Overview & Audit Log)
         Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
         Route::get('/inventory/movements', [InventoryController::class, 'movements'])->name('inventory.movements');
+        Route::get('/inventory/ledger', [StockLedgerController::class, 'index'])->name('inventory.ledger');
 
         // Installed Equipment & Warranty API
         Route::get('/api/equipment/lookup-serial', [EquipmentLookupController::class, 'lookup'])->name('equipment.lookup');
@@ -528,14 +586,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/rma/{rma}', [RmaClaimController::class, 'show'])->name('rma.show');
         Route::get('/rma/{rma}/dispatch-pdf', [RmaClaimController::class, 'downloadDispatchChallan'])->name('rma.dispatch-pdf');
 
-        // Suppliers & Vendors Read-Only
-        Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-        Route::get('/suppliers/suggest', [SupplierController::class, 'suggest'])->name('suppliers.suggest');
-        Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
-
-        // Purchase Orders Read-Only
-        Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
-        Route::get('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
 
         // Invoices Read-Only
         Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');

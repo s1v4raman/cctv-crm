@@ -10,6 +10,7 @@ use App\Models\ProjectAuditLog;
 use App\Models\ProjectDocument;
 use App\Models\ProjectMaterial;
 use App\Models\Site;
+use App\Models\Supplier;
 use App\Models\TaskMaterialConsumption;
 use App\Models\User;
 use App\Models\Vendor;
@@ -155,7 +156,7 @@ class ProjectController extends Controller
         $leads = Lead::orderBy('customer_name')->get();
         $projectTypes = Project::projectTypeOptions();
         $products = Product::select('id', 'name', 'name_key', 'unit', 'cost_price', 'unit_price')->orderBy('name')->get();
-        $vendors = Vendor::select('id', 'name', 'name_key')->orderBy('name')->get();
+        $vendors = Supplier::select('id', 'name', 'name_key')->orderBy('name')->get();
 
         $savedProductsMap = $products->mapWithKeys(function ($p) {
             $key = $p->name_key ?: Product::normalizeNameKey($p->name);
@@ -163,7 +164,7 @@ class ProjectController extends Controller
         })->all();
 
         $savedVendorsSet = $vendors->map(function ($v) {
-            return $v->name_key ?: Vendor::normalizeNameKey($v->name);
+            return $v->name_key ?: Supplier::normalizeNameKey($v->name);
         })->filter()->unique()->values()->all();
 
         // Auto-suggest next project code safely
@@ -324,32 +325,36 @@ class ProjectController extends Controller
                                 ]
                             );
 
-                            $vendorId = null;
+                            $supplierId = null;
                             $source = $mat['source'] ?? 'warehouse';
 
-                            // For local purchase with shop name, auto-learn vendor by normalized name_key
+                            // For local purchase with shop name, auto-learn supplier by normalized name_key
                             if ($source === 'local_purchase' && !empty($mat['shop_name'])) {
                                 $rawShop = trim($mat['shop_name']);
-                                $cleanShop = Vendor::cleanName($rawShop);
-                                $vendorKey = Vendor::normalizeNameKey($rawShop);
+                                $cleanShop = Supplier::cleanName($rawShop);
+                                $supplierKey = Supplier::normalizeNameKey($rawShop);
 
                                 if ($cleanShop !== '') {
-                                    $vendor = Vendor::firstOrCreate(
-                                        ['name_key' => $vendorKey],
+                                    $supplier = Supplier::firstOrCreate(
+                                        ['name_key' => $supplierKey],
                                         [
                                             'name' => $cleanShop,
+                                            'company_name' => $cleanShop,
+                                            'type' => 'local_shop',
                                             'status' => 'pending',
                                             'created_by' => Auth::id(),
+                                            'is_active' => true,
                                         ]
                                     );
-                                    $vendorId = $vendor->id;
+                                    $supplierId = $supplier->id;
                                 }
                             }
 
                             ProjectMaterial::create([
                                 'project_id' => $project->id,
                                 'product_id' => $product->id,
-                                'vendor_id' => $vendorId,
+                                'supplier_id' => $supplierId,
+                                'vendor_id' => null,
                                 'item_name' => $cleanName,
                                 'quantity' => $mat['quantity'] ?? 1,
                                 'unit' => $mat['unit'] ?? 'nos',
@@ -691,6 +696,27 @@ class ProjectController extends Controller
             }
         }
 
+        // Auto-learn supplier for local shop purchase
+        if (in_array($validated['source'] ?? '', ['local_purchase', 'bought_from_shop']) && !empty($validated['shop_name'])) {
+            $rawShop = trim($validated['shop_name']);
+            $cleanShop = Supplier::cleanName($rawShop);
+            $supplierKey = Supplier::normalizeNameKey($rawShop);
+            if ($cleanShop !== '') {
+                $supplier = Supplier::firstOrCreate(
+                    ['name_key' => $supplierKey],
+                    [
+                        'name'         => $cleanShop,
+                        'company_name' => $cleanShop,
+                        'type'         => 'local_shop',
+                        'status'       => 'pending',
+                        'created_by'   => Auth::id(),
+                        'is_active'    => true,
+                    ]
+                );
+                $validated['supplier_id'] = $supplier->id;
+            }
+        }
+
         $material = ProjectMaterial::create($validated);
 
         ProjectAuditLog::logChange(
@@ -724,6 +750,26 @@ class ProjectController extends Controller
             'shop_name'  => 'nullable|string|max:255',
             'notes'      => 'nullable|string|max:255',
         ]);
+
+        if (in_array($validated['source'] ?? '', ['local_purchase', 'bought_from_shop']) && !empty($validated['shop_name'])) {
+            $rawShop = trim($validated['shop_name']);
+            $cleanShop = Supplier::cleanName($rawShop);
+            $supplierKey = Supplier::normalizeNameKey($rawShop);
+            if ($cleanShop !== '') {
+                $supplier = Supplier::firstOrCreate(
+                    ['name_key' => $supplierKey],
+                    [
+                        'name'         => $cleanShop,
+                        'company_name' => $cleanShop,
+                        'type'         => 'local_shop',
+                        'status'       => 'pending',
+                        'created_by'   => Auth::id(),
+                        'is_active'    => true,
+                    ]
+                );
+                $validated['supplier_id'] = $supplier->id;
+            }
+        }
 
         $oldName = $material->item_name;
         $oldQty = $material->quantity;

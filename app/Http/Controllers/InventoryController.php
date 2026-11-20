@@ -90,33 +90,23 @@ class InventoryController extends Controller
         $qty = (int) $validated['quantity'];
         $currentStock = $product->stock_quantity;
 
-        if ($type === 'in' || $type === 'return') {
-            $newStock = $currentStock + $qty;
+        $stockService = app(\App\Services\StockService::class);
+        $note = $validated['notes'] ?? 'Manual stock update';
+
+        if ($type === 'in') {
+            $stockService->recordReceipt($product, $qty, (float) $product->cost_price, ['note' => $note]);
+        } elseif ($type === 'return') {
+            $stockService->recordReturnToVendor($product, $qty, ['note' => $note]);
         } elseif ($type === 'out') {
             if ($qty > $currentStock) {
                 return back()->withErrors(['quantity' => "Cannot dispatch {$qty} units. Only {$currentStock} in stock."]);
             }
-            $newStock = $currentStock - $qty;
+            $stockService->recordIssue($product, $qty, ['note' => $note]);
         } elseif ($type === 'adjustment') {
-            // Direct override to the specified quantity
-            $newStock = $qty;
-            $qty = $newStock - $currentStock; // Difference
-        } else {
-            $newStock = $currentStock;
+            $stockService->recordAdjustment($product, $qty, $note, auth()->id());
         }
 
-        DB::transaction(function () use ($product, $type, $qty, $newStock, $validated) {
-            $product->update(['stock_quantity' => $newStock]);
-
-            StockMovement::create([
-                'product_id' => $product->id,
-                'type' => $type,
-                'quantity' => $qty,
-                'balance_after' => $newStock,
-                'notes' => $validated['notes'] ?? 'Manual stock update',
-                'user_id' => auth()->id(),
-            ]);
-        });
+        $newStock = $product->fresh()->stock_quantity;
 
         // Trigger real-time low stock alert if threshold breached
         $product->refresh();

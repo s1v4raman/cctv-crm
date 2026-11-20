@@ -1,351 +1,555 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Purchase Order {{ $purchaseOrder->po_number }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Purchase Order - {{ $purchaseOrder->po_number }}</title>
     <style>
+        @page {
+            margin: 14mm 12mm 12mm 12mm;
+            size: a4 portrait;
+        }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 11px;
-            color: #1e293b;
-            line-height: 1.4;
+            font-family: 'DejaVu Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 8px;
+            color: #1f2937;
+            line-height: 1.35;
             margin: 0;
             padding: 0;
         }
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 18px;
-            border-bottom: 2px solid #0f172a;
-            padding-bottom: 12px;
+
+        /* Running Header for Page 2 and later */
+        header {
+            position: fixed;
+            top: -10mm;
+            left: 0;
+            right: 0;
+            height: 10mm;
+            text-align: center;
+            z-index: 1;
         }
-        .header-logo {
-            font-size: 24px;
+        .p2-inst-name {
+            font-size: 10.5px;
             font-weight: bold;
-            color: #0b1a5c;
-            vertical-align: top;
+            letter-spacing: 0.5px;
+            color: #000000;
+            text-transform: uppercase;
         }
-        .header-logo span {
-            color: #c02428;
-        }
-        .header-details {
-            text-align: right;
+        .p2-vend-name {
             font-size: 9.5px;
-            color: #475569;
-            vertical-align: top;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #000000;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        /* Page 1 Cover to conceal fixed running header on first page */
+        .p1-header-cover {
+            position: absolute;
+            top: -14mm;
+            left: -12mm;
+            right: -12mm;
+            height: 14mm;
+            background-color: #ffffff;
+            z-index: 100;
+        }
+
+        /* Top Left Company Details */
+        .company-header {
+            margin-bottom: 6px;
+        }
+        .company-name {
+            font-size: 13.5px;
+            font-weight: bold;
+            color: #000000;
+            letter-spacing: 0.4px;
+            margin-bottom: 2px;
+        }
+        .company-details {
+            font-size: 7.5px;
+            color: #1f2937;
             line-height: 1.35;
         }
-        .title {
+
+        /* Center Document Title */
+        .doc-title {
             text-align: center;
             font-size: 15px;
             font-weight: bold;
-            color: #0b1a5c;
-            margin-bottom: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            color: #4b5563;
+            letter-spacing: 0.5px;
+            margin: 6px 0 10px 0;
+            text-transform: capitalize;
         }
-        .meta-table {
+
+        /* Dedicated Vendor Banner */
+        .vendor-banner {
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            padding: 4px 6px;
+            margin-bottom: 8px;
+            font-size: 7.5px;
+            line-height: 1.35;
+        }
+        .vendor-banner strong {
+            color: #111827;
+        }
+
+        /* 3-Column Meta Table (Matching Format Reference) */
+        .meta-3col {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 14px;
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
+            margin-bottom: 10px;
         }
-        .meta-table td {
-            padding: 6px 10px;
-            font-size: 10px;
+        .meta-3col td {
             vertical-align: top;
+            font-size: 7.5px;
+            line-height: 1.35;
+            color: #1f2937;
         }
-        .addresses-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
+        .meta-3col .col-bill {
+            width: 38%;
+            padding-right: 8px;
         }
-        .addresses-table td {
-            width: 50%;
-            vertical-align: top;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            font-size: 10px;
-            line-height: 1.4;
+        .meta-3col .col-ship {
+            width: 34%;
+            padding-right: 8px;
         }
-        .address-heading {
-            font-size: 11px;
+        .meta-3col .col-details {
+            width: 28%;
+            text-align: right;
+        }
+        .col-heading {
+            font-size: 8.5px;
             font-weight: bold;
-            color: #0b1a5c;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 3px;
+            color: #111827;
+            margin-bottom: 2px;
         }
+        .party-name {
+            font-size: 8.5px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+        .detail-row {
+            margin-bottom: 2px;
+        }
+        .detail-row strong {
+            color: #111827;
+        }
+
+        /* Items Table */
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 16px;
-            border: 1px solid #0f172a;
+            margin-bottom: 8px;
         }
         .items-table th {
-            background-color: #0b1a5c;
+            background-color: #525252;
             color: #ffffff;
+            font-size: 7.5px;
             font-weight: bold;
+            padding: 5px 4px;
+            border: 1px solid #525252;
             text-align: left;
-            padding: 7px 6px;
-            border: 1px solid #0f172a;
-            font-size: 9.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .items-table td {
-            padding: 6px 6px;
-            border: 1px solid #cbd5e1;
-            font-size: 10px;
+            padding: 4px 4px;
+            font-size: 7.2px;
+            border-bottom: 1px solid #e5e7eb;
             vertical-align: middle;
-        }
-        .items-table th.right, .items-table td.right {
-            text-align: right;
+            color: #1f2937;
         }
         .items-table th.center, .items-table td.center {
             text-align: center;
         }
-        .totals-table {
+        .items-table th.right, .items-table td.right {
+            text-align: right;
+        }
+        .item-name {
+            font-weight: bold;
+            color: #111827;
+            font-size: 7.5px;
+        }
+        .item-spec {
+            font-size: 6.8px;
+            color: #6b7280;
+            margin-top: 1px;
+        }
+        .gst-percent {
+            font-size: 6.8px;
+            color: #4b5563;
+            margin-top: 1px;
+        }
+
+        /* Table Total Row */
+        .items-table tr.total-row td {
+            border-top: 1.2px solid #111827;
+            border-bottom: 1.2px solid #111827;
+            font-weight: bold;
+            font-size: 7.8px;
+            padding: 5px 4px;
+            background-color: #ffffff;
+        }
+
+        /* Bottom Two-Column Section */
+        .bottom-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 18px;
+            margin-top: 6px;
         }
-        .totals-table td {
-            padding: 5px 8px;
-            font-size: 10.5px;
+        .bottom-table td {
+            vertical-align: top;
         }
-        .totals-table .label {
-            text-align: right;
+        .bottom-left {
+            width: 58%;
+            padding-right: 14px;
+        }
+        .bottom-right {
+            width: 42%;
+        }
+
+        .section-label {
+            font-size: 8px;
             font-weight: bold;
-            color: #334155;
-            width: 78%;
+            color: #111827;
+            margin-bottom: 2px;
         }
-        .totals-table .val {
-            text-align: right;
-            font-weight: bold;
-            color: #0f172a;
-            width: 22%;
-            border-bottom: 1px solid #e2e8f0;
+        .words-text {
+            font-size: 7.5px;
+            color: #374151;
+            margin-bottom: 8px;
+            line-height: 1.3;
         }
-        .totals-table .grand-row td {
-            background-color: #0b1a5c;
-            color: #ffffff !important;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 8px 10px;
-            border: none;
+        .terms-text {
+            font-size: 6.8px;
+            color: #4b5563;
+            line-height: 1.35;
+            margin-bottom: 8px;
         }
-        .amount-words-box {
-            background-color: #f1f5f9;
-            border-left: 3px solid #0b1a5c;
-            padding: 7px 10px;
-            font-size: 10px;
-            margin-bottom: 18px;
-            color: #1e293b;
-        }
-        .terms-section {
-            margin-top: 15px;
-            font-size: 9.5px;
-            color: #475569;
-            line-height: 1.45;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 10px;
-        }
-        .terms-title {
-            font-weight: bold;
-            color: #0f172a;
-            font-size: 10px;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-        .terms-list {
+        .terms-text ol {
             margin: 0;
-            padding: 0 0 0 14px;
+            padding-left: 14px;
         }
-        .terms-list li {
-            margin-bottom: 2.5px;
+        .terms-text li {
+            margin-bottom: 2px;
         }
-        .signature-table {
+
+        /* Calculation Summary Table */
+        .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 40px;
+            margin-bottom: 14px;
         }
-        .signature-table td {
-            width: 50%;
-            vertical-align: bottom;
-            font-size: 10px;
+        .summary-table td {
+            padding: 2.5px 4px;
+            font-size: 7.8px;
+        }
+        .summary-label {
+            text-align: left;
+            color: #374151;
+        }
+        .summary-value {
+            text-align: right;
+            font-weight: bold;
+            color: #111827;
+        }
+        .summary-total-row td {
+            background-color: #525252;
+            color: #ffffff !important;
+            font-weight: bold;
+            font-size: 8.5px;
+            padding: 4px 6px;
+        }
+        .summary-total-row .summary-label {
+            color: #ffffff !important;
+        }
+        .summary-total-row .summary-value {
+            color: #ffffff !important;
+        }
+
+        /* Signatory Area */
+        .sign-area {
+            text-align: right;
+            margin-top: 8px;
+            padding-right: 4px;
+        }
+        .for-label {
+            font-size: 7.8px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 30px;
+        }
+        .sign-title {
+            font-size: 7.8px;
+            font-weight: bold;
+            color: #111827;
         }
     </style>
 </head>
 <body>
 
-    {{-- Official Header --}}
-    <table class="header-table">
+    @php
+        $settings = \App\Models\GatewaySetting::first();
+        $companyName = $settings?->company_trade_name ?: ($settings?->company_legal_name ?: 'NP SOLUTIONS');
+        $companyAddress = $settings?->company_address ?: 'NO 12 1ST MAIN ROAD SUBRAMANIYAPURAM, CHENNAI - 77';
+        $companyPhone = '9884664108';
+        $companyEmail = 'npsolutions.in@gmail.com';
+        $companyGstin = $settings?->company_gstin ?: '33DNAPA0957C1ZQ';
+        $companyStateCode = $settings?->company_state_code ?: '33';
+        $companyStateName = $settings?->company_state ?: 'Tamil Nadu';
+
+        $supplier = $purchaseOrder->supplier ?? null;
+        $supplierName = $supplier?->company_name ?: ($supplier?->name ?? 'Vendor');
+        $supplierAddress = $supplier?->address ?: '';
+        $supplierCity = $supplier?->city ?? '';
+        $supplierState = $supplier?->state ?: 'Tamil Nadu';
+        $supplierGstin = $supplier?->gst_number ?? '';
+        $supplierPhone = $supplier?->phone ?? '';
+
+        $vendorStateCode = $supplierGstin ? \App\Helpers\GstHelper::extractStateCode($supplierGstin) : null;
+        $isInterstate = !empty($vendorStateCode) && ($vendorStateCode !== $companyStateCode);
+
+        // Project / Destination resolution:
+        // If notes mention a project/site (e.g. A.C.S Medical College), use it for header and billing/shipping destination.
+        $projectName = 'A.C.S MEDICAL COLLEGE AND HOSPITAL';
+        if (!empty($purchaseOrder->notes) && preg_match('/(?:project|site|client)\s*:\s*([^,\n\r]+)/i', $purchaseOrder->notes, $m)) {
+            $projectName = trim($m[1]);
+        }
+
+        // Bill To & Ship To are the same location as required
+        $billToName = $companyName;
+        $billToAddress = $companyAddress;
+        $billToGstin = $companyGstin;
+        $billToState = $companyStateCode . '-' . $companyStateName;
+        $shipToAddress = $companyAddress;
+
+        $totalOrderedQty = (int) $purchaseOrder->items->sum('quantity_ordered');
+        $displaySubtotal = (float) $purchaseOrder->subtotal;
+        $displayTaxAmount = (float) $purchaseOrder->tax_amount;
+        $displayShipping = (float) ($purchaseOrder->shipping_cost ?? 0.0);
+        $displayGrandTotal = (float) $purchaseOrder->total;
+
+        $cgstAmount = (float) $purchaseOrder->cgst_amount;
+        $sgstAmount = (float) $purchaseOrder->sgst_amount;
+        $igstAmount = (float) $purchaseOrder->igst_amount;
+
+        // Dynamic tax split fallback if not recorded
+        $poTaxRate = (float) ($purchaseOrder->tax_percent > 0 ? $purchaseOrder->tax_percent : 18.0);
+        if ($displayTaxAmount > 0 && $cgstAmount == 0 && $sgstAmount == 0 && $igstAmount == 0) {
+            $split = \App\Helpers\GstHelper::calculateTaxSplit($displaySubtotal, $poTaxRate, $vendorStateCode, $companyStateCode);
+            $cgstAmount = $split['cgst_amount'];
+            $sgstAmount = $split['sgst_amount'];
+            $igstAmount = $split['igst_amount'];
+        }
+
+        // Amount in words
+        try {
+            $f = new \NumberFormatter("en_IN", \NumberFormatter::SPELLOUT);
+            $wordsStr = ucwords($f->format((int) round($displayGrandTotal)));
+            $amountInWords = $wordsStr . ' Rupees only';
+        } catch (\Throwable $e) {
+            $amountInWords = 'Rupees ' . number_format($displayGrandTotal, 2) . ' only';
+        }
+
+        $formattedDate = ($purchaseOrder->order_date ?? $purchaseOrder->created_at ?? now())->format('d-m-Y');
+    @endphp
+
+    {{-- Running Header on Page 2 and Later (Matches Denoted Design in Image 1) --}}
+    <header>
+        <div class="p2-inst-name">{{ $projectName }}</div>
+        <div class="p2-vend-name">{{ $companyName }}</div>
+    </header>
+
+    {{-- First Page Cover (Hides the fixed running header on page 1) --}}
+    <div class="p1-header-cover"></div>
+
+    {{-- Company Header (Top Left - Matches Image 2) --}}
+    <div class="company-header">
+        <div class="company-name">{{ $companyName }}</div>
+        <div class="company-details">
+            {{ $companyAddress }}<br>
+            Phone no. : {{ $companyPhone }}<br>
+            Email : {{ $companyEmail }}<br>
+            GSTIN : {{ $companyGstin }}<br>
+            State: {{ $companyStateCode }}-{{ $companyStateName }}
+        </div>
+    </div>
+
+    {{-- Center Document Title --}}
+    <div class="doc-title">Purchase Order</div>
+
+    {{-- Separate Vendor / Supplier Banner --}}
+    <div class="vendor-banner">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 17%; font-weight: bold; color: #111827;">Vendor / Supplier :</td>
+                <td style="width: 53%;">
+                    <strong>{{ strtoupper($supplierName) }}</strong>
+                    @if($supplierAddress) &bull; {{ strtoupper($supplierAddress) }}@endif
+                    @if($supplierPhone) &bull; Ph: {{ $supplierPhone }}@endif
+                </td>
+                <td style="width: 30%; text-align: right;">
+                    @if($supplierGstin) <strong>GSTIN :</strong> {{ $supplierGstin }} &bull; @endif
+                    <strong>State :</strong> {{ $supplierState }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {{-- 3-Column Meta Table: Bill To | Ship To (Same Location) | Order Details (Matches Image 3) --}}
+    <table class="meta-3col">
         <tr>
-            <td class="header-logo">
-                PRECISI<span>O</span>N<br>
-                <span style="font-size: 11px; color: #334155; letter-spacing: 2px; font-weight: normal; display: block; margin-top: -3px;">IT SYSTEMS</span>
+            {{-- Bill To --}}
+            <td class="col-bill">
+                <div class="col-heading">Bill To</div>
+                <div class="party-name">{{ strtoupper($billToName) }}</div>
+                <div>
+                    {!! nl2br(e(strtoupper($billToAddress))) !!}<br>
+                    @if($billToGstin)
+                        <strong>GSTIN :</strong> {{ $billToGstin }}<br>
+                    @endif
+                    <strong>State:</strong> {{ $billToState }}
+                </div>
             </td>
-            <td class="header-details">
-                <strong>Precision IT Systems (CCTV & Security Solutions)</strong><br>
-                Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board,<br>
-                Avadi, Chennai - 600054, Tamil Nadu.<br>
-                Phone: +91-9677257774 &bull; Email: precisionitsystem@gmail.com<br>
-                <strong>GSTIN: 33AHLPI3531N1Z8</strong>
+
+            {{-- Ship To: Same Location as Bill To --}}
+            <td class="col-ship">
+                <div class="col-heading">Ship To</div>
+                <div>
+                    {!! nl2br(e(strtoupper($shipToAddress))) !!}
+                </div>
+            </td>
+
+            {{-- Order Details --}}
+            <td class="col-details">
+                <div class="col-heading">Order Details</div>
+                <div class="detail-row">PO No. : <strong>{{ $purchaseOrder->po_number }}</strong></div>
+                <div class="detail-row">Date : <strong>{{ $formattedDate }}</strong></div>
+                <div class="detail-row">Place of supply: <strong>{{ $companyStateCode }}-{{ $companyStateName }}</strong></div>
+                @if($purchaseOrder->expected_delivery_date)
+                    <div class="detail-row">Expected By: <strong>{{ $purchaseOrder->expected_delivery_date->format('d-m-Y') }}</strong></div>
+                @endif
             </td>
         </tr>
     </table>
 
-    <div class="title">Official Purchase Order</div>
-
-    {{-- Meta Details --}}
-    <table class="meta-table">
-        <tr>
-            <td><strong>PO Number:</strong> <span style="font-family: monospace; font-size: 11px;">{{ $purchaseOrder->po_number }}</span></td>
-            <td><strong>Order Date:</strong> {{ ($purchaseOrder->order_date ?? $purchaseOrder->created_at ?? now())->format('d M Y') }}</td>
-            <td style="text-align: right;"><strong>Status:</strong> {{ ucfirst($purchaseOrder->status) }}</td>
-        </tr>
-        <tr>
-            <td><strong>Payment Terms:</strong> {{ $purchaseOrder->payment_terms ?: 'Net 30 Days' }}</td>
-            <td><strong>Expected Delivery:</strong> {{ $purchaseOrder->expected_delivery_date ? $purchaseOrder->expected_delivery_date->format('d M Y') : 'Immediate' }}</td>
-            <td style="text-align: right;"><strong>Payment Status:</strong> {{ ucfirst($purchaseOrder->payment_status) }}</td>
-        </tr>
-    </table>
-
-    {{-- Addresses: Vendor Details & Ship-To --}}
-    <table class="addresses-table">
-        <tr>
-            <td>
-                <div class="address-heading">Vendor / Supplier Details:</div>
-                <strong style="font-size: 11px; color: #0f172a;">{{ $purchaseOrder->supplier?->company_name ?: $purchaseOrder->supplier?->name }}</strong><br>
-                @if($purchaseOrder->supplier?->contact_person && $purchaseOrder->supplier->contact_person !== $purchaseOrder->supplier->name)
-                    Attn: {{ $purchaseOrder->supplier->contact_person }}<br>
-                @endif
-                @if($purchaseOrder->supplier?->address)
-                    {{ $purchaseOrder->supplier->address }}<br>
-                @endif
-                @if($purchaseOrder->supplier?->city || $purchaseOrder->supplier?->state)
-                    {{ $purchaseOrder->supplier?->city }}{{ $purchaseOrder->supplier?->state ? ', ' . $purchaseOrder->supplier->state : '' }}
-                    {{ $purchaseOrder->supplier?->pincode ? ' - ' . $purchaseOrder->supplier->pincode : '' }}<br>
-                @endif
-                <strong>Mobile:</strong> {{ $purchaseOrder->supplier?->phone ?: 'N/A' }}<br>
-                <strong>Email:</strong> {{ $purchaseOrder->supplier?->email ?: 'N/A' }}<br>
-                @if($purchaseOrder->supplier?->gstin)
-                    <strong>GSTIN:</strong> {{ $purchaseOrder->supplier->gstin }}
-                @endif
-            </td>
-            <td>
-                <div class="address-heading">Delivery / Ship-To Location:</div>
-                <strong style="font-size: 11px; color: #0f172a;">Precision IT Systems — Central Logistics</strong><br>
-                Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board,<br>
-                Avadi, Chennai - 600054, Tamil Nadu, India.<br>
-                <strong>Contact Person:</strong> Sivaraman (+91-9677257774)<br>
-                <strong>Receiving Hours:</strong> Monday – Saturday (10:00 AM – 7:00 PM)<br>
-                @if($purchaseOrder->notes)
-                    <div style="margin-top: 4px; color: #b45309; font-size: 9px;">
-                        <strong>Dispatch Note:</strong> {{ $purchaseOrder->notes }}
-                    </div>
-                @endif
-            </td>
-        </tr>
-    </table>
-
-    {{-- Line Items Table --}}
+    {{-- Items Table (Matching Exact Reference Layout) --}}
     <table class="items-table">
         <thead>
             <tr>
-                <th class="center" style="width: 5%;">#</th>
-                <th style="width: 55%;">Item Name & Specifications</th>
-                <th class="center" style="width: 12%;">Qty Ordered</th>
-                <th class="right" style="width: 14%;">Unit Cost (₹)</th>
-                <th class="right" style="width: 14%;">Total Cost (₹)</th>
+                <th class="center" style="width: 4%;">#</th>
+                <th style="width: 29%;">Item name</th>
+                <th class="center" style="width: 9%;">HSN/SAC</th>
+                <th class="center" style="width: 8%;">Quantity</th>
+                <th class="center" style="width: 6%;">Unit</th>
+                <th class="right" style="width: 12%;">Price/ Unit</th>
+                <th class="right" style="width: 12%;">Taxable amount</th>
+                <th class="right" style="width: 10%;">GST</th>
+                <th class="right" style="width: 10%;">Amount</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($purchaseOrder->items as $index => $item)
+            @foreach($purchaseOrder->items as $index => $item)
                 @php
-                    $lineTotal = (float) ($item->total_cost ?: ($item->quantity_ordered * $item->unit_cost));
+                    $qty = (int) $item->quantity_ordered;
+                    $rate = (float) $item->unit_cost;
+                    $taxable = $qty * $rate;
+                    $lineGst = (float) ($item->total_cost ? ($item->total_cost - $taxable) : ($taxable * ($poTaxRate / 100)));
+                    $lineTotal = (float) ($item->total_cost ?: ($taxable + $lineGst));
+                    $hsn = $item->hsn_code ?: ($item->product?->hsn_code ?? '8525');
+                    $unit = $item->product?->unit ?? 'Nos';
                 @endphp
                 <tr>
                     <td class="center">{{ $index + 1 }}</td>
                     <td>
-                        <strong style="color: #0f172a;">{{ $item->item_name }}</strong>
-                        @if($item->product && $item->product->model_number)
-                            <div style="font-size: 8.5px; color: #64748b;">Model: {{ $item->product->model_number }}</div>
+                        <div class="item-name">{{ $item->item_name }}</div>
+                        @if($item->sku)
+                            <div class="item-spec">SKU: {{ $item->sku }}</div>
                         @endif
                     </td>
-                    <td class="center font-bold">{{ $item->quantity_ordered }}</td>
-                    <td class="right">{{ number_format((float) $item->unit_cost, 2) }}</td>
-                    <td class="right" style="font-weight: bold;">{{ number_format($lineTotal, 2) }}</td>
+                    <td class="center">{{ $hsn }}</td>
+                    <td class="center">{{ $qty }}</td>
+                    <td class="center">{{ $unit }}</td>
+                    <td class="right">₹ {{ number_format($rate, 2) }}</td>
+                    <td class="right">₹ {{ number_format($taxable, 2) }}</td>
+                    <td class="right">
+                        ₹ {{ number_format($lineGst, 2) }}
+                        <div class="gst-percent">({{ (float) $poTaxRate }}%)</div>
+                    </td>
+                    <td class="right">₹ {{ number_format($lineTotal, 2) }}</td>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="center" style="padding: 20px; color: #94a3b8;">No items listed on this purchase order.</td>
-                </tr>
-            @endforelse
+            @endforeach
+
+            {{-- Table Total Row --}}
+            <tr class="total-row">
+                <td colspan="3" style="text-align: left; padding-left: 6px;">Total</td>
+                <td class="center">{{ $totalOrderedQty }}</td>
+                <td></td>
+                <td></td>
+                <td class="right">₹ {{ number_format($displaySubtotal, 2) }}</td>
+                <td class="right">₹ {{ number_format($displayTaxAmount, 2) }}</td>
+                <td class="right">₹ {{ number_format($displayGrandTotal, 2) }}</td>
+            </tr>
         </tbody>
     </table>
 
-    {{-- Financial Totals Table --}}
-    <table class="totals-table">
+    {{-- Bottom Two-Column Section --}}
+    <table class="bottom-table">
         <tr>
-            <td class="label">Subtotal:</td>
-            <td class="val">₹{{ number_format((float) $purchaseOrder->subtotal, 2) }}</td>
-        </tr>
-        @if((float) $purchaseOrder->tax_amount > 0 || (float) $purchaseOrder->tax_percent > 0)
-            <tr>
-                <td class="label">
-                    GST Tax {{ (float) $purchaseOrder->tax_percent > 0 ? '(' . (float) $purchaseOrder->tax_percent . '%)' : '' }}:
-                </td>
-                <td class="val">₹{{ number_format((float) $purchaseOrder->tax_amount, 2) }}</td>
-            </tr>
-        @endif
-        @if((float) $purchaseOrder->shipping_cost > 0)
-            <tr>
-                <td class="label">Shipping / Freight:</td>
-                <td class="val">₹{{ number_format((float) $purchaseOrder->shipping_cost, 2) }}</td>
-            </tr>
-        @endif
-        <tr class="grand-row">
-            <td class="label" style="color: #ffffff;">GRAND TOTAL (INR):</td>
-            <td class="val" style="color: #ffffff; text-align: right;">₹{{ number_format((float) $purchaseOrder->total, 2) }}</td>
-        </tr>
-    </table>
+            <td class="bottom-left">
+                <div class="section-label">Invoice Amount In Words</div>
+                <div class="words-text">{{ $amountInWords }}</div>
 
-    {{-- Amount in words --}}
-    @php
-        $amountInWords = ucwords(\App\Models\Quotation::numberToWords($purchaseOrder->total));
-    @endphp
-    <div class="amount-words-box">
-        <strong>Amount Chargeable (in words):</strong> Indian Rupees {{ $amountInWords }} Only.
-    </div>
-
-    {{-- Procurement Terms & Conditions --}}
-    <div class="terms-section">
-        <div class="terms-title">Procurement Terms & Conditions:</div>
-        <ol class="terms-list">
-            <li>All delivered hardware must be brand new, factory sealed, with original manufacturer warranty and valid serial numbers.</li>
-            <li>Original Delivery Challan and GST Tax Invoice mentioning PO #<strong>{{ $purchaseOrder->po_number }}</strong> must accompany the consignment.</li>
-            <li>Any damaged, tampered, or non-functional items identified during inward inspection must be replaced immediately.</li>
-            <li>Payment will be disbursed as per agreed credit terms ({{ $purchaseOrder->payment_terms ?: 'Net 30 Days' }}) via NEFT / RTGS / Bank Transfer upon delivery verification.</li>
-        </ol>
-    </div>
-
-    {{-- Signature Section --}}
-    <table class="signature-table">
-        <tr>
-            <td>
-                <div style="font-size: 9.5px; color: #64748b; margin-bottom: 40px;">Vendor Acceptance & Seal:</div>
-                <div style="border-top: 1px dashed #94a3b8; width: 190px; padding-top: 4px; font-weight: bold;">
-                    Authorized Vendor Signatory
+                <div class="section-label">Terms and Conditions</div>
+                <div class="terms-text">
+                    <ol>
+                        <li>All supplied items must be brand new, factory sealed with standard manufacturer warranty.</li>
+                        <li>Original Delivery Challan and Tax Invoice mentioning PO #<strong>{{ $purchaseOrder->po_number }}</strong> must accompany the consignment.</li>
+                        <li>Goods received are subject to verification and quality inspection at the warehouse.</li>
+                        <li>Payment will be processed via NEFT / RTGS as per agreed payment terms.</li>
+                    </ol>
                 </div>
             </td>
-            <td style="text-align: right;">
-                <div style="font-size: 9.5px; color: #64748b; margin-bottom: 40px;">For <strong>PRECISION IT SYSTEMS</strong>:</div>
-                <div style="border-top: 1px dashed #94a3b8; width: 190px; padding-top: 4px; font-weight: bold; margin-left: auto;">
-                    Authorized Procurement Officer
+
+            <td class="bottom-right">
+                <table class="summary-table">
+                    <tr>
+                        <td class="summary-label">Sub Total</td>
+                        <td class="summary-value">₹ {{ number_format($displaySubtotal, 2) }}</td>
+                    </tr>
+                    @if($isInterstate)
+                        <tr>
+                            <td class="summary-label">IGST&#64;{{ (float) $poTaxRate }}%</td>
+                            <td class="summary-value">₹ {{ number_format($igstAmount ?: $displayTaxAmount, 2) }}</td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="summary-label">SGST&#64;{{ (float) ($poTaxRate / 2) }}%</td>
+                            <td class="summary-value">₹ {{ number_format($sgstAmount ?: ($displayTaxAmount / 2), 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="summary-label">CGST&#64;{{ (float) ($poTaxRate / 2) }}%</td>
+                            <td class="summary-value">₹ {{ number_format($cgstAmount ?: ($displayTaxAmount / 2), 2) }}</td>
+                        </tr>
+                    @endif
+                    @if($displayShipping > 0)
+                        <tr>
+                            <td class="summary-label">Freight / Shipping</td>
+                            <td class="summary-value">₹ {{ number_format($displayShipping, 2) }}</td>
+                        </tr>
+                    @endif
+                    <tr class="summary-total-row">
+                        <td class="summary-label">Total</td>
+                        <td class="summary-value">₹ {{ number_format($displayGrandTotal, 2) }}</td>
+                    </tr>
+                </table>
+
+                {{-- Signatory Area --}}
+                <div class="sign-area">
+                    <div class="for-label">For :{{ $companyName }}</div>
+                    <div class="sign-title">Authorized Signatory</div>
                 </div>
             </td>
         </tr>

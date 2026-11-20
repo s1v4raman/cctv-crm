@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateLeadStatusRequest;
 use App\Models\Lead;
 use App\Services\AlertNotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeadController extends Controller
 {
@@ -209,7 +210,7 @@ class LeadController extends Controller
                 ->with('status', "Customer '{$lead->customer_name}' added. You can now register their equipment.");
         }
 
-        if (Auth::user()?->isTechnician()) {
+        if ($request->user()?->isTechnician() || Auth::user()?->isTechnician()) {
             return redirect()->route('technician.dashboard')
                 ->with('status', "Customer '{$lead->customer_name}' registered successfully.");
         }
@@ -300,8 +301,12 @@ class LeadController extends Controller
     /**
      * Download customer contact as vCard (.vcf) to import directly to phone.
      */
-    public function downloadVcard(Lead $lead, \App\Services\VcardExportService $vcardService)
+    public function downloadVcard(Request $request, Lead $lead, \App\Services\VcardExportService $vcardService)
     {
-        return $vcardService->downloadResponse($lead);
+        $overridePhone = $request->query('phone');
+        $overrideName  = $request->query('name');
+        $disposition   = $request->query('mode', 'attachment');
+
+        return $vcardService->downloadResponse($lead, $overridePhone, $overrideName, $disposition);
     }
 }

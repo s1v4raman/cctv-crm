@@ -351,8 +351,11 @@
                         </div>
 
                         {{-- Save Button --}}
-                        <div class="mt-6 flex justify-end">
-                            <button type="submit" class="btn-primary h-[38px] px-6 text-xs font-semibold">
+                        <div class="mt-6 flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex-wrap gap-3">
+                            <span class="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                                💾 Click <strong>Save Gateway Settings</strong> here before testing verification emails on the right.
+                            </span>
+                            <button type="submit" class="btn-primary h-[40px] px-8 text-xs sm:text-sm font-bold shadow-sm" style="background-color: #2563eb !important; color: #ffffff !important;">
                                 Save Gateway Settings
                             </button>
                         </div>
@@ -368,6 +371,18 @@
                             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Test Real-Time Email Delivery</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Dispatch a live test email to verify your SMTP connection.</p>
                         </div>
+
+                        @if(!empty($settings->smtp_host) && !empty($settings->smtp_username))
+                            <div class="p-2.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300">
+                                <strong>✓ Active SMTP:</strong> {{ $settings->smtp_host }}<br>
+                                <span class="text-[11px] opacity-90">Account: {{ $settings->smtp_username }}</span>
+                            </div>
+                        @else
+                            <div class="p-2.5 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300">
+                                <strong>⚠️ SMTP Not Saved in Database:</strong><br>
+                                Fill in Card 7 on the left and click <strong>Save Gateway Settings</strong> at the bottom of the form before sending a test.
+                            </div>
+                        @endif
 
                         <form method="POST" action="{{ route('alerts.gateways.test-email') }}" class="space-y-3.5">
                             @csrf

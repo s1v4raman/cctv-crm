@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
+use App\Models\VendorBill;
 use App\Models\VendorPayment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -135,12 +136,16 @@ class AccountsPayableService
             : 100.0;
 
         $totalUnpaidPos = $buckets['0_30']['count'] + $buckets['31_60']['count'] + $buckets['61_90']['count'] + $buckets['90_plus']['count'];
+        $totalActiveDebitNotes = (float) \App\Models\SupplierDebitNote::where('status', 'active')->sum('total_amount');
+        $netTotalPayable = max(0.0, $totalPayableBalance - $totalActiveDebitNotes);
 
         return [
             'as_of_date'                 => $asOf->format('d M Y'),
-            'total_payable_balance'      => round($totalPayableBalance, 2),
-            'total_outstanding'          => round($totalPayableBalance, 2),
-            'total_outstanding_payable'  => round($totalPayableBalance, 2),
+            'total_payable_balance'      => round($netTotalPayable, 2),
+            'total_outstanding'          => round($netTotalPayable, 2),
+            'total_outstanding_payable'  => round($netTotalPayable, 2),
+            'total_active_debit_notes'   => round($totalActiveDebitNotes, 2),
+            'gross_payable_balance'      => round($totalPayableBalance, 2),
             'total_overdue_balance'      => round($totalOverdueBalance, 2),
             'total_current_balance'      => round($buckets['0_30']['amount'], 2),
             'current_0_30'               => round($buckets['0_30']['amount'], 2),
@@ -268,6 +273,9 @@ class AccountsPayableService
                 if ($filters['bucket'] === '90_plus' && $highestDaysOverdue <= 90) continue;
             }
 
+            $debitNotesTotal = (float) $supplier->debitNotes()->where('status', 'active')->sum('total_amount');
+            $netBalanceDue = max(0.0, $balanceDue - $debitNotesTotal);
+
             $payablesList[] = [
                 'supplier_id'          => $supplier->id,
                 'supplier_name'        => $supplier->company_name ?: $supplier->name,
@@ -284,14 +292,23 @@ class AccountsPayableService
                 'days_31_60'           => round($days_31_60, 2),
                 'days_61_90'           => round($days_61_90, 2),
                 'days_90_plus'         => round($days_90_plus, 2),
+                'days_61_plus'         => round($days_61_90 + $days_90_plus, 2),
+                'open_commitments'     => round($supplier->openPoCommitments(), 2),
                 'total_invoiced'       => round($totalInvoiced, 2),
+                'total_ordered_volume' => round($totalInvoiced, 2),
                 'total_paid'           => round($totalPaid, 2),
-                'balance_due'          => round($balanceDue, 2),
-                'total_due'            => round($balanceDue, 2),
+                'total_paid_volume'    => round($totalPaid, 2),
+                'gross_payable_balance'=> round($balanceDue, 2),
+                'debit_notes_total'    => round($debitNotesTotal, 2),
+                'balance_due'          => round($netBalanceDue, 2),
+                'balance_payable'      => round($netBalanceDue, 2),
+                'total_due'            => round($netBalanceDue, 2),
                 'oldest_due_date'      => $oldestDueDate ? $oldestDueDate->format('d M Y') : 'N/A',
                 'highest_days_overdue' => $highestDaysOverdue,
                 'bucket_label'         => $bucketLabel,
                 'bucket_badge_class'   => $bucketBadgeClass,
+                'aging_status'         => $bucketLabel,
+                'aging_badge_class'    => $bucketBadgeClass,
             ];
         }
 
@@ -475,29 +492,51 @@ class AccountsPayableService
         $supplier->load([
             'purchaseOrders.items',
             'vendorPayments',
+            'vendorBills' => function ($q) {
+                $q->whereNotIn('status', [VendorBill::STATUS_DRAFT, VendorBill::STATUS_CANCELLED])->latest('invoice_date');
+            },
         ]);
 
         $transactions = [];
         $runningBalance = 0.0;
         $totalInvoiced = 0.0;
         $totalPaid = 0.0;
-
-        // Collect all POs and Payments
         $rawEvents = [];
 
-        foreach ($supplier->purchaseOrders as $po) {
-            $date = $po->order_date ? Carbon::parse($po->order_date) : $po->created_at;
-            $rawEvents[] = [
-                'date'        => $date,
-                'type'        => 'purchase_order',
-                'po_id'       => $po->id,
-                'reference'   => $po->po_number . ($po->supplier_invoice_no ? " (Bill: {$po->supplier_invoice_no})" : ''),
-                'description' => "Procurement PO #{$po->po_number} - Status: " . ucfirst($po->status),
-                'credit'      => (float) $po->total, // Increases our liability to supplier
-                'debit'       => 0.0,
-                'raw_date'    => $date->timestamp,
-            ];
-            $totalInvoiced += (float) $po->total;
+        $hasBills = $supplier->vendorBills->isNotEmpty();
+
+        if ($hasBills) {
+            // Ledger entries from official vendor bills
+            foreach ($supplier->vendorBills as $bill) {
+                $date = $bill->invoice_date ? Carbon::parse($bill->invoice_date) : $bill->created_at;
+                $rawEvents[] = [
+                    'date'        => $date,
+                    'type'        => 'vendor_bill',
+                    'bill_id'     => $bill->id,
+                    'reference'   => "Bill #{$bill->bill_number} (Inv: {$bill->vendor_invoice_no})",
+                    'description' => "Vendor Bill #{$bill->bill_number}" . ($bill->purchaseOrder ? " via PO #{$bill->purchaseOrder->po_number}" : '') . " - Status: " . ucfirst($bill->status),
+                    'credit'      => (float) $bill->total,
+                    'debit'       => 0.0,
+                    'raw_date'    => $date->timestamp,
+                ];
+                $totalInvoiced += (float) $bill->total;
+            }
+        } else {
+            // Fallback for legacy POs
+            foreach ($supplier->purchaseOrders as $po) {
+                $date = $po->order_date ? Carbon::parse($po->order_date) : $po->created_at;
+                $rawEvents[] = [
+                    'date'        => $date,
+                    'type'        => 'purchase_order',
+                    'po_id'       => $po->id,
+                    'reference'   => $po->po_number . ($po->supplier_invoice_no ? " (Bill: {$po->supplier_invoice_no})" : ''),
+                    'description' => "Procurement PO #{$po->po_number} - Status: " . ucfirst($po->status),
+                    'credit'      => (float) $po->total,
+                    'debit'       => 0.0,
+                    'raw_date'    => $date->timestamp,
+                ];
+                $totalInvoiced += (float) $po->total;
+            }
         }
 
         foreach ($supplier->vendorPayments as $pmt) {
@@ -509,7 +548,7 @@ class AccountsPayableService
                 'reference'   => $pmt->payment_reference,
                 'description' => "Disbursement via " . strtoupper(str_replace('_', ' ', $pmt->payment_method)) . ($pmt->transaction_reference ? " (Ref: {$pmt->transaction_reference})" : ''),
                 'credit'      => 0.0,
-                'debit'       => (float) $pmt->amount, // Decreases our liability
+                'debit'       => (float) $pmt->amount,
                 'raw_date'    => $date->timestamp,
             ];
             $totalPaid += (float) $pmt->amount;
@@ -527,6 +566,7 @@ class AccountsPayableService
         }
 
         $outstanding = max(0.0, $totalInvoiced - $totalPaid);
+        $openCommitments = $supplier->openPoCommitments();
 
         return [
             'transactions'        => $transactions,
@@ -535,6 +575,7 @@ class AccountsPayableService
             'total_paid'          => round($totalPaid, 2),
             'outstanding_balance' => round($outstanding, 2),
             'net_balance'         => round($outstanding, 2),
+            'open_commitments'    => round($openCommitments, 2),
         ];
     }
 

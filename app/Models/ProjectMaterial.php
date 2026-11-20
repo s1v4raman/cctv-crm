@@ -14,6 +14,7 @@ class ProjectMaterial extends Model
         'project_id',
         'product_id',
         'vendor_id',
+        'supplier_id',
         'item_name',
         'quantity',
         'unit',
@@ -38,9 +39,15 @@ class ProjectMaterial extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(Vendor::class);
+        // Backward-compatible alias proxying to supplier
+        return $this->supplier_id ? $this->belongsTo(Supplier::class, 'supplier_id') : $this->belongsTo(Vendor::class, 'vendor_id');
     }
 
     public function consumptions(): \Illuminate\Database\Eloquent\Relations\HasMany

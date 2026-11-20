@@ -165,7 +165,7 @@ class QuotationWhatsAppDispatchTest extends TestCase
 
         $webUrl = $this->quotation->getWhatsAppWebUrl('3');
         $this->assertStringContainsString('https://web.whatsapp.com/send?phone=919876543210', $webUrl);
-        $this->assertStringContainsString('Classic Formal Quotation', urldecode($webUrl));
+        $this->assertStringContainsString('Linepix GST Invoice', urldecode($webUrl));
 
         $appUrl = $this->quotation->getWhatsAppAppUrl('1');
         $this->assertStringContainsString('whatsapp://send?phone=919876543210', $appUrl);
@@ -173,5 +173,15 @@ class QuotationWhatsAppDispatchTest extends TestCase
         $smsUrl = $this->quotation->getSmsUrl('1');
         $this->assertStringContainsString('sms:+919876543210?body=', $smsUrl);
         $this->assertStringContainsString('Q-2026-9090', urldecode($smsUrl));
+    }
+
+    public function test_quotation_view_has_whatsapp_message_toggle_button(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('quotations.show', $this->quotation));
+
+        $response->assertOk();
+        $response->assertSee('id="btn-toggle-include-msg"', false);
+        $response->assertSee('toggleWhatsAppMessageInclusion()', false);
+        $response->assertSeeText('OFF (PDF Only Default)');
     }
 }

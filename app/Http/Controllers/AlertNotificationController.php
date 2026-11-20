@@ -257,19 +257,24 @@ class AlertNotificationController extends Controller
         \App\Services\MailConfigService::applyDynamicMailConfig();
 
         $settings = \App\Models\GatewaySetting::getSettings();
+
+        if (empty($settings->smtp_host) || empty($settings->smtp_username) || empty($settings->smtp_password)) {
+            return redirect()->route('alerts.gateways')->with('error', "⚠️ Cannot send test email: SMTP credentials are not saved yet! Please enter your SMTP Host, Username and App Password in '7. SMTP Email Configuration' on the left and click the green 'Save All Gateway Settings' button first.");
+        }
+
         $fromName = $settings->smtp_from_name ?: config('mail.from.name', 'CCTV Security Solutions');
         $fromAddress = $settings->smtp_from_address ?: config('mail.from.address', 'support@cctvcrm.com');
-        $host = $settings->smtp_host ?: config('mail.mailers.smtp.host', '127.0.0.1');
+        $host = $settings->smtp_host;
 
         try {
-            \Illuminate\Support\Facades\Mail::to($targetEmail)->send(
+            \Illuminate\Support\Facades\Mail::mailer('smtp')->to($targetEmail)->send(
                 new \App\Mail\SmtpVerificationTestMail($targetEmail, $fromName, $fromAddress, $host)
             );
 
             return redirect()->route('alerts.gateways')->with('status', "🎉 Live verification email successfully delivered to [{$targetEmail}] via SMTP host ({$host})!");
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("SMTP test failed: " . $e->getMessage());
-            return redirect()->route('alerts.gateways')->with('error', "❌ SMTP Email verification failed: " . $e->getMessage() . ". (Tip for Outlook/Office365: Use smtp.office365.com, port 587, TLS, and an App Password if 2FA is enabled).");
+            return redirect()->route('alerts.gateways')->with('error', "❌ SMTP Email verification failed: " . $e->getMessage() . ". Please check that your email address and 16-character Google App Password are correct.");
         }
     }
 }

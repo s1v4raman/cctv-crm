@@ -44,7 +44,17 @@
                 </a>
                 @endunless
 
-                <a href="{{ route('leads.vcard', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                <a href="{{ route('leads.vcard', $lead) }}"
+                   onclick="event.preventDefault(); window.triggerSaveContactDirect && window.triggerSaveContactDirect({
+                       name: @json($lead->customer_name ?? 'Customer'),
+                       phone: @json($lead->phone ?? ''),
+                       email: @json($lead->email ?? ''),
+                       address: @json($lead->site_address ?? ''),
+                       company: @json(config('app.name', 'Precision IT Systems')),
+                       vcardUrl: @json(route('leads.vcard', $lead))
+                   });"
+                   class="btn-secondary text-xs inline-flex items-center gap-1.5"
+                   title="Save customer contact to your phone or Google account">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>Save Contact</span>
                 </a>
@@ -362,9 +372,15 @@
                                         </span>
                                     </td>
                                     <td class="text-right">
-                                        <a href="{{ route('quotations.show', $q) }}" class="action-link">
-                                            View
-                                        </a>
+                                        <div class="inline-flex items-center gap-2 justify-end">
+                                            <a href="{{ route('quotations.show', ['quotation' => $q, 'open_email' => 1]) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700" title="Email Quotation with Attached PDF">
+                                                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                                <span>Email</span>
+                                            </a>
+                                            <a href="{{ route('quotations.show', $q) }}" class="action-link">
+                                                View
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

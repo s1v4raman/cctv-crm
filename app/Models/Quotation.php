@@ -34,7 +34,7 @@ class Quotation extends Model
     public const FORMATS = [
         '1' => 'Executive Modern',
         '2' => 'Technical Detailed',
-        '3' => 'Classic Formal',
+        '3' => 'Linepix GST Invoice',
     ];
 
     public const PRICING_MODES = [
@@ -55,6 +55,46 @@ class Quotation extends Model
     public function isTotalCostOnly(): bool
     {
         return ($this->pricing_mode ?? 'itemized') === 'total_only';
+    }
+
+    /**
+     * Get dynamic, financial-year based reference number according to template format.
+     * Examples for FY 2026-27:
+     * - Format 1: PITS/QUOT/26-27/02
+     * - Format 2: NP/26-27/002
+     * - Format 3: LP/26-27/02
+     */
+    public function getFormattedReferenceNo(?string $format = '1'): string
+    {
+        $raw = (string)($this->quotation_no ?? '');
+
+        // If quotation already has an explicit custom formatted string matching the prefix, preserve it
+        if ($format === '3' && str_starts_with($raw, 'LP/')) return $raw;
+        if ($format === '2' && str_starts_with($raw, 'NP/')) return $raw;
+        if ($format === '1' && str_starts_with($raw, 'PITS/')) return $raw;
+
+        $quoteDate = $this->quotation_date ?? $this->created_at ?? now();
+        $carbon = $quoteDate instanceof \Carbon\Carbon ? $quoteDate : \Carbon\Carbon::parse($quoteDate);
+
+        $year = (int)$carbon->format('Y');
+        $month = (int)$carbon->format('n');
+        $fyStart = $month >= 4 ? substr((string)$year, -2) : substr((string)($year - 1), -2);
+        $fyEnd   = $month >= 4 ? substr((string)($year + 1), -2) : substr((string)$year, -2);
+        $fy = "{$fyStart}-{$fyEnd}"; // e.g. "26-27"
+
+        // Extract sequential numeric ID or suffix
+        $seq = 1;
+        if (preg_match('/(\d+)$/', $raw, $matches)) {
+            $seq = (int)$matches[1];
+        } elseif ($this->id) {
+            $seq = (int)$this->id;
+        }
+
+        return match ($format) {
+            '2' => "NP/{$fy}/" . str_pad((string)$seq, 3, '0', STR_PAD_LEFT),
+            '3', '4' => "LP/{$fy}/" . str_pad((string)$seq, 2, '0', STR_PAD_LEFT),
+            default => "PITS/QUOT/{$fy}/" . str_pad((string)$seq, 2, '0', STR_PAD_LEFT),
+        };
     }
 
     protected function casts(): array
@@ -178,6 +218,62 @@ class Quotation extends Model
         ]);
     }
 
+    public static function indianRupeesWords(float|int|string|null $amount): string
+    {
+        $amount = round((float) $amount, 2);
+        if ($amount <= 0) {
+            return 'Zero Rupees only';
+        }
+
+        $crore = floor($amount / 10000000);
+        $amount -= $crore * 10000000;
+        $lakh = floor($amount / 100000);
+        $amount -= $lakh * 100000;
+        $thousand = floor($amount / 1000);
+        $amount -= $thousand * 1000;
+        $hundred = floor($amount / 100);
+        $amount -= $hundred * 100;
+        $tens = floor($amount);
+        $paise = round(($amount - $tens) * 100);
+
+        $ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+            'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        $tensArr = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+        $toWords = function ($n) use ($ones, $tensArr) {
+            if ($n < 20) {
+                return $ones[$n];
+            }
+            $t = $tensArr[intdiv($n, 10)];
+            $u = $ones[$n % 10];
+            return $u ? "$t $u" : $t;
+        };
+
+        $parts = [];
+        if ($crore > 0) {
+            $parts[] = $toWords($crore) . ' Crore';
+        }
+        if ($lakh > 0) {
+            $parts[] = $toWords($lakh) . ' Lakh';
+        }
+        if ($thousand > 0) {
+            $parts[] = $toWords($thousand) . ' Thousand';
+        }
+        if ($hundred > 0) {
+            $parts[] = $toWords($hundred) . ' Hundred';
+        }
+        if ($tens > 0) {
+            $parts[] = $toWords($tens);
+        }
+
+        $res = implode(' ', $parts) . ' Rupees';
+        if ($paise > 0) {
+            $res .= ' and ' . $toWords($paise) . ' Paise';
+        }
+
+        return trim($res) . ' only';
+    }
+
     public static function numberToWords($num)
     {
         $ones = array(
@@ -258,7 +354,7 @@ class Quotation extends Model
     /**
      * Generate structured WhatsApp message for a given PDF format.
      */
-    public function getWhatsAppFormattedMessage(string $format = '1'): string
+    public function getWhatsAppFormattedMessage(string $format = '1', ?string $pricingMode = null): string
     {
         $leadName = $this->lead?->customer_name ?? 'Valued Customer';
         $companyName = config('app.name', 'Precision IT Systems');
@@ -267,12 +363,14 @@ class Quotation extends Model
 
         $formatName = match($format) {
             '2' => 'Technical Detailed Quotation',
-            '3' => 'Classic Formal Quotation',
+            '3', '4' => 'Linepix GST Invoice',
             default => 'Executive Modern Quotation',
         };
 
+        $isTotalOnly = $pricingMode !== null ? ($pricingMode === 'total_only') : $this->isTotalCostOnly();
+
         $itemsSummary = "";
-        if ($this->isTotalCostOnly()) {
+        if ($isTotalOnly) {
             $itemsSummary = "• Complete Turnkey CCTV Surveillance & Security Infrastructure Solution\n  (Complete Supply, Cabling, Hardware Installation, Integration & Commissioning)\n";
         } elseif ($this->items->isNotEmpty()) {
             foreach ($this->items as $item) {
@@ -307,8 +405,8 @@ class Quotation extends Model
         }
         $msg .= "💵 *Grand Total:* ₹" . number_format((float)$this->total, 2) . "\n\n"
              . "----------------------------------------------\n"
-             . "📄 *Download & View PDF Proposal:*\n{$pdfUrl}\n\n"
-             . "Please review the attached proposal PDF. Reply directly to this chat for any questions or customization.\n\n"
+             . "📎 *Quotation PDF Document Attached*\n"
+             . "Please review the attached official quotation proposal. Reply directly to this chat for any questions or approval.\n\n"
              . "Best Regards,\n"
              . "*{$companyName}*";
 
@@ -318,10 +416,10 @@ class Quotation extends Model
     /**
      * Get direct WhatsApp Link (Universal Web & Mobile App Dispatcher).
      */
-    public function getWhatsAppUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null): string
+    public function getWhatsAppUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null, ?string $pricingMode = null): string
     {
         $phone = $this->getWhatsAppPhone($customPhone);
-        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format));
+        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format, $pricingMode));
 
         if (empty($phone)) {
             return "https://api.whatsapp.com/send?text={$text}";
@@ -333,10 +431,10 @@ class Quotation extends Model
     /**
      * Get WhatsApp Web Direct Link (web.whatsapp.com).
      */
-    public function getWhatsAppWebUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null): string
+    public function getWhatsAppWebUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null, ?string $pricingMode = null): string
     {
         $phone = $this->getWhatsAppPhone($customPhone);
-        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format));
+        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format, $pricingMode));
 
         if (empty($phone)) {
             return "https://web.whatsapp.com/send?text={$text}";
@@ -348,10 +446,10 @@ class Quotation extends Model
     /**
      * Get direct WhatsApp Desktop scheme (whatsapp://).
      */
-    public function getWhatsAppAppUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null): string
+    public function getWhatsAppAppUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null, ?string $pricingMode = null): string
     {
         $phone = $this->getWhatsAppPhone($customPhone);
-        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format));
+        $text = rawurlencode($customMsg ?: $this->getWhatsAppFormattedMessage($format, $pricingMode));
 
         if (empty($phone)) {
             return "whatsapp://send?text={$text}";
@@ -388,43 +486,62 @@ class Quotation extends Model
     /**
      * Get clean plain-text formatted proposal message suitable for email bodies.
      */
-    public function getEmailFormattedBody(): string
+    public function getEmailFormattedBody(?string $format = '1', ?string $pricingMode = 'itemized', ?string $customNote = null): string
     {
         $leadName = $this->lead?->customer_name ?? 'Valued Customer';
         $companyName = config('app.name', 'Precision IT Systems');
         $validUntil = $this->valid_until ? $this->valid_until->format('d M Y') : '15 days from issue';
         $quoteDate = ($this->quotation_date ?? $this->created_at ?? now())->format('d M Y');
 
+        $formatName = match($format) {
+            '2' => 'Technical Detailed (Format 2)',
+            '3', '4' => 'Linepix GST Invoice (Format 3)',
+            default => 'Executive Modern (Format 1)',
+        };
+
         $itemsSummary = "";
-        if ($this->items->isNotEmpty()) {
+        if ($pricingMode !== 'total_only' && $this->items->isNotEmpty()) {
             foreach ($this->items as $item) {
                 $productName = $item->item_name ?: ($item->product ? $item->product->name : ($item->description ?: 'CCTV Equipment'));
                 $qty = number_format((float)$item->quantity, 0);
                 $total = number_format((float)$item->total, 2);
                 $itemsSummary .= "- {$qty}x {$productName} (₹{$total})\n";
             }
+        } elseif ($pricingMode === 'total_only' && $this->items->isNotEmpty()) {
+            foreach ($this->items as $item) {
+                $productName = $item->item_name ?: ($item->product ? $item->product->name : ($item->description ?: 'CCTV Equipment'));
+                $qty = number_format((float)$item->quantity, 0);
+                $itemsSummary .= "- {$qty}x {$productName}\n";
+            }
         }
 
-        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => '1']);
+        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => $format ?: '1', 'pricing_mode' => $pricingMode ?: 'itemized']);
 
-        $body ="Dear {$leadName},\n\n"
+        $body = "Dear {$leadName},\n\n"
               . "Thank you for contacting us regarding your CCTV surveillance and security requirements.\n"
               . "Please find below the official quotation and pricing summary for your installation:\n\n"
               . "Quotation Number: #{$this->quotation_no}\n"
               . "Date: {$quoteDate}\n"
+              . "Proposal Style: {$formatName}\n"
               . "Valid Until: {$validUntil}\n\n";
 
-        if (!empty($itemsSummary)) {
-            $body .= "Equipment & Services Summary:\n{$itemsSummary}\n";
+        if (!empty($customNote)) {
+            $body .= "Note from Sales / Engineering Team:\n{$customNote}\n\n";
         }
 
-        $body .= "Subtotal: ₹" . number_format((float)$this->subtotal, 2) . "\n";
-        if ((float)$this->discount > 0) {
-            $body .= "Special Discount: -₹" . number_format((float)$this->discount, 2) . "\n";
+        if (!empty($itemsSummary)) {
+            $body .= ($pricingMode === 'total_only' ? "Scope of Equipment & Services:\n" : "Equipment & Services Summary:\n") . "{$itemsSummary}\n";
         }
-        if ((float)$this->tax_amount > 0) {
-            $taxPercent = number_format((float)($this->tax_percent ?? 18), 0);
-            $body .= "GST ({$taxPercent}%): ₹" . number_format((float)$this->tax_amount, 2) . "\n";
+
+        if ($pricingMode !== 'total_only') {
+            $body .= "Subtotal: ₹" . number_format((float)$this->subtotal, 2) . "\n";
+            if ((float)$this->discount > 0) {
+                $body .= "Special Discount: -₹" . number_format((float)$this->discount, 2) . "\n";
+            }
+            if ((float)$this->tax_amount > 0) {
+                $taxPercent = number_format((float)($this->tax_percent ?? 18), 0);
+                $body .= "GST ({$taxPercent}%): ₹" . number_format((float)$this->tax_amount, 2) . "\n";
+            }
         }
         $body .= "Grand Total: ₹" . number_format((float)$this->total, 2) . "\n\n"
               . "==============================================\n"
@@ -441,23 +558,35 @@ class Quotation extends Model
     /**
      * Get Microsoft Outlook Web compose URL (Office 365 / Outlook.com).
      */
-    public function getOutlookComposeUrl(): string
+    public function getOutlookComposeUrl(?string $format = '1', ?string $pricingMode = 'itemized', ?string $customNote = null): string
     {
         $to = $this->lead?->email ?? '';
         $subject = rawurlencode($this->getEmailSubject());
-        $body = rawurlencode($this->getEmailFormattedBody());
+        $body = rawurlencode($this->getEmailFormattedBody($format, $pricingMode, $customNote));
 
         return "https://outlook.office.com/mail/deeplink/compose?to=" . rawurlencode($to) . "&subject={$subject}&body={$body}";
     }
 
     /**
-     * Get system default mailto: URL for Desktop Outlook / Windows Mail.
+     * Get Google Gmail Web compose URL.
      */
-    public function getMailtoUrl(): string
+    public function getGmailComposeUrl(?string $format = '1', ?string $pricingMode = 'itemized', ?string $customNote = null): string
     {
         $to = $this->lead?->email ?? '';
         $subject = rawurlencode($this->getEmailSubject());
-        $body = rawurlencode($this->getEmailFormattedBody());
+        $body = rawurlencode($this->getEmailFormattedBody($format, $pricingMode, $customNote));
+
+        return "https://mail.google.com/mail/?view=cm&fs=1&to=" . rawurlencode($to) . "&su={$subject}&body={$body}";
+    }
+
+    /**
+     * Get system default mailto: URL for Desktop Outlook / Windows Mail.
+     */
+    public function getMailtoUrl(?string $format = '1', ?string $pricingMode = 'itemized', ?string $customNote = null): string
+    {
+        $to = $this->lead?->email ?? '';
+        $subject = rawurlencode($this->getEmailSubject());
+        $body = rawurlencode($this->getEmailFormattedBody($format, $pricingMode, $customNote));
 
         return "mailto:{$to}?subject={$subject}&body={$body}";
     }

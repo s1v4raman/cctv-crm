@@ -2,22 +2,55 @@
 
 namespace App\Models;
 
+use App\Helpers\GstHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class PurchaseOrder extends Model
 {
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PENDING_APPROVAL = 'pending_approval';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_SENT = 'sent';
+    public const STATUS_PARTIALLY_RECEIVED = 'partially_received';
+    public const STATUS_RECEIVED = 'received';
+    public const STATUS_CLOSED = 'closed';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CANCELLED = 'cancelled';
+
+    /**
+     * Allowed status transitions map.
+     */
+    public const TRANSITIONS = [
+        self::STATUS_DRAFT              => [self::STATUS_PENDING_APPROVAL, self::STATUS_APPROVED, self::STATUS_CANCELLED],
+        self::STATUS_PENDING_APPROVAL   => [self::STATUS_APPROVED, self::STATUS_REJECTED, self::STATUS_CANCELLED],
+        self::STATUS_APPROVED           => [self::STATUS_SENT, self::STATUS_CANCELLED],
+        self::STATUS_SENT               => [self::STATUS_PARTIALLY_RECEIVED, self::STATUS_RECEIVED, self::STATUS_CANCELLED],
+        self::STATUS_PARTIALLY_RECEIVED => [self::STATUS_RECEIVED],
+        self::STATUS_RECEIVED           => [self::STATUS_CLOSED],
+        self::STATUS_REJECTED           => [self::STATUS_DRAFT, self::STATUS_CANCELLED],
+        self::STATUS_CLOSED             => [],
+        self::STATUS_CANCELLED          => [],
+    ];
+
     protected $fillable = [
         'supplier_id',
+        'project_id',
         'po_number',
         'supplier_invoice_no',
         'supplier_invoice_date',
         'order_date',
         'expected_delivery_date',
         'due_date',
-        'status', // draft, ordered, partially_received, received, cancelled
+        'status', // draft, pending_approval, approved, sent, partially_received, received, closed, rejected, cancelled
+        'approved_by',
+        'approved_at',
+        'rejected_by',
+        'rejected_at',
+        'rejection_reason',
         'subtotal',
         'tax_percent',
         'tax_amount',
@@ -36,20 +69,22 @@ class PurchaseOrder extends Model
     protected function casts(): array
     {
         return [
-            'order_date' => 'date',
-            'expected_delivery_date' => 'date',
-            'due_date' => 'date',
+            'order_date'            => 'date',
+            'expected_delivery_date'=> 'date',
+            'due_date'              => 'date',
             'supplier_invoice_date' => 'date',
-            'subtotal' => 'decimal:2',
-            'tax_percent' => 'decimal:2',
-            'tax_amount' => 'decimal:2',
-            'cgst_amount' => 'decimal:2',
-            'sgst_amount' => 'decimal:2',
-            'igst_amount' => 'decimal:2',
-            'is_itc_eligible' => 'boolean',
-            'shipping_cost' => 'decimal:2',
-            'total' => 'decimal:2',
-            'amount_paid' => 'decimal:2',
+            'approved_at'           => 'datetime',
+            'rejected_at'           => 'datetime',
+            'subtotal'              => 'decimal:2',
+            'tax_percent'           => 'decimal:2',
+            'tax_amount'            => 'decimal:2',
+            'cgst_amount'           => 'decimal:2',
+            'sgst_amount'           => 'decimal:2',
+            'igst_amount'           => 'decimal:2',
+            'is_itc_eligible'       => 'boolean',
+            'shipping_cost'         => 'decimal:2',
+            'total'                 => 'decimal:2',
+            'amount_paid'           => 'decimal:2',
         ];
     }
 
@@ -58,9 +93,24 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Supplier::class);
     }
 
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function goodsReceipts(): HasMany
+    {
+        return $this->hasMany(GoodsReceipt::class)->latest();
+    }
+
+    public function purchaseReturns(): HasMany
+    {
+        return $this->hasMany(PurchaseReturn::class)->latest();
     }
 
     public function vendorPayments(): HasMany
@@ -68,9 +118,145 @@ class PurchaseOrder extends Model
         return $this->hasMany(VendorPayment::class)->latest('payment_date');
     }
 
+    public function vendorBills(): HasMany
+    {
+        return $this->hasMany(VendorBill::class)->latest('invoice_date');
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejectedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    /**
+     * Check if a transition to $targetStatus is permitted by the state machine.
+     * Note: 'received' can only be set by inwardStock(), never by updateStatus().
+     */
+    public function canTransitionTo(string $targetStatus): bool
+    {
+        $allowed = self::TRANSITIONS[$this->status] ?? [];
+
+        if (!in_array($targetStatus, $allowed, true)) {
+            return false;
+        }
+
+        if ($targetStatus === self::STATUS_CANCELLED && !$this->canBeCancelled()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Cancellation is allowed only if nothing has been received and no payment exists.
+     */
+    public function canBeCancelled(): bool
+    {
+        $totalReceived = (int) $this->items()->sum('quantity_received');
+        if ($totalReceived > 0) {
+            return false;
+        }
+
+        if ((float) $this->amount_paid > 0.0) {
+            return false;
+        }
+
+        if ($this->vendorPayments()->exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Approved, sent, received, or closed POs cannot be edited.
+     * Only draft or rejected POs can be edited.
+     */
+    public function canBeEdited(): bool
+    {
+        return in_array($this->status, [self::STATUS_DRAFT, self::STATUS_REJECTED], true);
+    }
+
+    /**
+     * Submit PO for approval (Staff or Admin).
+     */
+    public function submitForApproval(): bool
+    {
+        if (!$this->canTransitionTo(self::STATUS_PENDING_APPROVAL)) {
+            return false;
+        }
+
+        return $this->update(['status' => self::STATUS_PENDING_APPROVAL]);
+    }
+
+    /**
+     * Admin approves the PO.
+     */
+    public function approve(int $adminUserId): bool
+    {
+        if (!$this->canTransitionTo(self::STATUS_APPROVED)) {
+            return false;
+        }
+
+        return $this->update([
+            'status'           => self::STATUS_APPROVED,
+            'approved_by'      => $adminUserId,
+            'approved_at'      => now(),
+            'rejected_by'      => null,
+            'rejected_at'      => null,
+            'rejection_reason' => null,
+        ]);
+    }
+
+    /**
+     * Admin rejects the PO with a reason.
+     */
+    public function reject(int $adminUserId, ?string $reason = null): bool
+    {
+        if (!$this->canTransitionTo(self::STATUS_REJECTED)) {
+            return false;
+        }
+
+        return $this->update([
+            'status'           => self::STATUS_REJECTED,
+            'rejected_by'      => $adminUserId,
+            'rejected_at'      => now(),
+            'rejection_reason' => $reason,
+        ]);
+    }
+
+    /**
+     * Mark PO as sent to vendor.
+     */
+    public function markSent(): bool
+    {
+        if ($this->status === self::STATUS_APPROVED) {
+            return $this->update(['status' => self::STATUS_SENT]);
+        }
+
+        return false;
+    }
+
+    /**
+     * Close received PO.
+     */
+    public function close(): bool
+    {
+        if (!$this->canTransitionTo(self::STATUS_CLOSED)) {
+            return false;
+        }
+
+        return $this->update(['status' => self::STATUS_CLOSED]);
     }
 
     /**
@@ -83,141 +269,323 @@ class PurchaseOrder extends Model
         $totalReceived = (int) $items->sum('quantity_received');
         $hasBill = !empty(trim((string) $this->supplier_invoice_no));
 
+        $quantityMatch = ($totalOrdered > 0 && $totalReceived >= $totalOrdered);
+        $invoiceAttached = $hasBill;
+        $priceMatch = true;
+
+        if ($quantityMatch && $invoiceAttached) {
+            $status = 'matched';
+            $badgeColor = 'green';
+            $label = '3-Way Verified (Passed)';
+            $description = 'All ordered items fully received with supplier invoice attached and verified.';
+        } elseif ($totalReceived > 0 && $totalReceived < $totalOrdered) {
+            $status = 'partial_receipt';
+            $badgeColor = 'amber';
+            $label = 'Partial Receipt (In Progress)';
+            $description = "Received {$totalReceived} of {$totalOrdered} units. Inwarding partially completed.";
+        } elseif ($totalReceived >= $totalOrdered && !$invoiceAttached) {
+            $status = 'unbilled';
+            $badgeColor = 'amber';
+            $label = 'Inwarded / Bill Pending';
+            $description = "{$totalReceived} of {$totalOrdered} units received at warehouse. Supplier invoice not yet recorded.";
+        } else {
+            $status = 'pending_inward';
+            $badgeColor = 'gray';
+            $label = 'Pending Inwarding (GRN)';
+            $description = 'Goods not yet inwarded into central warehouse.';
+        }
+
         $itemBreakdowns = [];
-        $hasQtyMismatch = false;
-
         foreach ($items as $item) {
-            $ordered = (int) $item->quantity_ordered;
-            $received = (int) $item->quantity_received;
-            $qtyDiff = $received - $ordered;
-
-            if ($received > 0 && $received !== $ordered) {
-                $hasQtyMismatch = true;
-            }
-
             $itemBreakdowns[] = [
-                'item_name'         => $item->item_name,
-                'sku'               => $item->sku,
-                'unit_cost'         => (float) $item->unit_cost,
-                'quantity_ordered'  => $ordered,
-                'quantity_received' => $received,
-                'variance_qty'      => $qtyDiff,
-                'is_fully_received' => $received >= $ordered,
+                'id'                 => $item->id,
+                'name'               => $item->item_name,
+                'sku'                => $item->sku,
+                'ordered'            => (int) $item->quantity_ordered,
+                'received'           => (int) $item->quantity_received,
+                'pending'            => $item->pendingQuantity(),
+                'unit_cost'          => (float) $item->unit_cost,
+                'total_cost'         => (float) $item->total_cost,
+                'is_fully_received'  => $item->quantity_received >= $item->quantity_ordered,
             ];
         }
 
-        if ($totalReceived === 0) {
-            $status = 'pending_inward';
-            $label = 'Pending Inwarding (GRN)';
-            $badgeClass = 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700';
-            $icon = 'hourglass';
-            $description = 'Goods not yet received at warehouse.';
-        } elseif (!$hasBill) {
-            $status = 'unbilled';
-            $label = 'Inwarded / Bill Pending';
-            $badgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-300 dark:border-amber-800';
-            $icon = 'document';
-            $description = 'Stock received, but vendor tax invoice not yet recorded.';
-        } elseif ($totalReceived >= $totalOrdered && !$hasQtyMismatch) {
-            $status = 'matched';
-            $label = '3-Way Verified (Passed)';
-            $badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
-            $icon = 'check-circle';
-            $description = '100% matched: PO quantity, GRN received units, and Vendor invoice align.';
-        } elseif ($totalReceived < $totalOrdered) {
-            $status = 'partial_receipt';
-            $label = 'Partial Receipt (In Progress)';
-            $badgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border-blue-300 dark:border-blue-800';
-            $icon = 'truck';
-            $description = "Received {$totalReceived} of {$totalOrdered} units. Remaining shipment expected.";
-        } else {
-            $status = 'quantity_mismatch';
-            $label = 'Quantity Discrepancy';
-            $badgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border-rose-300 dark:border-rose-800 animate-pulse';
-            $icon = 'exclamation-circle';
-            $description = 'Variance between ordered purchase quantities and warehouse inward records.';
-        }
-
         return [
-            'status'         => $status,
-            'label'          => $label,
-            'badge_class'    => $badgeClass,
-            'icon'           => $icon,
-            'description'    => $description,
-            'total_ordered'  => $totalOrdered,
-            'total_received' => $totalReceived,
-            'has_bill'       => $hasBill,
-            'bill_number'    => $this->supplier_invoice_no,
-            'bill_date'      => $this->supplier_invoice_date?->format('d M Y'),
-            'items'          => $itemBreakdowns,
+            'status'           => $status,
+            'label'            => $label,
+            'badge_color'      => $badgeColor,
+            'badge_class'      => match($badgeColor) {
+                'green' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                'amber' => 'bg-amber-50 text-amber-700 border-amber-200',
+                'blue'  => 'bg-blue-50 text-blue-700 border-blue-200',
+                default => 'bg-slate-50 text-slate-700 border-slate-200',
+            },
+            'description'      => $description,
+            'quantity_match'   => $quantityMatch,
+            'invoice_attached' => $invoiceAttached,
+            'has_bill'         => $hasBill,
+            'price_match'      => $priceMatch,
+            'total_ordered'    => $totalOrdered,
+            'total_received'   => $totalReceived,
+            'bill_number'      => $this->supplier_invoice_no,
+            'bill_date'        => $this->supplier_invoice_date?->format('d M Y'),
+            'items'            => $itemBreakdowns,
         ];
     }
 
+    /**
+     * Recalculate and persist PO totals, computing line-by-line Indian GST splits.
+     */
     public function recalculateTotals(): void
     {
-        $subtotal = (float) $this->items()->sum('total_cost');
-        $taxAmount = $subtotal * ((float) $this->tax_percent / 100.0);
+        $subtotal = 0.0;
+        $taxAmount = 0.0;
+        $cgstAmount = 0.0;
+        $sgstAmount = 0.0;
+        $igstAmount = 0.0;
+
+        $vendorGstin = $this->supplier?->gst_number;
+        $vendorStateCode = $vendorGstin ? GstHelper::extractStateCode($vendorGstin) : null;
+        $companyStateCode = GstHelper::getCompanyStateCode();
+
+        foreach ($this->items as $item) {
+            $lineSubtotal = (float) ($item->quantity_ordered * $item->unit_cost);
+            $taxRate = (float) ($item->tax_rate ?: ($this->tax_percent ?: 18.00));
+            $split = GstHelper::calculateTaxSplit($lineSubtotal, $taxRate, $vendorStateCode, $companyStateCode);
+
+            $item->update([
+                'total_cost'  => $lineSubtotal,
+                'tax_rate'    => $taxRate,
+                'cgst_rate'   => $split['cgst_rate'],
+                'cgst_amount' => $split['cgst_amount'],
+                'sgst_rate'   => $split['sgst_rate'],
+                'sgst_amount' => $split['sgst_amount'],
+                'igst_rate'   => $split['igst_rate'],
+                'igst_amount' => $split['igst_amount'],
+            ]);
+
+            $subtotal += $lineSubtotal;
+            $taxAmount += $split['total_tax'];
+            $cgstAmount += $split['cgst_amount'];
+            $sgstAmount += $split['sgst_amount'];
+            $igstAmount += $split['igst_amount'];
+        }
+
         $total = $subtotal + $taxAmount + (float) $this->shipping_cost;
 
         $this->update([
-            'subtotal' => $subtotal,
-            'tax_amount' => $taxAmount,
-            'total' => $total,
+            'subtotal'    => $subtotal,
+            'tax_amount'  => $taxAmount,
+            'cgst_amount' => $cgstAmount,
+            'sgst_amount' => $sgstAmount,
+            'igst_amount' => $igstAmount,
+            'total'       => $total,
         ]);
     }
 
     /**
-     * Inward received items into central warehouse stock ledger
+     * Inward received items into central warehouse stock ledger with strict locking and tolerance checks.
+     * Creates a GoodsReceipt, GoodsReceiptItem, GoodsReceiptSerial (for tracked items), and StockMovement rows.
+     * Updates weighted average cost and only transitions to 'received' if ALL item lines are completely fulfilled.
      * 
-     * @param array<int, int> $receivedQuantities [item_id => qty_to_inward_now]
+     * @param array<int|string, mixed> $receivedQuantities [item_id => qty] OR structured receipt array
+     * @param int|null $userId
+     * @param array<string, mixed> $receiptMeta
+     * @return \App\Models\GoodsReceipt
      */
-    public function inwardStock(array $receivedQuantities, ?int $userId = null): void
+    public function inwardStock(array $receivedQuantities, ?int $userId = null, array $receiptMeta = []): GoodsReceipt
     {
-        DB::transaction(function () use ($receivedQuantities, $userId) {
-            foreach ($this->items as $item) {
-                if (!isset($receivedQuantities[$item->id])) {
+        return DB::transaction(function () use ($receivedQuantities, $userId, $receiptMeta) {
+            $settings = GatewaySetting::first();
+            $tolerancePercent = (float) ($settings?->po_receiving_tolerance_percent ?? 0.0);
+
+            // Normalize input format
+            $deliveryNoteNo = $receivedQuantities['delivery_note_no'] ?? ($receiptMeta['delivery_note_no'] ?? null);
+            $notes = $receivedQuantities['notes'] ?? ($receiptMeta['notes'] ?? null);
+            $receivedDate = $receivedQuantities['received_date'] ?? ($receiptMeta['received_date'] ?? now()->toDateString());
+
+            if (isset($receivedQuantities['items']) && is_array($receivedQuantities['items'])) {
+                $itemsData = $receivedQuantities['items'];
+            } else {
+                $itemsData = [];
+                foreach ($receivedQuantities as $key => $val) {
+                    if (is_numeric($key)) {
+                        if (is_array($val)) {
+                            $itemsData[$key] = $val;
+                        } else {
+                            $itemsData[$key] = [
+                                'qty_received'  => (int) $val,
+                                'qty_rejected'  => 0,
+                                'reject_reason' => null,
+                                'serials'       => [],
+                            ];
+                        }
+                    }
+                }
+            }
+
+            // Generate GRN sequence
+            $grnNumber = \App\Services\DocumentSequenceService::nextGoodsReceiptNumber($receivedDate);
+
+            // Create GoodsReceipt header
+            $goodsReceipt = GoodsReceipt::create([
+                'grn_number'        => $grnNumber,
+                'purchase_order_id' => $this->id,
+                'supplier_id'       => $this->supplier_id,
+                'received_date'     => $receivedDate,
+                'received_by'       => $userId ?: auth()->id(),
+                'delivery_note_no'  => $deliveryNoteNo,
+                'notes'             => $notes,
+            ]);
+
+            // Fetch and lock all items for update
+            $items = $this->items()->lockForUpdate()->get();
+            $stockService = app(\App\Services\StockService::class);
+            $anyInwarded = false;
+
+            foreach ($items as $item) {
+                if (!isset($itemsData[$item->id])) {
                     continue;
                 }
 
-                $newInwardQty = (int) $receivedQuantities[$item->id];
-                if ($newInwardQty <= 0) {
+                $lineData = $itemsData[$item->id];
+                $newInwardQty = max(0, (int) ($lineData['qty_received'] ?? 0));
+                $newRejectedQty = max(0, (int) ($lineData['qty_rejected'] ?? 0));
+                $rejectReason = $lineData['reject_reason'] ?? null;
+                $rawSerials = $lineData['serials'] ?? [];
+
+                if ($newInwardQty <= 0 && $newRejectedQty <= 0) {
                     continue;
                 }
 
-                // Update item received count
-                $item->increment('quantity_received', $newInwardQty);
+                $anyInwarded = true;
 
-                // If item is linked to catalog product, increment stock & write movement
+                // Check tolerance ceiling for accepted quantity
+                $maxAllowed = (int) ceil($item->quantity_ordered * (1.0 + ($tolerancePercent / 100.0)));
+                $projectedTotal = $item->quantity_received + $newInwardQty;
+
+                if ($projectedTotal > $maxAllowed) {
+                    throw new InvalidArgumentException(
+                        "Inward quantity ({$newInwardQty}) for '{$item->item_name}' exceeds ordered quantity ({$item->quantity_ordered}) plus {$tolerancePercent}% tolerance. Maximum permitted: {$maxAllowed}, current: {$item->quantity_received}."
+                    );
+                }
+
+                // Check product serial tracking requirements
+                $product = null;
                 if ($item->product_id) {
-                    $product = Product::find($item->product_id);
-                    if ($product) {
-                        $product->increment('stock_quantity', $newInwardQty);
+                    $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
+                }
 
-                        StockMovement::create([
-                            'product_id' => $product->id,
-                            'type' => 'in',
-                            'quantity' => $newInwardQty,
-                            'balance_after' => $product->stock_quantity,
+                if ($product && $product->track_serial && $newInwardQty > 0) {
+                    // Extract list of serial numbers
+                    $serialList = [];
+                    foreach ($rawSerials as $s) {
+                        if (is_array($s)) {
+                            $sn = trim($s['serial_no'] ?? '');
+                            if ($sn !== '') {
+                                $serialList[] = [
+                                    'serial_no'      => $sn,
+                                    'mac_address'    => !empty($s['mac_address']) ? trim($s['mac_address']) : null,
+                                    'warranty_until' => !empty($s['warranty_until']) ? $s['warranty_until'] : null,
+                                ];
+                            }
+                        } else {
+                            $sn = trim((string) $s);
+                            if ($sn !== '') {
+                                $serialList[] = [
+                                    'serial_no'      => $sn,
+                                    'mac_address'    => null,
+                                    'warranty_until' => null,
+                                ];
+                            }
+                        }
+                    }
+
+                    if (count($serialList) !== $newInwardQty) {
+                        throw new InvalidArgumentException(
+                            "Product '{$product->name}' requires {$newInwardQty} serial numbers (one per accepted unit). " . count($serialList) . " provided."
+                        );
+                    }
+
+                    // Check for duplicates within the current submission
+                    $submittedSerials = array_column($serialList, 'serial_no');
+                    if (count($submittedSerials) !== count(array_unique($submittedSerials))) {
+                        throw new InvalidArgumentException(
+                            "Duplicate serial numbers found in submission for product '{$product->name}'."
+                        );
+                    }
+
+                    // Check for existing serials in the database for this product
+                    $existing = GoodsReceiptSerial::where('product_id', $product->id)
+                        ->whereIn('serial_no', $submittedSerials)
+                        ->pluck('serial_no')
+                        ->toArray();
+
+                    if (!empty($existing)) {
+                        throw new InvalidArgumentException(
+                            "Serial number(s) '" . implode(', ', $existing) . "' already registered for product '{$product->name}'."
+                        );
+                    }
+                } else {
+                    $serialList = [];
+                }
+
+                // Create GoodsReceiptItem
+                $receiptItem = GoodsReceiptItem::create([
+                    'goods_receipt_id'       => $goodsReceipt->id,
+                    'purchase_order_item_id' => $item->id,
+                    'product_id'             => $item->product_id,
+                    'qty_received'           => $newInwardQty,
+                    'qty_rejected'           => $newRejectedQty,
+                    'reject_reason'          => $rejectReason,
+                    'unit_cost'              => (float) $item->unit_cost,
+                ]);
+
+                // Record serials if any
+                foreach ($serialList as $sData) {
+                    GoodsReceiptSerial::create([
+                        'goods_receipt_item_id' => $receiptItem->id,
+                        'product_id'            => $product->id,
+                        'serial_no'             => $sData['serial_no'],
+                        'mac_address'           => $sData['mac_address'],
+                        'warranty_until'        => $sData['warranty_until'],
+                    ]);
+                }
+
+                // Update item received count for accepted goods
+                if ($newInwardQty > 0) {
+                    $item->increment('quantity_received', $newInwardQty);
+
+                    // If linked to catalog product, route stock & weighted average cost through StockService
+                    if ($product) {
+                        $stockService->recordReceipt($product, $newInwardQty, (float) $item->unit_cost, [
                             'reference_type' => PurchaseOrder::class,
-                            'reference_id' => $this->id,
-                            'notes' => "Procurement Inwarding via {$this->po_number} ({$this->supplier->name})",
-                            'user_id' => $userId ?: auth()->id(),
+                            'reference_id'   => $this->id,
+                            'note'           => "GRN: {$goodsReceipt->grn_number} (PO #{$this->po_number})",
+                            'created_by'     => $userId ?: auth()->id(),
                         ]);
                     }
                 }
             }
 
-            // Recalculate PO overall received status
-            $this->refresh();
-            $allItems = $this->items;
-            $totalOrdered = $allItems->sum('quantity_ordered');
-            $totalReceived = $allItems->sum('quantity_received');
-
-            if ($totalReceived >= $totalOrdered) {
-                $this->update(['status' => 'received']);
-            } elseif ($totalReceived > 0) {
-                $this->update(['status' => 'partially_received']);
+            if (!$anyInwarded) {
+                throw new InvalidArgumentException("Please specify at least 1 unit to receive or reject.");
             }
+
+            // Refresh items from database to check overall status
+            $allItems = $this->items()->get();
+            $allComplete = $allItems->count() > 0 && $allItems->every(function ($i) {
+                return $i->quantity_received >= $i->quantity_ordered;
+            });
+            $anyReceived = $allItems->sum('quantity_received') > 0;
+
+            if ($allComplete) {
+                $this->update(['status' => self::STATUS_RECEIVED]);
+            } elseif ($anyReceived) {
+                $this->update(['status' => self::STATUS_PARTIALLY_RECEIVED]);
+            }
+
+            return $goodsReceipt;
         });
     }
 
@@ -267,7 +635,7 @@ class PurchaseOrder extends Model
         $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 
         if ($pdfUrl) {
-            $msg .= "📄 *Official PO PDF Document:*\n{$pdfUrl}\n\n";
+            $msg .= "📄 *Official PO PDF Document (Valid for 14 Days):*\n{$pdfUrl}\n\n";
         }
 
         if ($this->notes) {

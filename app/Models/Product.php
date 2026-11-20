@@ -21,6 +21,7 @@ class Product extends Model
         'cost_price',
         'unit_price',
         'stock_quantity',
+        'track_serial',
         'min_stock_alert',
         'hsn_code',
         'tax_rate',
@@ -83,6 +84,7 @@ class Product extends Model
             'unit_price' => 'decimal:2',
             'tax_rate' => 'decimal:2',
             'stock_quantity' => 'integer',
+            'track_serial' => 'boolean',
             'min_stock_alert' => 'integer',
             'default_warranty_months' => 'integer',
             'is_active' => 'boolean',
@@ -97,6 +99,11 @@ class Product extends Model
     public function stockMovements(): HasMany
     {
         return $this->hasMany(StockMovement::class)->latest();
+    }
+
+    public function goodsReceiptSerials(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptSerial::class);
     }
 
     public function installedEquipment(): HasMany

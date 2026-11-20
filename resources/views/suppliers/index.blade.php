@@ -78,11 +78,11 @@
 
                         {{-- High-Contrast Action Buttons --}}
                         <div class="lg:col-span-2 flex items-center gap-2">
-                            <button type="submit" class="btn-primary flex-1 py-2 px-3 rounded-lg text-xs font-bold shadow-xs cursor-pointer text-center inline-flex items-center justify-center transition" style="background-color: #2563eb !important; color: #ffffff !important;">
-                                <span>Filter</span>
+                            <button type="submit" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold shadow-xs cursor-pointer text-center inline-flex items-center justify-center transition bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white" style="background-color: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important;">
+                                <span style="color: #ffffff !important; font-weight: 700;">Filter</span>
                             </button>
                             @if(request()->filled('search') || request()->filled('city') || request()->filled('payment_terms') || in_array(request('active'), ['yes', 'no']))
-                                <a href="{{ route('suppliers.index') }}" class="btn-secondary py-2 px-3 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition text-center" title="Reset all filters">
+                                <a href="{{ route('suppliers.index') }}" class="btn-secondary py-2 px-3 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-center" title="Reset all filters">
                                     <span>Reset</span>
                                 </a>
                             @endif
@@ -182,8 +182,8 @@
                         @if($supplier->phone)
                             <div class="whitespace-nowrap flex items-center gap-1.5">
                                 <span class="font-mono text-xs text-slate-900 dark:text-slate-200">{{ $supplier->phone }}</span>
-                                <a href="{{ $supplier->getWhatsAppUrl() }}" target="_blank" title="WhatsApp {{ $supplier->phone }}" class="inline-flex items-center justify-center w-6 h-6 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition cursor-pointer text-emerald-600 dark:text-emerald-400" aria-label="WhatsApp {{ $supplier->phone }}">
-                                    <x-icon.whatsapp :badge="true" class="w-4 h-4" />
+                                <a href="{{ $supplier->getWhatsAppUrl() }}" target="_blank" title="Chat on WhatsApp ({{ $supplier->phone }})" class="inline-flex items-center justify-center w-6 h-6 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition cursor-pointer text-emerald-600 dark:text-emerald-400" aria-label="WhatsApp {{ $supplier->phone }}">
+                                    <x-icon.whatsapp class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                 </a>
                             </div>
                         @endif
@@ -192,8 +192,8 @@
                                 <a href="mailto:{{ $supplier->email }}" class="hover:underline truncate max-w-[150px] font-mono text-[11px] text-slate-600 dark:text-slate-400">
                                     {{ $supplier->email }}
                                 </a>
-                                <a href="mailto:{{ $supplier->email }}" title="Email {{ $supplier->email }}" class="inline-flex items-center justify-center w-6 h-6 rounded-md hover:bg-sky-50 dark:hover:bg-sky-950/60 transition cursor-pointer text-sky-600 dark:text-sky-400" aria-label="Email {{ $supplier->email }}">
-                                    <x-icon.email class="w-4 h-4" />
+                                <a href="mailto:{{ $supplier->email }}" title="Send Email ({{ $supplier->email }})" class="inline-flex items-center justify-center w-6 h-6 rounded-md hover:bg-sky-50 dark:hover:bg-sky-950/60 transition cursor-pointer text-sky-600 dark:text-sky-400" aria-label="Email {{ $supplier->email }}">
+                                    <x-icon.email class="w-4 h-4 text-sky-600 dark:text-sky-400" />
                                 </a>
                             </div>
                         @endif

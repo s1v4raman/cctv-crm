@@ -662,18 +662,12 @@ class ProjectTaskController extends Controller
                 $product = Product::find($validated['product_id']);
                 if ($product) {
                     $qtyToDeduct = (int) ceil((float)$validated['quantity_used'] + (float)($validated['wastage_quantity'] ?? 0));
-                    $newStock = max(0, $product->stock_quantity - $qtyToDeduct);
-                    $product->update(['stock_quantity' => $newStock]);
-
-                    $movement = StockMovement::create([
-                        'product_id' => $product->id,
-                        'type' => 'job_installation',
-                        'quantity' => $qtyToDeduct,
-                        'balance_after' => $newStock,
+                    $movement = app(\App\Services\StockService::class)->recordIssue($product, $qtyToDeduct, [
                         'reference_type' => ProjectTask::class,
-                        'reference_id' => $task->id,
-                        'notes' => "Task consumption: {$task->title} (Project: {$project->project_code})",
-                        'user_id' => Auth::id(),
+                        'reference_id'   => $task->id,
+                        'project_id'     => $project->id,
+                        'note'           => "Task consumption: {$task->title} (Project: {$project->project_code})",
+                        'created_by'     => Auth::id(),
                     ]);
                     $stockMovementId = $movement->id;
                 }
@@ -747,7 +741,13 @@ class ProjectTaskController extends Controller
                 $product = Product::find($consumption->product_id);
                 $movement = StockMovement::find($consumption->stock_movement_id);
                 if ($product && $movement) {
-                    $product->increment('stock_quantity', $movement->quantity);
+                    app(\App\Services\StockService::class)->recordReceipt($product, abs($movement->quantity), (float) $product->cost_price, [
+                        'reference_type' => ProjectTask::class,
+                        'reference_id'   => $consumption->task_id,
+                        'project_id'     => $project->id,
+                        'note'           => "Reverted consumption on {$taskTitle}",
+                        'created_by'     => Auth::id(),
+                    ]);
                     $movement->delete();
                 }
             }

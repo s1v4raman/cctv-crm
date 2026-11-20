@@ -71,10 +71,6 @@ class ProjectMaterialIssueController extends Controller
             }
 
             $issue = DB::transaction(function () use ($project, $product, $validated, $isReturn, $qty, $workerId, $userId) {
-                $product = Product::lockForUpdate()->findOrFail($product->id);
-                $newStock = $isReturn ? (int)$product->stock_quantity + $qty : max(0, (int)$product->stock_quantity - $qty);
-                $product->update(['stock_quantity' => $newStock]);
-
                 $issue = ProjectMaterialIssue::create([
                     'project_id' => $project->id,
                     'product_id' => $product->id,
@@ -90,16 +86,27 @@ class ProjectMaterialIssueController extends Controller
                 ]);
 
                 $who = $issue->handled_by_name;
-                $movement = StockMovement::create([
-                    'product_id' => $product->id,
-                    'type' => $isReturn ? 'return' : 'out',
-                    'quantity' => $qty,
-                    'balance_after' => $newStock,
-                    'reference_type' => Project::class,
-                    'reference_id' => $project->id,
-                    'notes' => ($isReturn ? 'Returned from site: ' : 'Given to site: ') . ($project->title ?? $project->project_code) . ($who ? " ({$who})" : ''),
-                    'user_id' => Auth::id(),
-                ]);
+                $noteText = ($isReturn ? 'Returned from site: ' : 'Given to site: ') . ($project->title ?? $project->project_code) . ($who ? " ({$who})" : '');
+
+                $stockService = app(\App\Services\StockService::class);
+                if ($isReturn) {
+                    $movement = $stockService->recordReceipt($product, $qty, (float) $product->cost_price, [
+                        'reference_type' => Project::class,
+                        'reference_id'   => $project->id,
+                        'project_id'     => $project->id,
+                        'note'           => $noteText,
+                        'created_by'     => Auth::id(),
+                    ]);
+                } else {
+                    $movement = $stockService->recordIssue($product, $qty, [
+                        'reference_type' => Project::class,
+                        'reference_id'   => $project->id,
+                        'project_id'     => $project->id,
+                        'note'           => $noteText,
+                        'created_by'     => Auth::id(),
+                    ]);
+                }
+
                 $issue->update(['stock_movement_id' => $movement->id]);
 
                 ProjectAuditLog::logChange(
@@ -148,12 +155,26 @@ class ProjectMaterialIssueController extends Controller
 
         try {
             DB::transaction(function () use ($project, $issue) {
-                $product = Product::lockForUpdate()->find($issue->product_id);
+                $product = Product::find($issue->product_id);
                 if ($product) {
-                    $restored = $issue->isReturn()
-                        ? max(0, (int)$product->stock_quantity - (int)$issue->quantity)
-                        : (int)$product->stock_quantity + (int)$issue->quantity;
-                    $product->update(['stock_quantity' => $restored]);
+                    $stockService = app(\App\Services\StockService::class);
+                    if ($issue->isReturn()) {
+                        $stockService->recordIssue($product, (int) $issue->quantity, [
+                            'reference_type' => Project::class,
+                            'reference_id'   => $project->id,
+                            'project_id'     => $project->id,
+                            'note'           => "Undid return from site {$project->project_code}",
+                            'created_by'     => Auth::id(),
+                        ]);
+                    } else {
+                        $stockService->recordReceipt($product, (int) $issue->quantity, (float) $product->cost_price, [
+                            'reference_type' => Project::class,
+                            'reference_id'   => $project->id,
+                            'project_id'     => $project->id,
+                            'note'           => "Undid issue to site {$project->project_code}",
+                            'created_by'     => Auth::id(),
+                        ]);
+                    }
                 }
                 StockMovement::whereKey($issue->stock_movement_id)->delete();
 

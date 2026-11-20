@@ -13,12 +13,17 @@ class VendorPayment extends Model
 
     protected $table = 'vendor_payments';
 
+    public const KIND_ADVANCE = 'advance';
+    public const KIND_AGAINST_BILL = 'against_bill';
+
     protected $fillable = [
         'supplier_id',
         'purchase_order_id',
+        'vendor_bill_id',
         'payment_reference',
         'payment_date',
         'amount',
+        'kind',
         'payment_method',
         'transaction_reference',
         'notes',
@@ -38,6 +43,16 @@ class VendorPayment extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function vendorBill(): BelongsTo
+    {
+        return $this->belongsTo(VendorBill::class, 'vendor_bill_id');
+    }
+
+    public function allocations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(VendorPaymentAllocation::class);
     }
 
     public function recordedBy(): BelongsTo

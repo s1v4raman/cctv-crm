@@ -15,9 +15,7 @@ class SupplierController extends Controller
 
     public function index(Request $request): View
     {
-        if (auth()->user()?->role === 'technician') {
-            abort(403, 'Technicians are not authorized to view supplier records.');
-        }
+        $this->authorize('viewAny', Supplier::class);
 
         $search = trim((string) $request->input('search', ''));
         $cityFilter = trim((string) $request->input('city', ''));
@@ -77,11 +75,13 @@ class SupplierController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create', Supplier::class);
         return view('suppliers.create');
     }
 
     public function store(StoreSupplierRequest $request): RedirectResponse|JsonResponse
     {
+        $this->authorize('create', Supplier::class);
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -101,6 +101,7 @@ class SupplierController extends Controller
 
     public function show(Supplier $supplier): View
     {
+        $this->authorize('view', $supplier);
         $supplier->load([
             'purchaseOrders.items',
             'purchaseOrders.createdBy',
@@ -112,6 +113,8 @@ class SupplierController extends Controller
 
     public function recordPayment(Request $request, Supplier $supplier): RedirectResponse
     {
+        $this->authorize('recordPayment', $supplier);
+
         $validated = $request->validate([
             'purchase_order_id'     => ['nullable', 'exists:purchase_orders,id'],
             'amount'                => ['required', 'numeric', 'min:0.01'],
@@ -122,6 +125,15 @@ class SupplierController extends Controller
         ]);
 
         $amount = (float) $validated['amount'];
+
+        if (!empty($validated['purchase_order_id'])) {
+            $po = \App\Models\PurchaseOrder::where('supplier_id', $supplier->id)->find($validated['purchase_order_id']);
+            if ($po && $amount > ($po->balanceDue() + 0.01)) {
+                return back()->withErrors([
+                    'amount' => "Payment amount (₹" . number_format($amount, 2) . ") exceeds remaining balance due on PO #{$po->po_number} (₹" . number_format($po->balanceDue(), 2) . ")."
+                ])->withInput();
+            }
+        }
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($supplier, $validated, $amount) {
             $po = null;
@@ -161,11 +173,13 @@ class SupplierController extends Controller
 
     public function edit(Supplier $supplier): View
     {
+        $this->authorize('update', $supplier);
         return view('suppliers.edit', compact('supplier'));
     }
 
     public function update(StoreSupplierRequest $request, Supplier $supplier): RedirectResponse
     {
+        $this->authorize('update', $supplier);
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -176,9 +190,7 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier): RedirectResponse
     {
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('delete', $supplier);
 
         $supplier->delete();
 
@@ -190,6 +202,7 @@ class SupplierController extends Controller
      */
     public function suggest(Request $request): JsonResponse
     {
+        $this->authorize('suggest', Supplier::class);
         $category = $request->input('category');
         $itemName = $request->input('item_name');
 
@@ -216,6 +229,7 @@ class SupplierController extends Controller
      */
     public function shareWhatsApp(Request $request, Supplier $supplier): RedirectResponse|JsonResponse
     {
+        $this->authorize('view', $supplier);
         $validated = $request->validate([
             'phone'             => ['nullable', 'string', 'max:25'],
             'message'           => ['nullable', 'string', 'max:5000'],
@@ -241,7 +255,7 @@ class SupplierController extends Controller
         } elseif (!empty($validated['purchase_order_id']) && $templateType === 'po_dispatch') {
             $po = \App\Models\PurchaseOrder::with(['supplier', 'items'])->find($validated['purchase_order_id']);
             if ($po) {
-                $publicPdfUrl = \Illuminate\Support\Facades\URL::signedRoute('purchase-orders.public-pdf', ['purchase_order' => $po]);
+                $publicPdfUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute('purchase-orders.public-pdf', now()->addDays(14), ['purchase_order' => $po]);
                 $messageText = $po->buildWhatsAppMessage($customMessage, $publicPdfUrl);
                 $whatsappUrl = $po->getWhatsAppUrl($phone, $customMessage, $publicPdfUrl);
             } else {
@@ -292,6 +306,7 @@ class SupplierController extends Controller
      */
     public function sendEmail(Request $request, Supplier $supplier): RedirectResponse
     {
+        $this->authorize('view', $supplier);
         $validated = $request->validate([
             'email'             => ['required', 'email'],
             'subject'           => ['required', 'string', 'max:255'],

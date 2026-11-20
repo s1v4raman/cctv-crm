@@ -43,11 +43,11 @@
 
             {{-- Tools, or what to do with the ticked leads --}}
             <div class="ld-toolbar">
-                <div class="flex items-center gap-1" x-show="selected.length === 0">
+                <div class="flex items-center gap-2" x-show="selected.length === 0">
                     <button type="button" class="ld-tool" :class="showFilter && 'is-on'" @click="showFilter = !showFilter; $nextTick(() => fit())" :aria-pressed="showFilter">
                         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z"/></svg>
                         <span>Filter</span>
-                        @if($filterCount > 0)<span class="text-xs font-semibold" style="color: var(--ld-accent)">{{ $filterCount }}</span>@endif
+                        @if($filterCount > 0)<span class="text-xs font-semibold px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">{{ $filterCount }}</span>@endif
                     </button>
 
                     <div class="relative" @click.outside="menu === 'sort' && (menu = null)">
@@ -65,14 +65,16 @@
                         </div>
                     </div>
 
-                    <span class="ld-sep" aria-hidden="true"></span>
-
-                    <a href="{{ $here(['layout' => null]) }}" class="ld-icon-btn plain-link {{ $layout === 'list' ? 'is-on' : '' }}" title="List" aria-label="List view" @if($layout === 'list') aria-current="page" @endif>
-                        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>
-                    </a>
-                    <a href="{{ $here(['layout' => 'board']) }}" class="ld-icon-btn plain-link {{ $layout === 'board' ? 'is-on' : '' }}" title="Board by status" aria-label="Board view" @if($layout === 'board') aria-current="page" @endif>
-                        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="17" height="7" rx="1.5"/><rect x="3.5" y="13" width="17" height="7" rx="1.5"/></svg>
-                    </a>
+                    <div class="ld-view-switcher inline-flex items-center p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100/90 dark:bg-slate-800/90 shadow-2xs ml-1">
+                        <a href="{{ $here(['layout' => null]) }}" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition {{ $layout === 'list' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}" title="List view" aria-label="List view">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            <span>List</span>
+                        </a>
+                        <a href="{{ $here(['layout' => 'board']) }}" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition {{ $layout === 'board' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}" title="Board by status" aria-label="Board view">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/></svg>
+                            <span>Board</span>
+                        </a>
+                    </div>
                 </div>
 
                 @if($isOffice)

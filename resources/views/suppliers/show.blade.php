@@ -28,18 +28,20 @@
 
                 <div class="flex items-center gap-2 flex-wrap">
                     @if(auth()->user()->isOffice())
-                        <button type="button" onclick="openSupplierPayment('', {{ (float) $supplier->balancePayable() }})" class="btn-primary px-3.5 py-2 rounded-lg text-xs font-bold shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition" style="background-color: #2563eb !important; color: #ffffff !important;">
-                            <span>Record Paid Amount</span>
+                        <button type="button" onclick="openSupplierPayment('', {{ (float) $supplier->balancePayable() }})" class="px-3.5 py-2 rounded-lg text-xs font-bold shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white" style="background-color: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important;">
+                            <span style="color: #ffffff !important; font-weight: 700;">Record Paid Amount</span>
                         </button>
                     @endif
                     @if($supplier->phone)
-                        <button type="button" onclick="openSupplierWhatsApp()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5" style="background-color: #059669 !important; color: #ffffff !important;">
-                            <span>WhatsApp</span>
+                        <button type="button" onclick="openSupplierWhatsApp()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white" style="background-color: #059669 !important; color: #ffffff !important;">
+                            <x-icon.whatsapp class="w-4 h-4 text-white" />
+                            <span style="color: #ffffff !important;">WhatsApp</span>
                         </button>
                     @endif
                     @if($supplier->email)
-                        <button type="button" onclick="openSupplierEmail()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5" style="background-color: #0284c7 !important; color: #ffffff !important;">
-                            <span>Email</span>
+                        <button type="button" onclick="openSupplierEmail()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white" style="background-color: #0284c7 !important; color: #ffffff !important;">
+                            <x-icon.email class="w-4 h-4 text-white" />
+                            <span style="color: #ffffff !important;">Email</span>
                         </button>
                     @endif
                     @if(auth()->user()->isOffice())
@@ -548,8 +550,8 @@
                     <p class="text-xs text-slate-500 mt-0.5">Track ordered hardware cost, offline amount paid, and outstanding balance.</p>
                 </div>
                 @if(auth()->user()->isOffice())
-                    <button type="button" @click="openPaymentModal('', {{ $supplier->balancePayable() }})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer border border-blue-600 inline-flex items-center" style="background-color: #2563eb !important; color: #ffffff !important;">
-                        <span>Record Paid Amount</span>
+                    <button type="button" @click="openPaymentModal('', {{ $supplier->balancePayable() }})" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer border border-blue-600 inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white" style="background-color: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important;">
+                        <span style="color: #ffffff !important; font-weight: 700;">Record Paid Amount</span>
                     </button>
                 @endif
             </div>

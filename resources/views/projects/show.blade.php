@@ -63,6 +63,30 @@
              rejectModalOpen: false,
              materialModalOpen: false,
              editMaterialModalOpen: false,
+             bomPoModalOpen: false,
+             bomPoLoading: false,
+             bomPoItems: [],
+             bomPoSuppliers: [],
+             async openBomPoModal() {
+                 this.bomPoLoading = true;
+                 this.bomPoModalOpen = true;
+                 try {
+                     const res = await fetch(`{{ route('projects.purchase-orders.bom-preview', $project) }}`);
+                     const data = await res.json();
+                     if (data.success) {
+                         this.bomPoItems = data.items.map(it => ({
+                             ...it,
+                             selected: true,
+                             supplier_id: it.supplier_id || (data.suppliers[0]?.id || '')
+                         }));
+                         this.bomPoSuppliers = data.suppliers;
+                     }
+                 } catch (e) {
+                     console.error('Failed to load BOM PO preview', e);
+                 } finally {
+                     this.bomPoLoading = false;
+                 }
+             },
              productDetailsModalOpen: false,
              selectedProductData: null,
              openProductDetailsModal(data) {
@@ -1154,6 +1178,10 @@
                             </template>
                         </select>
                         @if(auth()->user()->isOffice())
+                            <button type="button" @click="openBomPoModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>Create Purchase Order from BOM</span>
+                            </button>
                             <button type="button" @click="openIssueModal('issue')" class="btn-primary text-xs">Give to site</button>
                             <button type="button" @click="openIssueModal('return')" class="btn-secondary text-xs">Return to storeroom</button>
                         @endif
@@ -4295,6 +4323,112 @@
                             <button type="submit" class="btn-primary text-xs shadow-md">Update Task</button>
                         </template>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Create Purchase Order from BOM Modal --}}
+        <div x-show="bomPoModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="bomPoModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Create Purchase Order from Project BOM</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Generates draft POs grouped by supplier for BOM lines requiring procurement (local shop purchase or stock shortage).</p>
+                    </div>
+                    <x-close-button @click="bomPoModalOpen = false" />
+                </div>
+
+                <div x-show="bomPoLoading" class="py-12 text-center text-slate-500 text-xs">
+                    <svg class="animate-spin h-6 w-6 mx-auto mb-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>Evaluating project BOM requirements and supplier stock balances...</span>
+                </div>
+
+                <form x-show="!bomPoLoading" method="POST" action="{{ route('projects.purchase-orders.from-bom', $project) }}" class="space-y-4">
+                    @csrf
+
+                    <template x-if="bomPoItems.length === 0">
+                        <div class="p-6 text-center text-slate-500 text-xs bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <p class="font-bold text-slate-700 dark:text-slate-300">No BOM items require purchase orders right now.</p>
+                            <p class="mt-1">All planned items are either satisfied by current storeroom stock or not designated for external local shop purchase.</p>
+                        </div>
+                    </template>
+
+                    <template x-if="bomPoItems.length > 0">
+                        <div class="space-y-4">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                                <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                                    <thead class="bg-slate-50 dark:bg-slate-800 text-[11px] font-bold uppercase text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                                        <tr>
+                                            <th class="px-3 py-2.5 text-center w-10">Select</th>
+                                            <th class="px-3 py-2.5">BOM Material Item</th>
+                                            <th class="px-3 py-2.5 text-center">Req / On-Hand</th>
+                                            <th class="px-3 py-2.5 w-28">Order Qty</th>
+                                            <th class="px-3 py-2.5 w-32">Est. Unit Rate (₹)</th>
+                                            <th class="px-3 py-2.5 w-48">Supplier / Vendor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                        <template x-for="(item, idx) in bomPoItems" :key="item.id">
+                                            <tr :class="item.selected ? 'bg-indigo-50/30 dark:bg-indigo-950/20' : 'opacity-60'">
+                                                <td class="px-3 py-2.5 text-center">
+                                                    <input type="checkbox" x-model="item.selected" class="rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                                                    <input type="hidden" :name="`items[${idx}][bom_item_id]`" :value="item.id" :disabled="!item.selected">
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    <div class="font-bold text-slate-900 dark:text-white" x-text="item.item_name"></div>
+                                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                                        <span class="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                                                              :class="item.is_local_purchase ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'"
+                                                              x-text="item.is_local_purchase ? 'Local Shop' : 'Stock Shortage'"></span>
+                                                        <template x-if="item.product_sku">
+                                                            <span class="text-[10px] text-slate-400" x-text="item.product_sku"></span>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2.5 text-center">
+                                                    <span class="font-semibold" x-text="`${item.required_quantity} ${item.unit}`"></span>
+                                                    <div class="text-[10px] text-slate-400" x-text="`Stock: ${item.stock_on_hand}`"></div>
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    <input type="number" step="0.01" min="0.01" x-model.number="item.order_quantity" :name="`items[${idx}][quantity]`" :disabled="!item.selected" class="crm-input text-xs py-1 px-2 text-right" required>
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    <input type="number" step="0.01" min="0" x-model.number="item.unit_cost" :name="`items[${idx}][unit_cost]`" :disabled="!item.selected" class="crm-input text-xs py-1 px-2 text-right" required>
+                                                    <input type="hidden" :name="`items[${idx}][tax_rate]`" :value="item.tax_rate || 18.0" :disabled="!item.selected">
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    <select x-model="item.supplier_id" :name="`items[${idx}][supplier_id]`" :disabled="!item.selected" class="crm-select text-xs py-1 px-2" required>
+                                                        <option value="">Select Supplier</option>
+                                                        <template x-for="sup in bomPoSuppliers" :key="sup.id">
+                                                            <option :value="sup.id" x-text="sup.company_name || sup.name" :selected="sup.id == item.supplier_id"></option>
+                                                        </template>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                <div>
+                                    <label class="crm-label text-xs">Target Expected Delivery Date</label>
+                                    <input type="date" name="expected_delivery_date" value="{{ now()->addDays(7)->toDateString() }}" class="crm-input text-xs">
+                                </div>
+                                <div>
+                                    <label class="crm-label text-xs">Internal PO Notes</label>
+                                    <input type="text" name="notes" placeholder="e.g. Urgent site delivery for ground floor camera wiring" class="crm-input text-xs">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <button type="button" @click="bomPoModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                                <button type="submit" class="btn-primary text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md">
+                                    Generate Draft Purchase Order(s)
+                                </button>
+                            </div>
+                        </div>
+                    </template>
                 </form>
             </div>
         </div>

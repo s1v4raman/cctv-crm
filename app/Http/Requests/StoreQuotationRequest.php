@@ -21,7 +21,15 @@ class StoreQuotationRequest extends FormRequest
             'discount' => ['nullable', 'numeric', 'min:0'],
             'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'notes' => ['nullable', 'string'],
-            'pdf_format' => ['nullable', 'string', 'in:1,2,3'],
+            'pdf_format' => ['nullable', 'string', 'in:1,2,3,4'],
+            'pricing_mode' => ['nullable', 'string', 'in:itemized,total_only'],
+
+            // Email dispatch fields
+            'action' => ['nullable', 'string', 'in:save,save_and_send'],
+            'send_email_now' => ['nullable', 'boolean'],
+            'customer_email' => ['nullable', 'email'],
+            'email_subject' => ['nullable', 'string', 'max:255'],
+            'email_custom_message' => ['nullable', 'string', 'max:2000'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
