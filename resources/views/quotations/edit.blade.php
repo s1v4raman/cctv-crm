@@ -3,13 +3,20 @@
         $formItems = old(
             'items',
             $quotation->items->map(function ($item) {
+                $catalogProduct = $item->product ?: ($item->product_id ? \App\Models\Product::find($item->product_id) : \App\Models\Product::where('name', trim($item->item_name))->first());
+                $catalogPrice = $catalogProduct ? (float) $catalogProduct->unit_price : 0;
+                $effectivePrice = (float) $item->unit_price;
+                if ($effectivePrice <= 0 && $catalogPrice > 0) {
+                    $effectivePrice = $catalogPrice;
+                }
                 return [
-                    'product_id' => $item->product_id,
+                    'product_id' => $item->product_id ?: ($catalogProduct?->id),
                     'item_name' => $item->item_name,
                     'description' => $item->description,
                     'quantity' => $item->quantity,
                     'unit' => $item->unit,
-                    'unit_price' => $item->unit_price,
+                    'unit_price' => $effectivePrice,
+                    'admin_price' => $catalogPrice,
                 ];
             })->values()->all()
         );
@@ -286,11 +293,14 @@
                                                        min="0"
                                                        step="0.01"
                                                        required
+                                                       data-admin-price="{{ $item['admin_price'] ?? $item['unit_price'] ?? 0 }}"
                                                        class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
 
                                                 @error("items.$index.unit_price")
                                                     <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                                                 @enderror
+
+                                                <div class="item-admin-price-hint mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium"></div>
                                             </td>
 
                                             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
@@ -413,6 +423,7 @@
                        step="0.01"
                        required
                        class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
+                <div class="item-admin-price-hint mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium"></div>
             </td>
 
             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
@@ -434,6 +445,7 @@
     </div>
 
     <script>
+        const isTechnician = {{ auth()->user()?->isTechnician() ? 'true' : 'false' }};
         const activeSuppliers = @js($suppliers ?? []);
         const itemsBody = document.getElementById('items-body');
         const template = document.getElementById('item-row-template').innerHTML;
@@ -550,6 +562,48 @@
             document.getElementById('grand-total-display').textContent = money(grandTotal);
         }
 
+        function updateRowAdminPriceHint(row, adminPrice) {
+            const hintEl = row.querySelector('.item-admin-price-hint');
+            if (!hintEl) return;
+            const price = parseFloat(adminPrice) || 0;
+            if (price > 0 && isTechnician) {
+                hintEl.innerHTML = `<span class="inline-flex items-center gap-1 font-semibold text-amber-700 dark:text-amber-400">🛡️ Admin Min: <strong>${money(price)}</strong> (Cannot reduce)</span>`;
+            } else if (price > 0) {
+                hintEl.innerHTML = `<span>Admin Base: ${money(price)}</span>`;
+            } else {
+                hintEl.innerHTML = '';
+            }
+        }
+
+        function validateRowUnitPrice(row) {
+            const unitPriceInput = row.querySelector('.unit-price');
+            const hintEl = row.querySelector('.item-admin-price-hint');
+            if (!unitPriceInput) return true;
+
+            const adminPrice = parseFloat(unitPriceInput.dataset.adminPrice) || 0;
+            const enteredPrice = parseFloat(unitPriceInput.value) || 0;
+
+            if (isTechnician && adminPrice > 0 && enteredPrice < (adminPrice - 0.001)) {
+                unitPriceInput.classList.add('border-rose-500', 'bg-rose-50/60', 'text-rose-700');
+                unitPriceInput.classList.remove('border-slate-300', 'dark:border-slate-700');
+                if (hintEl) {
+                    hintEl.innerHTML = `<span class="text-rose-600 dark:text-rose-400 font-bold">⚠️ Min price is ${money(adminPrice)}. Cannot quote below Admin schedule!</span>`;
+                }
+                return false;
+            } else {
+                unitPriceInput.classList.remove('border-rose-500', 'bg-rose-50/60', 'text-rose-700');
+                unitPriceInput.classList.add('border-slate-300', 'dark:border-slate-700');
+                if (hintEl && adminPrice > 0) {
+                    if (enteredPrice > (adminPrice + 0.001)) {
+                        hintEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✓ Above Admin rate (${money(adminPrice)})</span>`;
+                    } else {
+                        updateRowAdminPriceHint(row, adminPrice);
+                    }
+                }
+                return true;
+            }
+        }
+
         const productDropdown = document.getElementById('quotation-product-dropdown');
         let activeRow = null;
         let activeInput = null;
@@ -618,10 +672,21 @@
             row.querySelector('.item-name').value = product.name;
             row.querySelector('.item-description').value = product.description || '';
             row.querySelector('.item-unit').value = product.unit;
-            row.querySelector('.unit-price').value = product.unit_price;
+            
+            const unitPriceInput = row.querySelector('.unit-price');
+            const minPrice = parseFloat(product.unit_price) || 0;
+            if (unitPriceInput) {
+                unitPriceInput.value = minPrice;
+                unitPriceInput.dataset.adminPrice = minPrice;
+                if (isTechnician && minPrice > 0) {
+                    unitPriceInput.min = minPrice;
+                }
+            }
 
             hideAllProductResults();
             updateRowSupplierHint(row, product);
+            updateRowAdminPriceHint(row, minPrice);
+            validateRowUnitPrice(row);
             calculateTotals();
 
             const quantityInput = row.querySelector('.quantity');
@@ -766,6 +831,14 @@
             });
 
             itemNameInput.addEventListener('blur', () => {
+                if (!productIdInput.value && currentProducts && currentProducts.length > 0) {
+                    const typedText = itemNameInput.value.trim().toLowerCase();
+                    const exactMatch = currentProducts.find(p => p.name.trim().toLowerCase() === typedText)
+                        || (currentProducts.length === 1 && currentProducts[0].name.toLowerCase().includes(typedText) ? currentProducts[0] : null);
+                    if (exactMatch) {
+                        selectProduct(row, exactMatch);
+                    }
+                }
                 setTimeout(() => {
                     hideAllProductResults();
                 }, 200);
@@ -783,9 +856,10 @@
                     highlightedIndex = (highlightedIndex - 1 + currentProducts.length) % currentProducts.length;
                     updateHighlight();
                 } else if (e.key === 'Enter') {
-                    if (highlightedIndex >= 0 && highlightedIndex < currentProducts.length) {
-                        e.preventDefault();
-                        selectProduct(row, currentProducts[highlightedIndex]);
+                    e.preventDefault();
+                    const targetIdx = highlightedIndex >= 0 ? highlightedIndex : 0;
+                    if (targetIdx >= 0 && targetIdx < currentProducts.length) {
+                        selectProduct(row, currentProducts[targetIdx]);
                     }
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
@@ -794,7 +868,14 @@
             });
 
             quantityInput.addEventListener('input', calculateTotals);
-            unitPriceInput.addEventListener('input', calculateTotals);
+            unitPriceInput.addEventListener('input', () => {
+                validateRowUnitPrice(row);
+                calculateTotals();
+            });
+            unitPriceInput.addEventListener('change', () => {
+                validateRowUnitPrice(row);
+                calculateTotals();
+            });
 
             removeButton.addEventListener('click', () => {
                 const rows = document.querySelectorAll('.item-row');
@@ -855,7 +936,48 @@
         document.querySelectorAll('.item-row').forEach((row) => {
             bindRowEvents(row);
             updateRowSupplierHint(row);
+            const unitPriceInput = row.querySelector('.unit-price');
+            const adminPrice = parseFloat(unitPriceInput?.dataset?.adminPrice) || parseFloat(unitPriceInput?.value) || 0;
+            if (unitPriceInput && adminPrice > 0) {
+                unitPriceInput.dataset.adminPrice = adminPrice;
+                if (isTechnician) {
+                    unitPriceInput.min = adminPrice;
+                }
+                updateRowAdminPriceHint(row, adminPrice);
+            }
         });
+
+        // Form submission safety guard for technicians
+        const editQuotationForm = document.querySelector('form');
+        if (editQuotationForm && isTechnician) {
+            editQuotationForm.addEventListener('submit', (e) => {
+                let hasViolation = false;
+                let firstViolatingRow = null;
+
+                document.querySelectorAll('.item-row').forEach((row) => {
+                    if (!validateRowUnitPrice(row)) {
+                        hasViolation = true;
+                        if (!firstViolatingRow) firstViolatingRow = row;
+                    }
+                });
+
+                if (hasViolation) {
+                    e.preventDefault();
+                    if (firstViolatingRow) {
+                        const input = firstViolatingRow.querySelector('.unit-price');
+                        if (input) {
+                            input.focus();
+                            input.select();
+                        }
+                    }
+                    if (typeof crmAlert === 'function') {
+                        crmAlert('Cannot update quotation: One or more products have a price lower than the Admin scheduled price. You can only quote the same or a higher price.');
+                    } else {
+                        alert('Cannot update quotation: One or more products have a price lower than the Admin scheduled price. You can only quote the same or a higher price.');
+                    }
+                }
+            });
+        }
 
         // Listen for products created on-the-fly from Quick Add Product modal
         window.addEventListener('product-created-in-catalog', (e) => {

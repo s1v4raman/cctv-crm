@@ -129,6 +129,13 @@
                 @endif
 
                 @if($quotation->status === 'accepted')
+                    <a href="{{ route('quotations.procurement-check', $quotation) }}" 
+                       class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-bold text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                       title="{{ __('Inspect Zero & Low Stock Deficit for this Quotation') }}">
+                        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        <span>{{ __('Stock & Procurement Shortage') }}</span>
+                    </a>
+
                     @if($quotation->installationJob)
                         <a href="{{ route('jobs.show', $quotation->installationJob) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
                             <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -498,7 +505,7 @@
                 @else
                     {{-- Standard view for Technicians and Completed/Accepted Quotes --}}
                     @php
-                        $showPricesToViewer = !$isTechnician || in_array($quotation->status, ['approved', 'sent', 'accepted']);
+                        $showPricesToViewer = true;
                     @endphp
                     <div class="overflow-x-auto">
                         <table class="crm-table w-full">
@@ -588,19 +595,14 @@
                                         <span>{{ __('Approved by Admin. Ready to share quotation with customer.') }}</span>
                                     </div>
                                 </div>
-                            @endif
-                        </div>
-                        @else
-                        <div class="w-full md:w-80">
-                            <div class="p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/80 bg-amber-50/60 dark:bg-amber-950/40 text-xs text-amber-900 dark:text-amber-200 space-y-1">
-                                <div class="flex items-center gap-1.5 font-bold">
-                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                                    <span>{{ __('Pending Admin Pricing Review') }}</span>
+                            @elseif($isTechnician && $quotation->status === 'pending_approval')
+                                <div class="pt-2">
+                                    <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 font-semibold flex items-center gap-1.5">
+                                        <span>⏳</span>
+                                        <span>{{ __('Quotation recorded with on-site pricing. Awaiting final Admin review before customer sharing.') }}</span>
+                                    </div>
                                 </div>
-                                <p class="text-[11px] text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
-                                    {{ __('Product specifications have been submitted to Management. As soon as Admin approves and sets the unit rates, pricing will be visible here and ready for customer sharing.') }}
-                                </p>
-                            </div>
+                            @endif
                         </div>
                         @endif
                     </div>
@@ -778,14 +780,17 @@
                 </div>
 
                 {{-- Quick Webmail & Email App Switcher Strip --}}
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-2">
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-2.5">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-700 dark:text-slate-300">{{ __('Choose Where to Send:') }}</span>
-                        <span class="text-[11px] text-slate-500">{{ __('PDF automatically downloaded & ready') }}</span>
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                            📎 {{ __('PDF Attached Automatically') }}
+                        </span>
                     </div>
                     <div class="grid grid-cols-2 gap-2.5 text-xs">
                         <button type="button" onclick="executeEmailAppDispatch('gmail')"
-                                class="allow-brand-icon py-2 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                                class="allow-brand-icon py-2.5 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                                title="Opens Gmail Web compose with quotation summary">
                             <svg class="w-4 h-4 shrink-0 allow-brand-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="#4285F4" d="M45,16.2l-5,2.75v19.55c0,1.38-1.12,2.5-2.5,2.5h-5.5V26.8l13-9.6V16.2z"/>
                                 <path fill="#34A853" d="M16,41h-5.5c-1.38,0-2.5-1.12-2.5-2.5V18.95l-5-2.75V17.2l13,9.6V41z"/>
@@ -795,15 +800,16 @@
                             </svg>
                             <span>{{ __('Gmail Web') }}</span>
                         </button>
-                        <button type="button" onclick="executeEmailAppDispatch('default')"
-                                class="allow-brand-icon py-2 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                        <button type="button" onclick="executeEmailAppDispatch('outlook')"
+                                class="allow-brand-icon py-2.5 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-800 dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                                title="Opens Microsoft Outlook with PDF attached automatically">
                             <svg class="w-4 h-4 shrink-0 allow-brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="2" y="5" width="18" height="22" rx="3" fill="#0078D4"/>
                                 <path d="M11 11a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 7.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="#ffffff"/>
                                 <rect x="15" y="8" width="15" height="16" rx="2" fill="#28A8EA"/>
                                 <path d="M15 10l7.5 5.5L30 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span>{{ __('Outlook') }}</span>
+                            <span>{{ __('Outlook (Auto-Attach PDF)') }}</span>
                         </button>
                     </div>
                 </div>
@@ -1829,7 +1835,7 @@
         setTimeout(() => link.remove(), 500);
     }
 
-    function showEmailAppGuideToast(email, filename) {
+    function showEmailAppGuideToast(email, filename, clientType = 'outlook') {
         let existing = document.getElementById('email-app-toast');
         if (existing) existing.remove();
 
@@ -1842,11 +1848,14 @@
             </div>
             <div class="flex-1 text-xs">
                 <div class="font-bold text-sm text-white flex items-center gap-1.5">
-                    <span>Email App Ready</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold">PDF Downloaded</span>
+                    <span>${clientType === 'gmail' ? 'Gmail Web Ready' : 'Outlook Draft Ready'}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">📎 Auto-Attached</span>
                 </div>
                 <p class="text-slate-300 mt-1 leading-relaxed">
-                    Opened email to <strong class="text-white">${email}</strong>. The quotation PDF <strong class="text-white">${filename}</strong> is in your Downloads. Simply attach or drop it into the email and click <strong>Send</strong>.
+                    ${clientType === 'gmail' 
+                        ? `Opened Gmail compose to <strong class="text-white">${email}</strong> with pre-filled proposal. The PDF is ready in your browser.`
+                        : `Generated draft with <strong class="text-white">${filename}</strong> automatically attached. Opening in Outlook—simply review and click <strong>Send</strong>!`
+                    }
                 </p>
             </div>
             <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none">&times;</button>
@@ -1857,10 +1866,10 @@
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 400);
             }
-        }, 12000);
+        }, 10000);
     }
 
-    function executeEmailAppDispatch(clientType = 'default') {
+    function executeEmailAppDispatch(clientType = 'outlook') {
         const emailInput = document.getElementById('email-modal-recipient');
         const email = emailInput ? emailInput.value.trim() : '';
 
@@ -1887,11 +1896,7 @@
 
         const filename = `Quotation_${emailQuotationData.quoteNo}_${getCustomerSafeName()}.pdf`;
 
-        // 1. Trigger automatic download of the exact chosen Quotation PDF
-        downloadEmailModalPdf();
-
-        // 2. Build formatted email message body
-        const publicPdfUrl = `${window.location.origin}/quotations/${emailQuotationData.id}/public-pdf/${format}?pricing_mode=${encodeURIComponent(pricingMode)}`;
+        // Build clean email message body (Strictly proposal details, NO download links!)
         const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         const formatName = emailQuotationData.formatNames[format] || `Format ${format}`;
 
@@ -1907,32 +1912,44 @@
             body += `Special Note from Engineering Team:\n${customNote}\n\n`;
         }
 
-        body += `==============================================\n`
-              + `📄 View & Download Complete PDF Proposal:\n${publicPdfUrl}\n`
-              + `==============================================\n\n`
-              + `The signed PDF document has been automatically attached for your review and records.\n\n`
+        body += `----------------------------------------------\n`
+              + `📎 The official signed PDF proposal document (${filename}) has been automatically attached to this email.\n`
+              + `----------------------------------------------\n\n`
               + `Please feel free to reply directly to this email or call us if you have any questions.\n\n`
               + `Best Regards,\n`
               + `Engineering & Sales Team\n`
               + `Precision IT Systems`;
 
-        // 3. Open in System Email App or Webmail
+        // 3. Dispatch to Outlook (.eml with embedded PDF attachment) or Webmail
         if (clientType === 'gmail') {
+            downloadEmailModalPdf();
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(gmailUrl, '_blank');
         } else {
-            // Default System Email App (Outlook / Windows Mail)
-            const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoUrl;
+            // Outlook: Trigger RFC-822 .eml draft file with embedded Base64 PDF attachment!
+            // When opened by Windows, Outlook automatically launches in compose mode with PDF already attached!
+            const emlUrl = `/quotations/${emailQuotationData.id}/download-eml?`
+                + `email=${encodeURIComponent(email)}`
+                + `&subject=${encodeURIComponent(subject)}`
+                + `&pdf_format=${encodeURIComponent(format)}`
+                + `&pricing_mode=${encodeURIComponent(pricingMode)}`
+                + `&custom_note=${encodeURIComponent(customNote)}`;
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = emlUrl;
+            downloadLink.download = `Draft_${filename.replace(/\.pdf$/i, '')}.eml`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            setTimeout(() => downloadLink.remove(), 600);
         }
 
-        // 4. Copy email draft text to clipboard
+        // 4. Copy clean proposal draft text to clipboard
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(body).catch(() => {});
         }
 
         // 5. Show toast guide
-        showEmailAppGuideToast(email, filename);
+        showEmailAppGuideToast(email, filename, clientType);
 
         // 6. Background sync to CRM
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -1946,6 +1963,12 @@
         fetch(`/quotations/${emailQuotationData.id}/send-email`, {
             method: 'POST',
             headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        }).catch(() => {});
                 'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'

@@ -178,14 +178,12 @@
                                         <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit
                                         </th>
-                                        @if(!$isTechnician)
                                         <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit Price
                                         </th>
                                         <th class="px-3 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Total
                                         </th>
-                                        @endif
                                         <th class="px-3 py-3"></th>
                                     </tr>
                                 </thead>
@@ -249,7 +247,6 @@
                                                 </select>
                                             </td>
 
-                                            @if(!$isTechnician)
                                             <td class="p-2 align-top">
                                                 <input aria-label="Unit price" type="number"
                                                        name="items[{{ $index }}][unit_price]"
@@ -257,15 +254,19 @@
                                                        min="0"
                                                        step="0.01"
                                                        required
+                                                       autocomplete="off"
                                                        class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
+                                                
+                                                @error("items.$index.unit_price")
+                                                    <p class="mt-1 text-[11px] font-bold text-rose-500 dark:text-rose-400 leading-tight">{{ $message }}</p>
+                                                @enderror
+
+                                                <div class="item-admin-price-hint mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium"></div>
                                             </td>
 
                                             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                                                 ₹0.00
                                             </td>
-                                            @else
-                                                <input type="hidden" class="unit-price" name="items[{{ $index }}][unit_price]" value="{{ $item['unit_price'] ?? 0 }}">
-                                            @endif
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
@@ -298,7 +299,6 @@
                             @enderror
                         </div>
 
-                        @if(!$isTechnician)
                         <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/80 p-5 space-y-3">
                             <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
                                 <span>Subtotal</span>
@@ -314,11 +314,17 @@
                                        min="0"
                                        step="0.01"
                                        value="{{ old('discount', 0) }}"
-                                       class="w-32 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-right text-xs px-2.5 py-1.5 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
+                                       @if($isTechnician) readonly title="{{ __('Admin Pricing Rule: Discounts can only be applied by office Admin') }}" @endif
+                                       class="w-32 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-right text-xs px-2.5 py-1.5 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono {{ $isTechnician ? 'opacity-70 cursor-not-allowed bg-slate-100 dark:bg-slate-800' : '' }}">
                             </div>
+                            @if($isTechnician)
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 text-right italic">
+                                    {{ __('Admin Pricing Rule: Discounts can only be applied by office Admin.') }}
+                                </p>
+                            @endif
 
                             <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
-                                <span>GST Amount</span>
+                                <span>GST Amount (18%)</span>
                                 <span id="tax-display" class="font-bold text-slate-900 dark:text-slate-100 font-mono text-sm">₹0.00</span>
                             </div>
 
@@ -326,24 +332,15 @@
                                 <span>Grand Total</span>
                                 <span id="grand-total-display" class="text-blue-600 dark:text-amber-400 font-mono text-xl font-black">₹0.00</span>
                             </div>
-                        </div>
-                        @else
-                        <div class="rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/70 p-5 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200">{{ __('Automated Office Review & Pricing') }}</h4>
-                                    <p class="text-[11px] text-blue-800/80 dark:text-blue-300/80 mt-0.5">{{ __('Product costs and quotation totals are calculated & reviewed by office management') }}</p>
-                                </div>
+
+                            @if($isTechnician)
+                            <div class="rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/70 p-3 mt-3">
+                                <p class="text-[11px] font-semibold text-amber-900 dark:text-amber-300 leading-snug">
+                                    <strong>Admin Price Protection Rule Active:</strong> Product rates are automatically scheduled from the Admin catalog. You can quote the same or a higher rate, but cannot reduce unit prices below Admin scheduled rates.
+                                </p>
                             </div>
-                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed border-t border-blue-100 dark:border-blue-900/50 pt-2.5">
-                                {{ __('As an on-site technician, please select the items, equipment specifications, and quantities required. Once submitted, your quotation will be immediately sent to Admin & Office staff for price verification and approval.') }}
-                            </p>
-                            <input type="hidden" id="discount" name="discount" value="0">
+                            @endif
                         </div>
-                        @endif
                     </div>
 
                     <div class="form-actions mt-8 flex items-center justify-end gap-3 flex-wrap">
@@ -415,7 +412,6 @@
                 </select>
             </td>
 
-            @if(!$isTechnician)
             <td class="p-2 align-top">
                 <input aria-label="Unit price" type="number"
                        name="items[__INDEX__][unit_price]"
@@ -423,15 +419,14 @@
                        min="0"
                        step="0.01"
                        required
+                       autocomplete="off"
                        class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
+                <div class="item-admin-price-hint mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium"></div>
             </td>
 
             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                 ₹0.00
             </td>
-            @else
-                <input type="hidden" class="unit-price" name="items[__INDEX__][unit_price]" value="0">
-            @endif
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
@@ -534,11 +529,10 @@
         }
 
         function calculateTotals() {
-            if (isTechnician) return;
             let subtotal = 0;
 
             document.querySelectorAll('.item-row').forEach((row) => {
-                const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+                const quantity = parseFloat(row.querySelector('.quantity')?.value) || 0;
                 const unitPrice = parseFloat(row.querySelector('.unit-price')?.value) || 0;
                 const lineTotal = quantity * unitPrice;
 
@@ -559,6 +553,48 @@
             if (taxDisplay) taxDisplay.textContent = money(taxAmount);
             const gtDisplay = document.getElementById('grand-total-display');
             if (gtDisplay) gtDisplay.textContent = money(grandTotal);
+        }
+
+        function updateRowAdminPriceHint(row, adminPrice) {
+            const hintEl = row.querySelector('.item-admin-price-hint');
+            if (!hintEl) return;
+            const price = parseFloat(adminPrice) || 0;
+            if (price > 0 && isTechnician) {
+                hintEl.innerHTML = `<span class="inline-flex items-center gap-1 font-semibold text-amber-700 dark:text-amber-400">🛡️ Admin Min: <strong>${money(price)}</strong> (Cannot reduce)</span>`;
+            } else if (price > 0) {
+                hintEl.innerHTML = `<span>Admin Base: ${money(price)}</span>`;
+            } else {
+                hintEl.innerHTML = '';
+            }
+        }
+
+        function validateRowUnitPrice(row) {
+            const unitPriceInput = row.querySelector('.unit-price');
+            const hintEl = row.querySelector('.item-admin-price-hint');
+            if (!unitPriceInput) return true;
+
+            const adminPrice = parseFloat(unitPriceInput.dataset.adminPrice) || 0;
+            const enteredPrice = parseFloat(unitPriceInput.value) || 0;
+
+            if (isTechnician && adminPrice > 0 && enteredPrice < (adminPrice - 0.001)) {
+                unitPriceInput.classList.add('border-rose-500', 'bg-rose-50/60', 'text-rose-700');
+                unitPriceInput.classList.remove('border-slate-300', 'dark:border-slate-700');
+                if (hintEl) {
+                    hintEl.innerHTML = `<span class="text-rose-600 dark:text-rose-400 font-bold">⚠️ Min price is ${money(adminPrice)}. Cannot quote below Admin schedule!</span>`;
+                }
+                return false;
+            } else {
+                unitPriceInput.classList.remove('border-rose-500', 'bg-rose-50/60', 'text-rose-700');
+                unitPriceInput.classList.add('border-slate-300', 'dark:border-slate-700');
+                if (hintEl && adminPrice > 0) {
+                    if (enteredPrice > (adminPrice + 0.001)) {
+                        hintEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✓ Above Admin rate (${money(adminPrice)})</span>`;
+                    } else {
+                        updateRowAdminPriceHint(row, adminPrice);
+                    }
+                }
+                return true;
+            }
         }
 
         const productDropdown = document.getElementById('quotation-product-dropdown');
@@ -631,12 +667,19 @@
             row.querySelector('.item-unit').value = product.unit;
             
             const unitPriceInput = row.querySelector('.unit-price');
+            const minPrice = parseFloat(product.unit_price) || 0;
             if (unitPriceInput) {
-                unitPriceInput.value = isTechnician ? 0 : (product.unit_price || 0);
+                unitPriceInput.value = minPrice;
+                unitPriceInput.dataset.adminPrice = minPrice;
+                if (isTechnician && minPrice > 0) {
+                    unitPriceInput.min = minPrice;
+                }
             }
 
             hideAllProductResults();
             updateRowSupplierHint(row, product);
+            updateRowAdminPriceHint(row, minPrice);
+            validateRowUnitPrice(row);
             calculateTotals();
 
             const quantityInput = row.querySelector('.quantity');
@@ -727,11 +770,12 @@
                             ` : ''}
                             ${catSuppliersHtml}
                         </div>
-                        ${!isTechnician && product.unit_price ? `
+                        ${product.unit_price ? `
                         <div class="shrink-0 text-right">
                             <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50 shadow-2xs">
                                 ${money(product.unit_price)}
                             </span>
+                            ${isTechnician ? `<span class="block text-[9px] text-amber-600 dark:text-amber-400 font-bold mt-0.5">Admin Min Rate</span>` : ''}
                         </div>
                         ` : ''}
                     `;
@@ -783,6 +827,14 @@
             });
 
             itemNameInput.addEventListener('blur', () => {
+                if (!productIdInput.value && currentProducts && currentProducts.length > 0) {
+                    const typedText = itemNameInput.value.trim().toLowerCase();
+                    const exactMatch = currentProducts.find(p => p.name.trim().toLowerCase() === typedText)
+                        || (currentProducts.length === 1 && currentProducts[0].name.toLowerCase().includes(typedText) ? currentProducts[0] : null);
+                    if (exactMatch) {
+                        selectProduct(row, exactMatch);
+                    }
+                }
                 setTimeout(() => {
                     hideAllProductResults();
                 }, 200);
@@ -800,9 +852,10 @@
                     highlightedIndex = (highlightedIndex - 1 + currentProducts.length) % currentProducts.length;
                     updateHighlight();
                 } else if (e.key === 'Enter') {
-                    if (highlightedIndex >= 0 && highlightedIndex < currentProducts.length) {
-                        e.preventDefault();
-                        selectProduct(row, currentProducts[highlightedIndex]);
+                    e.preventDefault();
+                    const targetIdx = highlightedIndex >= 0 ? highlightedIndex : 0;
+                    if (targetIdx >= 0 && targetIdx < currentProducts.length) {
+                        selectProduct(row, currentProducts[targetIdx]);
                     }
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
@@ -811,7 +864,14 @@
             });
 
             quantityInput.addEventListener('input', calculateTotals);
-            unitPriceInput.addEventListener('input', calculateTotals);
+            unitPriceInput.addEventListener('input', () => {
+                validateRowUnitPrice(row);
+                calculateTotals();
+            });
+            unitPriceInput.addEventListener('change', () => {
+                validateRowUnitPrice(row);
+                calculateTotals();
+            });
 
             removeButton.addEventListener('click', () => {
                 const rows = document.querySelectorAll('.item-row');
@@ -872,7 +932,44 @@
         document.querySelectorAll('.item-row').forEach((row) => {
             bindRowEvents(row);
             updateRowSupplierHint(row);
+            const unitPriceInput = row.querySelector('.unit-price');
+            if (unitPriceInput && parseFloat(unitPriceInput.value) > 0) {
+                unitPriceInput.dataset.adminPrice = unitPriceInput.value;
+                updateRowAdminPriceHint(row, unitPriceInput.value);
+            }
         });
+
+        // Form submission safety guard for technicians
+        const quotationForm = document.querySelector('form');
+        if (quotationForm && isTechnician) {
+            quotationForm.addEventListener('submit', (e) => {
+                let hasViolation = false;
+                let firstViolatingRow = null;
+
+                document.querySelectorAll('.item-row').forEach((row) => {
+                    if (!validateRowUnitPrice(row)) {
+                        hasViolation = true;
+                        if (!firstViolatingRow) firstViolatingRow = row;
+                    }
+                });
+
+                if (hasViolation) {
+                    e.preventDefault();
+                    if (firstViolatingRow) {
+                        const input = firstViolatingRow.querySelector('.unit-price');
+                        if (input) {
+                            input.focus();
+                            input.select();
+                        }
+                    }
+                    if (typeof crmAlert === 'function') {
+                        crmAlert('Cannot submit quotation: One or more products have a price lower than the Admin scheduled price. You can only quote the same or a higher price.');
+                    } else {
+                        alert('Cannot submit quotation: One or more products have a price lower than the Admin scheduled price. You can only quote the same or a higher price.');
+                    }
+                }
+            });
+        }
 
         // Listen for products created on-the-fly from Quick Add Product modal
         window.addEventListener('product-created-in-catalog', (e) => {

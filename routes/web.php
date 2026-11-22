@@ -513,11 +513,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Quotations Read-Only
         Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
         Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+        Route::get('/quotations/{quotation}/procurement-check', [QuotationController::class, 'procurementCheck'])->name('quotations.procurement-check');
+        Route::post('/quotations/{quotation}/procurement-po', [QuotationController::class, 'generatePoFromShortage'])->name('quotations.procurement-po');
         Route::get('/quotations/{quotation}/preview/{format?}', [QuotationController::class, 'previewPage'])->name('quotations.preview');
         Route::get('/quotations/{quotation}/send-whatsapp', [QuotationController::class, 'sendWhatsApp'])->name('quotations.send-whatsapp');
         Route::post('/quotations/{quotation}/send-whatsapp-document', [QuotationController::class, 'sendWhatsAppDocument'])->name('quotations.send-whatsapp-document');
         Route::get('/quotations/{quotation}/pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf');
         Route::get('/quotations/{quotation}/download-pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.download-pdf');
+        Route::get('/quotations/{quotation}/download-eml', [QuotationController::class, 'downloadEml'])->name('quotations.download-eml');
         Route::get('/quotations/{quotation}/vcard', [QuotationController::class, 'downloadVcard'])->name('quotations.vcard');
 
         // Invoices & Payments Write

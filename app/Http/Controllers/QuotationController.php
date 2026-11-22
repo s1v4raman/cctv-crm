@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\GstHelper;
 use App\Http\Requests\StoreQuotationRequest;
+use App\Models\GatewaySetting;
 use App\Models\Lead;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
+use App\Models\Supplier;
+use App\Services\DocumentSequenceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
@@ -40,17 +46,27 @@ class QuotationController extends Controller
         $quotation = DB::transaction(function () use ($data, $lead, $isTech) {
             $subtotal = 0;
 
-            // Fetch catalog product prices if technician submitted items without price
+            // Fetch catalog product prices if technician or employee submitted items without price or missing product_id
             $processedItems = [];
             foreach ($data['items'] as $item) {
                 $qty = (float) $item['quantity'];
                 $price = isset($item['unit_price']) && is_numeric($item['unit_price']) ? (float) $item['unit_price'] : 0;
                 
-                if ($price <= 0 && !empty($item['product_id'])) {
+                $catalogProduct = null;
+                if (!empty($item['product_id'])) {
                     $catalogProduct = \App\Models\Product::find($item['product_id']);
-                    if ($catalogProduct && $catalogProduct->unit_price) {
-                        $price = (float) $catalogProduct->unit_price;
+                }
+                if (!$catalogProduct && !empty($item['item_name'])) {
+                    $catalogProduct = \App\Models\Product::where('name', trim($item['item_name']))
+                        ->orWhere('sku', trim($item['item_name']))
+                        ->first();
+                    if ($catalogProduct) {
+                        $item['product_id'] = $catalogProduct->id;
                     }
+                }
+
+                if ($price <= 0 && $catalogProduct && (float) $catalogProduct->unit_price > 0) {
+                    $price = (float) $catalogProduct->unit_price;
                 }
                 $item['unit_price'] = $price;
                 $lineTotal = $qty * $price;
@@ -116,7 +132,7 @@ class QuotationController extends Controller
                 'from_status' => null,
                 'to_status' => $status,
                 'notes' => $isTech
-                    ? 'Field technician ' . Auth::user()->name . ' created quotation with ' . count($processedItems) . ' items. Awaiting Admin pricing & product review.'
+                    ? 'Field technician ' . Auth::user()->name . ' created quotation with ' . count($processedItems) . ' items with on-site pricing (Grand Total: ' . \App\Support\Inr::money($grandTotal) . '). Awaiting Admin review.'
                     : 'Quotation created.',
             ]);
 
@@ -129,7 +145,7 @@ class QuotationController extends Controller
 
             return redirect()
                 ->route('technician.dashboard')
-                ->with('status', "Quotation #{$quotation->quotation_no} submitted successfully! It has been forwarded to Admin & Employee teams for pricing and product review. Once approved, you can share it directly with the client.");
+                ->with('status', "Quotation #{$quotation->quotation_no} submitted successfully! On-site pricing recorded (Grand Total: " . \App\Support\Inr::money($quotation->total) . "). Forwarded to Admin for review.");
         }
 
         return redirect()
@@ -197,6 +213,142 @@ class QuotationController extends Controller
         $filename = 'Quotation_' . $quotation->quotation_no . ($safeCustomer ? '_' . $safeCustomer : '') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Generate and stream a standard RFC-822 (.eml) draft file with embedded Base64 PDF attachment.
+     * When opened in Windows, Outlook immediately opens the message in Compose mode with the PDF attached!
+     */
+    public function downloadEml(Request $request, Quotation $quotation)
+    {
+        if (Auth::user()?->isTechnician() && $quotation->status === 'pending_approval') {
+            return redirect()
+                ->route('quotations.show', $quotation)
+                ->with('error', 'Admin review & approval is required before downloading or sharing this quotation.');
+        }
+
+        $quotation->loadMissing(['lead', 'items.product']);
+
+        $format = $request->query('pdf_format', $quotation->pdf_format ?? '1');
+        if (!in_array((string) $format, ['1', '2', '3', '4'])) {
+            $format = '1';
+        }
+
+        $pricingMode = $request->query('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (!in_array((string) $pricingMode, ['itemized', 'total_only'])) {
+            $pricingMode = 'itemized';
+        }
+
+        $quotation->pricing_mode = $pricingMode;
+
+        // Compile Quotation PDF
+        $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
+        $pdfContent = $pdf->output();
+
+        $recipientEmail = trim((string) $request->query('email', $quotation->lead?->email ?? ''));
+        $customerName   = $quotation->lead?->customer_name ?? 'Customer';
+        $subject        = trim((string) $request->query('subject', "Official Quotation #{$quotation->quotation_no} - CCTV Installation & Security Proposal"));
+        $customNote     = trim((string) $request->query('custom_note', ''));
+
+        $safeCustomer = \Illuminate\Support\Str::slug($customerName, '_');
+        $pdfFilename = "Quotation_{$quotation->quotation_no}" . ($safeCustomer ? "_{$safeCustomer}" : '') . ".pdf";
+        $emlFilename = "Draft_Quotation_{$quotation->quotation_no}" . ($safeCustomer ? "_{$safeCustomer}" : '') . ".eml";
+
+        $dateFormatted = $quotation->quotation_date ? $quotation->quotation_date->format('d M Y') : now()->format('d M Y');
+        $validUntilFormatted = $quotation->valid_until ? $quotation->valid_until->format('d M Y') : now()->addDays(15)->format('d M Y');
+        $pricingModeLabel = $pricingMode === 'total_only' ? 'Turnkey Total Cost' : 'Itemized with Product Costs';
+
+        // Plain text body - strictly proposal summary & notice that PDF is attached. NO download links!
+        $plainBody = "Dear {$customerName},\r\n\r\n"
+            . "Thank you for contacting Precision IT Systems regarding your CCTV surveillance and security requirements.\r\n"
+            . "Please find attached your official quotation proposal and pricing schedule:\r\n\r\n"
+            . "Quotation Number : #{$quotation->quotation_no}\r\n"
+            . "Date             : {$dateFormatted}\r\n"
+            . "Valid Until      : {$validUntilFormatted}\r\n"
+            . "Pricing Format   : {$pricingModeLabel}\r\n"
+            . "Grand Total      : " . \App\Support\Inr::money($quotation->total) . "\r\n\r\n";
+
+        if ($customNote !== '') {
+            $plainBody .= "Special Note from Engineering Team:\r\n{$customNote}\r\n\r\n";
+        }
+
+        $plainBody .= "The official signed PDF document ({$pdfFilename}) has been automatically attached to this email for your review and records.\r\n\r\n"
+            . "Please feel free to reply directly to this email or contact us if you have any questions.\r\n\r\n"
+            . "Best Regards,\r\n"
+            . "Engineering & Sales Team\r\n"
+            . "Precision IT Systems";
+
+        // HTML version
+        $htmlBody = "<div style=\"font-family: Arial, sans-serif; font-size: 14px; color: #1e293b; line-height: 1.6;\">"
+            . "<p>Dear <strong>" . e($customerName) . "</strong>,</p>"
+            . "<p>Thank you for contacting <strong>Precision IT Systems</strong> regarding your CCTV surveillance and security requirements. Please find attached your official quotation proposal and pricing schedule:</p>"
+            . "<table style=\"border-collapse: collapse; margin: 16px 0; font-size: 13px;\">"
+            . "<tr><td style=\"padding: 4px 12px 4px 0; color: #64748b;\">Quotation Number:</td><td><strong>#" . e($quotation->quotation_no) . "</strong></td></tr>"
+            . "<tr><td style=\"padding: 4px 12px 4px 0; color: #64748b;\">Date:</td><td>" . e($dateFormatted) . "</td></tr>"
+            . "<tr><td style=\"padding: 4px 12px 4px 0; color: #64748b;\">Valid Until:</td><td>" . e($validUntilFormatted) . "</td></tr>"
+            . "<tr><td style=\"padding: 4px 12px 4px 0; color: #64748b;\">Grand Total:</td><td><strong style=\"color: #2563eb; font-size: 15px;\">" . \App\Support\Inr::money($quotation->total) . "</strong></td></tr>"
+            . "</table>";
+
+        if ($customNote !== '') {
+            $htmlBody .= "<div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px 14px; margin: 16px 0;\">"
+                . "<strong>Special Note:</strong><br>" . nl2br(e($customNote)) . "</div>";
+        }
+
+        $htmlBody .= "<p style=\"background: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px 14px; border-radius: 6px; color: #065f46; font-weight: bold;\">"
+            . "📎 The signed proposal document (<strong>" . e($pdfFilename) . "</strong>) is attached to this email."
+            . "</p>"
+            . "<p>Please feel free to reply directly to this email or call us if you have any questions.</p>"
+            . "<p>Best Regards,<br><strong>Engineering &amp; Sales Team</strong><br>Precision IT Systems</p>"
+            . "</div>";
+
+        $boundaryMixed = '=_MixedBoundary_' . md5(uniqid((string) time(), true));
+        $boundaryAlt   = '=_AltBoundary_' . md5(uniqid((string) (time() + 1), true));
+
+        $fromAddress = config('mail.from.address', 'sales@cctvcrm.com');
+        $fromName    = config('mail.from.name', 'Precision IT Systems');
+
+        $eml = "From: =?UTF-8?B?" . base64_encode($fromName) . "?= <{$fromAddress}>\r\n";
+        if ($recipientEmail !== '') {
+            $eml .= "To: {$recipientEmail}\r\n";
+        }
+        $eml .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+        $eml .= "Date: " . date('r') . "\r\n";
+        $eml .= "MIME-Version: 1.0\r\n";
+        $eml .= "X-Unsent: 1\r\n"; // Informs Outlook / Windows Mail to open as an unsent draft in compose mode!
+        $eml .= "Content-Type: multipart/mixed; boundary=\"{$boundaryMixed}\"\r\n\r\n";
+
+        // Body section (multipart/alternative)
+        $eml .= "--{$boundaryMixed}\r\n";
+        $eml .= "Content-Type: multipart/alternative; boundary=\"{$boundaryAlt}\"\r\n\r\n";
+
+        // Plain text part
+        $eml .= "--{$boundaryAlt}\r\n";
+        $eml .= "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n";
+        $eml .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+        $eml .= $plainBody . "\r\n\r\n";
+
+        // HTML part
+        $eml .= "--{$boundaryAlt}\r\n";
+        $eml .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $eml .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+        $eml .= $htmlBody . "\r\n\r\n";
+        $eml .= "--{$boundaryAlt}--\r\n\r\n";
+
+        // Attachment part
+        $eml .= "--{$boundaryMixed}\r\n";
+        $eml .= "Content-Type: application/pdf; name=\"{$pdfFilename}\"\r\n";
+        $eml .= "Content-Disposition: attachment; filename=\"{$pdfFilename}\"\r\n";
+        $eml .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $eml .= chunk_split(base64_encode($pdfContent)) . "\r\n";
+        $eml .= "--{$boundaryMixed}--\r\n";
+
+        return response($eml, 200, [
+            'Content-Type'        => 'message/rfc822',
+            'Content-Disposition' => 'attachment; filename="' . $emlFilename . '"',
+            'Cache-Control'       => 'no-cache, no-store, must-revalidate',
+            'Pragma'              => 'no-cache',
+            'Expires'             => '0',
+        ]);
     }
 
     public function publicPdf(Request $request, Quotation $quotation, ?string $format = '1')
@@ -692,9 +844,236 @@ class QuotationController extends Controller
             ]);
         });
 
+        $quotation->load(['items.product', 'lead']);
+
+        // Check whether any quoted product has zero stock or insufficient stock (shortage)
+        $hasShortage = false;
+        foreach ($quotation->items as $item) {
+            $product = $item->product;
+            if ($product) {
+                $stock = (float) $product->stock_quantity;
+                $required = (float) $item->quantity;
+                if ($stock <= 0 || $stock < $required) {
+                    $hasShortage = true;
+                    break;
+                }
+            }
+        }
+
+        if ($hasShortage) {
+            return redirect()
+                ->route('quotations.procurement-check', $quotation)
+                ->with('status', '✓ Quotation accepted! Warehouse stock analysis detected zero or low stock for quoted items. Review deficit and purchase orders below.');
+        }
+
         return redirect()
             ->route('quotations.show', $quotation)
-            ->with('status', 'Quotation marked as accepted successfully.');
+            ->with('status', 'Quotation marked as accepted successfully. All quoted products are available in warehouse stock.');
+    }
+
+    /**
+     * Dedicated procurement shortage review page: displays ONLY low-stock and zero-stock
+     * products from this accepted quotation for analysis by Admins and Employees.
+     */
+    public function procurementCheck(Quotation $quotation): View|RedirectResponse
+    {
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Unauthorized. Only Office management and staff can view procurement deficit analysis.');
+        }
+
+        $quotation->load(['items.product', 'lead']);
+
+        $suppliers = Supplier::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        $shortageItems = [];
+        $totalEstimatedCost = 0.0;
+        $totalUnitsToOrder = 0;
+
+        foreach ($quotation->items as $item) {
+            $product = $item->product;
+            $stock = $product ? (float) $product->stock_quantity : 0.0;
+            $required = (float) $item->quantity;
+
+            $isZeroStock = ($stock <= 0);
+            $isLowStock = ($stock > 0 && $stock < $required);
+
+            // ONLY include products that have zero stock or low stock (insufficient to fulfill the quote)
+            if ($isZeroStock || $isLowStock) {
+                $deficit = max(0, $required - max(0, $stock));
+                if ($deficit <= 0) {
+                    $deficit = $required;
+                }
+
+                $unitCost = (float) ($product?->cost_price ?: ($product?->unit_price ?: (float) $item->unit_price));
+                $lineCost = round($deficit * $unitCost, 2);
+                $totalEstimatedCost += $lineCost;
+                $totalUnitsToOrder += $deficit;
+
+                // Match suggested supplier based on product category if available
+                $suggestedSupplierId = $suppliers->first()?->id;
+                if ($product && $product->category) {
+                    $matchingSupplier = $suppliers->first(function ($s) use ($product) {
+                        return is_array($s->categories)
+                            ? in_array($product->category, $s->categories)
+                            : str_contains((string) $s->categories, (string) $product->category);
+                    });
+                    if ($matchingSupplier) {
+                        $suggestedSupplierId = $matchingSupplier->id;
+                    }
+                }
+
+                $shortageItems[] = [
+                    'item_id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'item_name' => $item->item_name,
+                    'sku' => $product?->sku ?? 'CUSTOM',
+                    'category' => $product?->category ?? 'General Hardware',
+                    'unit' => $item->unit ?: 'Nos',
+                    'quoted_quantity' => $required,
+                    'stock_on_hand' => $stock,
+                    'is_zero_stock' => $isZeroStock,
+                    'is_low_stock' => $isLowStock,
+                    'order_quantity' => $deficit,
+                    'unit_cost' => $unitCost,
+                    'tax_rate' => (float) ($product?->tax_rate ?: 18.0),
+                    'total_cost' => $lineCost,
+                    'suggested_supplier_id' => $suggestedSupplierId,
+                ];
+            }
+        }
+
+        return view('quotations.procurement_shortage', compact(
+            'quotation',
+            'shortageItems',
+            'suppliers',
+            'totalEstimatedCost',
+            'totalUnitsToOrder'
+        ));
+    }
+
+    /**
+     * Generate Purchase Order(s) from analyzed quotation shortage items. Admin only.
+     */
+    public function generatePoFromShortage(Request $request, Quotation $quotation): RedirectResponse
+    {
+        // Only Admin can view and purchase the orders
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only Administrators can generate and execute purchase orders.');
+        }
+
+        $validated = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.item_id' => ['required', 'exists:quotation_items,id'],
+            'items.*.product_id' => ['nullable', 'exists:products,id'],
+            'items.*.supplier_id' => ['required', 'exists:suppliers,id'],
+            'items.*.quantity' => ['required', 'numeric', 'min:1'],
+            'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
+            'items.*.tax_rate' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'expected_delivery_date' => ['nullable', 'date'],
+        ]);
+
+        $settings = GatewaySetting::first();
+        $companyStateCode = $settings?->company_state_code ?: '33';
+        $seqService = app(DocumentSequenceService::class);
+
+        // Group by supplier
+        $grouped = [];
+        foreach ($validated['items'] as $itemData) {
+            $grouped[$itemData['supplier_id']][] = $itemData;
+        }
+
+        $createdPOs = [];
+
+        DB::transaction(function () use ($grouped, $quotation, $validated, $companyStateCode, $seqService, &$createdPOs) {
+            foreach ($grouped as $supplierId => $items) {
+                $supplier = Supplier::findOrFail($supplierId);
+                $vendorStateCode = $supplier->gst_number ? GstHelper::extractStateCode($supplier->gst_number) : null;
+                $poNumber = $seqService->nextPurchaseOrderNumber();
+
+                $subtotal = 0.0;
+                $cgstTotal = 0.0;
+                $sgstTotal = 0.0;
+                $igstTotal = 0.0;
+
+                foreach ($items as $it) {
+                    $qty = (int) $it['quantity'];
+                    $cost = (float) $it['unit_cost'];
+                    $taxRate = (float) ($it['tax_rate'] ?? 18.0);
+                    $lineSubtotal = round($qty * $cost, 2);
+                    $subtotal += $lineSubtotal;
+
+                    $taxSplit = GstHelper::calculateTaxSplit($lineSubtotal, $taxRate, $vendorStateCode, $companyStateCode);
+                    $cgstTotal += $taxSplit['cgst_amount'];
+                    $sgstTotal += $taxSplit['sgst_amount'];
+                    $igstTotal += $taxSplit['igst_amount'];
+                }
+
+                $taxAmount = round($cgstTotal + $sgstTotal + $igstTotal, 2);
+                $grandTotal = round($subtotal + $taxAmount, 2);
+
+                $po = PurchaseOrder::create([
+                    'supplier_id' => $supplierId,
+                    'project_id' => null,
+                    'po_number' => $poNumber,
+                    'order_date' => now()->toDateString(),
+                    'expected_delivery_date' => $validated['expected_delivery_date'] ?? now()->addDays(5)->toDateString(),
+                    'status' => PurchaseOrder::STATUS_DRAFT,
+                    'subtotal' => $subtotal,
+                    'tax_percent' => 18.00,
+                    'tax_amount' => $taxAmount,
+                    'cgst_amount' => $cgstTotal,
+                    'sgst_amount' => $sgstTotal,
+                    'igst_amount' => $igstTotal,
+                    'total' => $grandTotal,
+                    'payment_status' => 'unpaid',
+                    'amount_paid' => 0.00,
+                    'notes' => "Quotation #{$quotation->quotation_no} Shortage Order for {$quotation->lead->customer_name}. " . ($validated['notes'] ?? ''),
+                    'created_by' => Auth::id(),
+                ]);
+
+                foreach ($items as $it) {
+                    $qItem = QuotationItem::with('product')->findOrFail($it['item_id']);
+                    $qty = (int) $it['quantity'];
+                    $cost = (float) $it['unit_cost'];
+                    $taxRate = (float) ($it['tax_rate'] ?? 18.0);
+                    $lineSubtotal = round($qty * $cost, 2);
+                    $taxSplit = GstHelper::calculateTaxSplit($lineSubtotal, $taxRate, $vendorStateCode, $companyStateCode);
+
+                    PurchaseOrderItem::create([
+                        'purchase_order_id' => $po->id,
+                        'product_id' => $it['product_id'] ?? $qItem->product_id,
+                        'item_name' => $qItem->item_name,
+                        'sku' => $qItem->product?->sku ?? 'CUSTOM',
+                        'unit_cost' => $cost,
+                        'quantity_ordered' => $qty,
+                        'quantity_received' => 0,
+                        'total_cost' => $lineSubtotal,
+                        'tax_rate' => $taxRate,
+                        'cgst_rate' => $taxSplit['cgst_rate'],
+                        'cgst_amount' => $taxSplit['cgst_amount'],
+                        'sgst_rate' => $taxSplit['sgst_rate'],
+                        'sgst_amount' => $taxSplit['sgst_amount'],
+                        'igst_rate' => $taxSplit['igst_rate'],
+                        'igst_amount' => $taxSplit['igst_amount'],
+                    ]);
+                }
+
+                $createdPOs[] = $po;
+            }
+        });
+
+        $firstPo = $createdPOs[0] ?? null;
+        if ($firstPo) {
+            return redirect()
+                ->route('purchase-orders.show', $firstPo)
+                ->with('status', "✓ Purchase Order {$firstPo->po_number} generated for quoted stock shortage! You can now analyze and download the PO PDF immediately for purchasing.")
+                ->with('show_pdf_ready', true);
+        }
+
+        return redirect()->route('purchase-orders.index')->with('status', 'Purchase order created.');
     }
 
     public function markRejected(Request $request, Quotation $quotation): RedirectResponse 
@@ -784,7 +1163,7 @@ class QuotationController extends Controller
         }
 
         $quotation->load([
-            'items',
+            'items.product',
             'lead',
         ]);
 
@@ -822,7 +1201,24 @@ class QuotationController extends Controller
             $quotation->items()->delete();
 
             foreach ($validated['items'] as $item) {
-                $lineTotal = (float) $item['quantity'] * (float) ($item['unit_price'] ?? 0);
+                $price = isset($item['unit_price']) && is_numeric($item['unit_price']) ? (float) $item['unit_price'] : 0;
+                $catalogProduct = null;
+                if (!empty($item['product_id'])) {
+                    $catalogProduct = \App\Models\Product::find($item['product_id']);
+                }
+                if (!$catalogProduct && !empty($item['item_name'])) {
+                    $catalogProduct = \App\Models\Product::where('name', trim($item['item_name']))
+                        ->orWhere('sku', trim($item['item_name']))
+                        ->first();
+                    if ($catalogProduct) {
+                        $item['product_id'] = $catalogProduct->id;
+                    }
+                }
+
+                if ($price <= 0 && $catalogProduct && (float) $catalogProduct->unit_price > 0) {
+                    $price = (float) $catalogProduct->unit_price;
+                }
+                $lineTotal = (float) $item['quantity'] * $price;
 
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
@@ -830,7 +1226,7 @@ class QuotationController extends Controller
                     'description' => $item['description'] ?? null,
                     'quantity' => (float) $item['quantity'],
                     'unit' => $item['unit'],
-                    'unit_price' => (float) ($item['unit_price'] ?? 0),
+                    'unit_price' => $price,
                     'total' => $lineTotal,
                 ]);
             }

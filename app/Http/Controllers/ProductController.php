@@ -338,15 +338,6 @@ class ProductController extends Controller
                 'default_warranty_months',
             ]);
 
-        $user = $request->user() ?: Auth::user();
-        if ($user?->isTechnician() || $user?->isWorker()) {
-            $products->makeHidden(['unit_price', 'cost_price']);
-            $products->each(function ($p) {
-                $p->unit_price = 0;
-                $p->cost_price = 0;
-            });
-        }
-
         return response()->json($products);
     }
 

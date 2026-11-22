@@ -22,8 +22,6 @@
         .attachment-notice { background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
         .attachment-icon { font-size: 20px; }
         .attachment-text { font-size: 12px; font-weight: 600; color: #065f46; }
-        .cta-center { text-align: center; margin: 26px 0; }
-        .btn-portal { display: inline-block; background-color: #4f46e5; color: #ffffff !important; padding: 13px 28px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3); }
         .footer { background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 24px; text-align: center; font-size: 11px; color: #94a3b8; line-height: 1.5; }
         .footer strong { color: #475569; }
     </style>
@@ -113,19 +111,8 @@
                 <div class="attachment-notice">
                     <div class="attachment-icon">📎</div>
                     <div class="attachment-text">
-                        The official PDF proposal document (<strong>Quotation-{{ $quotation->quotation_no }}.pdf</strong>) is attached to this email for your records.
+                        The official PDF proposal document (<strong>Quotation-{{ $quotation->quotation_no }}.pdf</strong>) is attached directly to this email for your review and records.
                     </div>
-                </div>
-
-                {{-- Action Button --}}
-                <div class="cta-center">
-                    <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" class="btn-portal" target="_blank">
-                        ✓ View &amp; Download Proposal PDF
-                    </a>
-                </div>
-
-                <div style="font-size: 12px; color: #64748b; text-align: center; margin-top: 15px;">
-                    Or download proposal directly: <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" style="color: #4f46e5; font-weight: 700;">Download PDF Proposal</a>
                 </div>
             </div>
 
