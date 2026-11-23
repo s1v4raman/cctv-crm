@@ -19,8 +19,9 @@ class EquipmentLookupController extends Controller
         $serial = trim((string) $request->input('serial', ''));
         $mac = trim((string) $request->input('mac', ''));
         $model = trim((string) $request->input('model', ''));
+        $ean = trim((string) $request->input('ean', ''));
 
-        // Handle composite or prefixed barcodes (e.g. "SN:12345,MAC:AA:BB:CC:DD:EE:FF")
+        // Handle composite or prefixed barcodes (e.g. "SN:12345,MAC:AA:BB:CC:DD:EE:FF,EAN:8901234567890")
         if ($serial !== '') {
             if (preg_match('/(?:S\/N|SN|SERIAL)[:\s=_-]*([A-Za-z0-9_-]+)/i', $serial, $snMatch)) {
                 $cleanedSerial = $snMatch[1];
@@ -32,6 +33,10 @@ class EquipmentLookupController extends Controller
                 $mac = $macMatch[1];
             }
 
+            if ($ean === '' && preg_match('/(?:EAN|UPC|BARCODE)[:\s=_-]*(\d{12,14})/i', $serial, $eanMatch)) {
+                $ean = $eanMatch[1];
+            }
+
             // If the serial input is actually a standalone MAC address, shift it to MAC
             if (preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $cleanedSerial)) {
                 $mac = strtoupper(str_replace('-', ':', $cleanedSerial));
@@ -39,6 +44,11 @@ class EquipmentLookupController extends Controller
             } elseif (preg_match('/^[0-9A-Fa-f]{12}$/', $cleanedSerial) && preg_match('/[A-Fa-f]/', $cleanedSerial)) {
                 $mac = strtoupper(implode(':', str_split($cleanedSerial, 2)));
                 $cleanedSerial = '';
+            } elseif (preg_match('/^\d{12,14}$/', $cleanedSerial)) {
+                // If serial looks like a 12-14 digit EAN/UPC barcode
+                if ($ean === '') {
+                    $ean = $cleanedSerial;
+                }
             }
 
             $serial = $cleanedSerial;
@@ -49,10 +59,10 @@ class EquipmentLookupController extends Controller
             $mac = strtoupper(str_replace('-', ':', $mac));
         }
 
-        if ($serial === '' && $mac === '' && $model === '') {
+        if ($serial === '' && $mac === '' && $model === '' && $ean === '') {
             return response()->json([
                 'found'   => false,
-                'message' => 'Please provide a serial number, MAC address, or model to search.',
+                'message' => 'Please provide a serial number, MAC address, EAN, or model to search.',
             ], 400);
         }
 
@@ -102,11 +112,18 @@ class EquipmentLookupController extends Controller
             ]);
         }
 
-        // If not found in installed equipment, search if this barcode matches a product SKU, Model No, or Name
+        // If not found in installed equipment, search if this barcode matches a product SKU, Model No, EAN, or Name
         $searchKey = $serial ?: $mac;
         $product = null;
 
-        if ($model !== '') {
+        if ($ean !== '') {
+            $product = Product::where('sku', $ean)
+                ->orWhere('model_no', $ean)
+                ->orWhere('name', 'like', "%{$ean}%")
+                ->first();
+        }
+
+        if (!$product && $model !== '') {
             $product = Product::where('model_no', $model)
                 ->orWhere('model_no', 'like', "%{$model}%")
                 ->orWhere('name', 'like', "%{$model}%")

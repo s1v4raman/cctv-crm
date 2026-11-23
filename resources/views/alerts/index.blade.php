@@ -29,7 +29,7 @@
             <div class="ld-views">
                 <span class="ld-chip">{{ $viewTitle }}</span>
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
-                    <button type="button" class="ld-icon-btn" title="Filter views" aria-label="Other views" :aria-expanded="menu === 'views'" @click="open('views')">
+                    <button type="button" class="ld-icon-btn btn-icon" title="Filter views" aria-label="Other views" :aria-expanded="menu === 'views'" @click="open('views')">
                         <svg class="icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu left-0" x-show="menu === 'views'" x-cloak>
@@ -96,7 +96,7 @@
 
                     {{-- More Actions menu --}}
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                        <button type="button" class="ld-outline" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
+                        <button type="button" class="ld-outline btn-icon" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>

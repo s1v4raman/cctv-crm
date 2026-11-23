@@ -66,11 +66,25 @@
                     </a>
                 @endif
 
-                {{-- Primary action: New Quote --}}
+                {{-- Primary action: New Quote & Add Project --}}
                 <a href="{{ route('quotations.create', $lead) }}" class="btn-primary text-xs inline-flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>New Quote</span>
                 </a>
+
+                @php
+                    $leadProject = $lead->projects()->latest()->first();
+                @endphp
+                @if($leadProject)
+                    <a href="{{ route('projects.show', $leadProject) }}" class="btn-primary text-xs inline-flex items-center gap-1.5 !bg-emerald-600 hover:!bg-emerald-700 !text-white" style="background-color: #059669 !important; color: #ffffff !important;">
+                        <svg class="w-3.5 h-3.5 !text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        <span style="color: #ffffff !important; font-weight: 700;">View Project #{{ $leadProject->project_code }} &rarr;</span>
+                    </a>
+                @elseif(auth()->user()->isOffice() || auth()->user()->isAdmin())
+                    <a href="{{ route('projects.create', ['lead_id' => $lead->id]) }}" class="btn-primary text-xs inline-flex items-center gap-1.5 !bg-blue-600 hover:!bg-blue-700 !text-white" style="background-color: #2563eb !important; color: #ffffff !important;">
+                        <span style="color: #ffffff !important; font-weight: 700;">+ Add Project</span>
+                    </a>
+                @endif
 
                 {{-- Danger action link --}}
                 @if(auth()->user()->isAdmin())
@@ -172,6 +186,8 @@
 
     <div class="pg-wrap py-6">
         <div class="pg-inner space-y-6">
+            {{-- Guided Workflow Pipeline: Direct Next Step Action Banner --}}
+            <x-workflow-stage-banner stage="lead" :model="$lead" />
 
             @if (session('status'))
                 <div class="p-3 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs">

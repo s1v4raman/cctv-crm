@@ -154,6 +154,11 @@ class Quotation extends Model
         return $this->installationJob();
     }
 
+    public function project(): ?Project
+    {
+        return $this->lead?->projects()->latest()->first();
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class);

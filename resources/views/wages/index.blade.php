@@ -68,7 +68,7 @@
             <div class="ld-views">
                 <span class="ld-chip">Payday {{ $paydaySunday->format('d M') }} ({{ $weekStart->format('d M') }} – {{ $paydaySunday->format('d M Y') }})</span>
                 <div class="relative" @click.outside="menu === 'weeks' && (menu = null)">
-                    <button type="button" class="ld-icon-btn" title="Change Pay Cycle" aria-label="Other pay periods" :aria-expanded="menu === 'weeks'" @click="open('weeks')">
+                    <button type="button" class="ld-icon-btn btn-icon" title="Change Pay Cycle" aria-label="Other pay periods" :aria-expanded="menu === 'weeks'" @click="open('weeks')">
                         <svg class="icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu left-0" x-show="menu === 'weeks'" x-cloak style="width: 320px; max-height: 380px; overflow-y: auto;">
@@ -117,18 +117,18 @@
                 <div class="flex items-center gap-2 ml-auto">
                     {{-- Dedicated Top Scroll Navigation Controls for All Workers --}}
                     <div class="inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 p-0.5 shadow-2xs" title="Scroll through worker records">
-                        <button type="button" @click="scrollUp()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Up (Previous Records)" aria-label="Scroll Up">
+                        <button type="button" @click="scrollUp()" class="btn-icon px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Up (Previous Records)" aria-label="Scroll Up">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                             <span>Scroll Up</span>
                         </button>
-                        <button type="button" @click="scrollDown()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Down (Next Records)" aria-label="Scroll Down">
+                        <button type="button" @click="scrollDown()" class="btn-icon px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Down (Next Records)" aria-label="Scroll Down">
                             <span>Scroll Down</span>
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </div>
 
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                        <button type="button" class="ld-outline" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
+                        <button type="button" class="ld-outline btn-icon" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>

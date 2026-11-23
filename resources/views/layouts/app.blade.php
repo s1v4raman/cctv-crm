@@ -652,15 +652,6 @@
                 border: 1px solid var(--input-border) !important;
             }
 
-            .crm-topbar #header-logout-btn {
-                background-color: var(--card-bg) !important;
-                border: 1px solid var(--card-border) !important;
-            }
-            html.dark .crm-topbar #header-logout-btn {
-                background-color: var(--table-header-bg) !important;
-                border: 1px solid var(--input-border) !important;
-            }
-
             /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
             .crm-user-avatar {
                 border-radius: 9999px !important;
@@ -1093,29 +1084,103 @@
                 flex-shrink: 0 !important;
             }
 
-            /* Universal Clean Buttons: Remove decorative icons inside buttons across all pages for all users */
-            button:not(.btn-icon):not(.btn-close):not(.allow-brand-icon):not(#header-theme-toggle-btn):not(#header-notification-btn):not(#header-logout-btn):not([aria-label*="close" i]):not([aria-label*="Close"]):not([aria-label*="clear" i]):not([aria-label*="Clear"]):not(.crm-toast__close):not(.pwa-close):not([class*="close"]):not([class*="clear"]) > svg,
-            a[class*="btn"]:not(.btn-icon):not(.allow-brand-icon):not([aria-label*="close" i]):not([aria-label*="clear" i]):not([class*="close"]):not([class*="clear"]) > svg,
-            .btn-primary svg,
-            .btn-secondary svg,
-            .btn-danger svg,
-            .btn-blue svg,
-            .btn-white svg,
-            .btn-amber svg,
-            .crm-btn-primary svg,
-            .crm-btn-secondary svg,
-            .btn-submit-primary svg,
-            .btn-cancel svg,
-            .btn-head-secondary svg {
+            /* Universal Clean Buttons: Remove decorative icons inside text buttons across all pages for all users while preserving action/icon buttons */
+            button:not(.btn-icon):not(.btn-close):not(.allow-brand-icon):not(#header-theme-toggle-btn):not(#header-notification-btn):not(#sidebar-logout-btn):not(.sidebar-logout-btn):not([aria-label*="log out" i]):not([aria-label*="logout" i]):not(#header-sidebar-toggle-btn):not([aria-label*="sidebar" i]):not([aria-label*="navigation" i]):not([aria-label*="close" i]):not([aria-label*="Close"]):not([aria-label*="clear" i]):not([aria-label*="Clear"]):not(.crm-toast__close):not(.pwa-close):not([class*="close"]):not([class*="clear"]):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.ld-view-switcher):not(.action-btn):not(.btn-action):not(.ld-page-arrow):not(.ld-row-actions *):not([aria-label*="action" i]):not([title*="action" i]):not([aria-label*="option" i]):not([title*="option" i]):not([aria-label*="scroll" i]):not([title*="scroll" i]):not([aria-label*="column" i]):not([title*="column" i]):not([aria-label*="view" i]):not([title*="view" i]):not([aria-label*="more" i]):not([title*="more" i]):not([aria-label*="sort" i]):not([title*="sort" i]):not([aria-label*="filter" i]):not([title*="filter" i]):not([aria-label*="edit" i]):not([title*="edit" i]):not([aria-label*="delete" i]):not([title*="delete" i]) > svg,
+            a[class*="btn"]:not(.btn-icon):not(.allow-brand-icon):not([aria-label*="close" i]):not([aria-label*="clear" i]):not([class*="close"]):not([class*="clear"]):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.ld-view-switcher):not(.action-btn):not(.btn-action):not(.ld-page-arrow):not([aria-label*="action" i]):not([title*="action" i]):not([aria-label*="option" i]):not([title*="option" i]):not([aria-label*="scroll" i]):not([title*="scroll" i]):not([aria-label*="column" i]):not([title*="column" i]):not([aria-label*="view" i]):not([title*="view" i]):not([aria-label*="more" i]):not([title*="more" i]):not([aria-label*="sort" i]):not([title*="sort" i]):not([aria-label*="filter" i]):not([title*="filter" i]):not([aria-label*="edit" i]):not([title*="edit" i]):not([aria-label*="delete" i]):not([title*="delete" i]) > svg,
+            .btn-primary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .btn-secondary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]):not([aria-label*="more" i]):not([title*="more" i]) svg,
+            .btn-danger:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]):not([aria-label*="delete" i]):not([title*="delete" i]) svg,
+            .btn-blue:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .btn-white:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .btn-amber:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .crm-btn-primary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .crm-btn-secondary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .btn-submit-primary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg,
+            .btn-cancel:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not(.ld-row-actions *):not([aria-label*="action" i]):not([title*="action" i]):not([aria-label*="delete" i]):not([title*="delete" i]) svg,
+            .btn-head-secondary:not(.btn-icon):not(.ld-outline):not(.ld-icon-btn):not(.ld-tool):not(.action-btn):not([aria-label*="action" i]):not([title*="action" i]) svg {
                 display: none !important;
             }
 
-            /* Explicit override to guarantee clear and close button icons always display */
+            /* Explicit override to guarantee action buttons, scroll controls, clear, close, theme, logout, and navigation icons always display */
             button.btn-icon > svg,
+            a.btn-icon > svg,
             button.btn-close > svg,
+            button#sidebar-logout-btn > svg,
+            button.sidebar-logout-btn > svg,
+            button[aria-label*="log out" i] > svg,
+            button[aria-label*="logout" i] > svg,
+            button#header-sidebar-toggle-btn > svg,
+            button[aria-label*="sidebar" i] > svg,
+            button[aria-label*="Toggle navigation" i] > svg,
             button[aria-label*="Clear" i] > svg,
             button[aria-label*="Close" i] > svg,
-            .crm-search-clear-btn svg {
+            .crm-search-clear-btn svg,
+            .ld-outline svg,
+            .ld-icon-btn svg,
+            .ld-tool svg,
+            .ld-view-switcher svg,
+            .ld-row-actions svg,
+            .ld-page-arrow svg,
+            .action-btn svg,
+            .btn-action svg,
+            button[aria-label*="action" i] svg,
+            button[aria-label*="actions" i] svg,
+            button[title*="action" i] svg,
+            button[title*="actions" i] svg,
+            button[aria-label*="option" i] svg,
+            button[aria-label*="options" i] svg,
+            button[title*="option" i] svg,
+            button[title*="options" i] svg,
+            button[aria-label*="scroll" i] svg,
+            button[title*="scroll" i] svg,
+            button[aria-label*="column" i] svg,
+            button[aria-label*="columns" i] svg,
+            button[title*="column" i] svg,
+            button[title*="columns" i] svg,
+            button[aria-label*="view" i] svg,
+            button[aria-label*="views" i] svg,
+            button[title*="view" i] svg,
+            button[title*="views" i] svg,
+            button[aria-label*="more" i] svg,
+            button[title*="more" i] svg,
+            button[aria-label*="sort" i] svg,
+            button[title*="sort" i] svg,
+            button[aria-label*="filter" i] svg,
+            button[title*="filter" i] svg,
+            button[aria-label*="edit" i] svg,
+            button[title*="edit" i] svg,
+            button[aria-label*="delete" i] svg,
+            button[title*="delete" i] svg,
+            a[aria-label*="action" i] svg,
+            a[aria-label*="actions" i] svg,
+            a[title*="action" i] svg,
+            a[title*="actions" i] svg,
+            a[aria-label*="edit" i] svg,
+            a[title*="edit" i] svg,
+            a[aria-label*="delete" i] svg,
+            a[title*="delete" i] svg {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            .ld-outline[aria-label*="action" i],
+            .ld-outline[title*="action" i],
+            .ld-outline[aria-label*="option" i],
+            .ld-outline[title*="option" i] {
+                width: 38px !important;
+                min-width: 38px !important;
+                padding: 0 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .ld-outline[aria-label*="action" i] svg,
+            .ld-outline[title*="action" i] svg,
+            .ld-outline[aria-label*="option" i] svg,
+            .ld-outline[title*="option" i] svg {
+                width: 16px !important;
+                height: 16px !important;
                 display: inline-block !important;
             }
         </style>
@@ -1412,7 +1477,7 @@
                             {{-- Mobile Hamburger Toggle --}}
                             <button @click="sidebarOpen = !sidebarOpen" 
                                     type="button"
-                                    class="lg:hidden inline-flex items-center justify-center p-1.5 rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                                    class="btn-icon lg:hidden inline-flex items-center justify-center p-1.5 rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
                                     aria-label="Toggle navigation menu">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
@@ -1421,13 +1486,14 @@
                             <button @click="window.crmSidebar.toggle()"
                                     type="button"
                                     id="header-sidebar-toggle-btn"
-                                    class="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-[6px] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                                    class="btn-icon hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-[6px] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 bg-white/50 dark:bg-slate-800/50"
                                     :title="sidebarCollapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'"
                                     :aria-expanded="(!sidebarCollapsed).toString()"
                                     aria-label="Toggle sidebar">
-                                <svg class="w-[18px] h-[18px] pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                    <rect width="18" height="18" x="3" y="3" rx="2"/>
-                                    <line stroke-linecap="round" x1="9" x2="9" y1="3" y2="21"/>
+                                <svg class="w-4 h-4 pointer-events-none transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect width="18" height="18" x="3" y="3" rx="3" stroke-width="1.8"/>
+                                    <line stroke-linecap="round" x1="9" x2="9" y1="3" y2="21" stroke-width="1.8"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" :d="sidebarCollapsed ? 'm13 9 3 3-3 3' : 'm16 9-3 3 3 3'"/>
                                 </svg>
                             </button>
 
@@ -1842,20 +1908,6 @@
                                     </form>
                                 </div>
                             </div>
-
-                            {{-- Dedicated Quick Logout Header Button (All Pages & All Users) --}}
-                            <form method="POST" action="{{ route('logout') }}" class="inline-flex items-center">
-                                @csrf
-                                <button type="submit"
-                                        id="header-logout-btn"
-                                        aria-label="{{ __('Log Out') }}"
-                                        title="{{ __('Log Out') }}"
-                                        class="h-9 w-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 hover:border-rose-200 dark:hover:border-rose-900 transition-all cursor-pointer select-none shadow-2xs shrink-0">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                    </svg>
-                                </button>
-                            </form>
                         </div>
 
                         @if(auth()->user()->isInternal())

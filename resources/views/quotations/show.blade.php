@@ -53,14 +53,27 @@
                         <span>{{ __('Awaiting Admin Price Approval (Sharing Locked)') }}</span>
                     </div>
                 @else
-                    {{-- Direct Preview Button: Navigates cleanly to dedicated preview page --}}
-                    <a href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?? '1']) }}" 
-                       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" 
-                       style="background-color: var(--crm-accent, #2563eb) !important; color: #ffffff !important;" 
-                       title="{{ __('Preview Quotation in Live Page') }}">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span style="color: #ffffff !important; font-weight: 700;">{{ __('Preview') }}</span>
-                    </a>
+                    @php
+                        $linkedProject = $quotation->project();
+                    @endphp
+
+                    {{-- Next Work Action: Convert to Project or View Existing Project --}}
+                    @if($linkedProject)
+                        <a href="{{ route('projects.show', $linkedProject) }}" 
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" 
+                           style="background-color: #059669 !important; color: #ffffff !important;" 
+                           title="Open Project Execution Workspace">
+                            <svg class="w-4 h-4 shrink-0 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                            <span style="color: #ffffff !important; font-weight: 700;">View Project #{{ $linkedProject->project_code }} &rarr;</span>
+                        </a>
+                    @else
+                        <a href="{{ route('projects.create', ['quotation_id' => $quotation->id, 'lead_id' => $quotation->lead_id]) }}" 
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" 
+                           style="background-color: #2563eb !important; color: #ffffff !important;" 
+                           title="Convert this quotation directly into a Project and begin execution">
+                            <span style="color: #ffffff !important; font-weight: 700;">+ Add Project</span>
+                        </a>
+                    @endif
 
                     <a href="{{ route('quotations.download-pdf', [$quotation, $quotation->pdf_format ?? '1']) }}" 
                        class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold" 
@@ -172,6 +185,8 @@
 
     <div class="pg-wrap py-6">
         <div class="pg-inner space-y-6">
+            {{-- Guided Workflow Pipeline: Direct Next Step Action Banner --}}
+            <x-workflow-stage-banner stage="quotation" :model="$quotation" />
             @php
                 $isTechnician = auth()->user()?->isTechnician();
                 $isTechnicianRequest = $quotation->status === 'pending_approval' && ($quotation->creator?->isTechnician() || ($quotation->created_by && $quotation->created_by !== auth()->id()));

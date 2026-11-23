@@ -242,23 +242,34 @@
                     const sInput = document.getElementById('serial_number_input');
                     const mInput = document.getElementById('mac_address_input');
 
-                    if (targetId === 'mac_address_input') {
-                        if (parsed && parsed.mac) {
-                            if (mInput) mInput.value = parsed.mac;
-                        }
-                        if (parsed && parsed.serial && sInput && !sInput.value) {
+                    // 1. Single Scan Multi-Data Population: Fill both S/N and MAC simultaneously
+                    if (parsed && parsed.serial) {
+                        if (sInput) {
                             sInput.value = parsed.serial;
+                            sInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            sInput.dispatchEvent(new Event('change', { bubbles: true }));
                         }
-                    } else {
-                        if (parsed && parsed.serial) {
-                            if (sInput) sInput.value = parsed.serial;
-                        }
-                        if (parsed && parsed.mac && mInput && !mInput.value) {
-                            mInput.value = parsed.mac;
+                    } else if (targetId === 'serial_number_input' && !parsed?.mac && rawCode) {
+                        if (sInput) {
+                            sInput.value = rawCode;
+                            sInput.dispatchEvent(new Event('input', { bubbles: true }));
                         }
                     }
 
-                    // Auto-fill Product Name / Equipment Name & Select Catalog Model
+                    if (parsed && parsed.mac) {
+                        if (mInput) {
+                            mInput.value = parsed.mac;
+                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            mInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    } else if (targetId === 'mac_address_input' && !parsed?.serial && rawCode) {
+                        if (mInput) {
+                            mInput.value = rawCode;
+                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }
+
+                    // 2. Auto-fill Product Name / Equipment Name & Select Catalog Model
                     if (lookupData) {
                         if (lookupData.equipment_name || lookupData.product_name) {
                             this.equipmentName = lookupData.equipment_name || lookupData.product_name;
@@ -272,14 +283,17 @@
                         }
                         if (lookupData.mac_address && mInput && !mInput.value) {
                             mInput.value = lookupData.mac_address;
+                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
                         }
                     }
 
-                    // Auto-match model from barcode/QR code if product is not yet selected
-                    if (parsed && parsed.model && (!this.selectedProduct || !this.selectedProduct.id)) {
+                    // 3. Auto-match model or EAN from barcode/QR code if product is not yet selected
+                    const searchKey = (parsed && (parsed.ean || parsed.model)) ? (parsed.ean || parsed.model).toLowerCase() : '';
+                    if (searchKey && (!this.selectedProduct || !this.selectedProduct.id)) {
                         const matched = this.products.find(p => 
-                            (p.model_no && p.model_no.toLowerCase().includes(parsed.model.toLowerCase())) ||
-                            (p.name && p.name.toLowerCase().includes(parsed.model.toLowerCase()))
+                            (p.sku && p.sku.toLowerCase() === searchKey) ||
+                            (p.model_no && p.model_no.toLowerCase().includes(searchKey)) ||
+                            (p.name && p.name.toLowerCase().includes(searchKey))
                         );
                         if (matched) {
                             const pSelect = document.querySelector('select[name="product_id"]');

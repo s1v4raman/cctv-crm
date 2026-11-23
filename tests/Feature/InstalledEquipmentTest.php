@@ -98,8 +98,8 @@ class InstalledEquipmentTest extends TestCase
         // Check stock movement was logged
         $this->assertDatabaseHas('stock_movements', [
             'product_id' => $product->id,
-            'type' => 'job_installation',
-            'quantity' => -1,
+            'type' => 'out',
+            'quantity' => 1,
             'balance_after' => 9,
         ]);
     }

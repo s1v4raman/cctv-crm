@@ -59,4 +59,9 @@ class Lead extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
 }

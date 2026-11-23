@@ -17,10 +17,10 @@ class ProjectPolicy
         return $user->isInternal();
     }
 
-    // Admins add projects and technicians submit them for approval; staff cannot add them
+    // Internal users (admins, office staff, and technicians) can create projects
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isTechnician();
+        return $user->isInternal();
     }
 
     public function update(User $user, Project $project): bool

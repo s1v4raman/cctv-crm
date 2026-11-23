@@ -15,9 +15,9 @@
     </x-slot>
 
     @php
-        $preselectedSite = null;
+        $preselectedSite = $prefillSite ?? null;
         $siteIdToLoad = old('site_id', request('site_id'));
-        if ($siteIdToLoad) {
+        if (!$preselectedSite && $siteIdToLoad) {
             $preselectedSite = \App\Models\Site::find($siteIdToLoad);
         }
     @endphp
@@ -28,8 +28,9 @@
 
         function projectWizard() {
             return {
-                step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ((isset($errors) && $errors->any()) ? 3 : ($preselectedSite ? 2 : 1)))) }},
+                step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ((isset($errors) && $errors->any()) ? 3 : (($preselectedSite || !empty($prefillMaterials) || request('quotation_id') || request('lead_id')) ? 2 : 1)))) }},
                 selectedSite: @json($preselectedSite),
+                lead_id: @json(old('lead_id', $prefillLead?->id ?? ($preselectedSite?->lead_id ?? ''))),
                 siteSearch: '',
                 siteResults: [],
                 siteModalOpen: false,
@@ -43,15 +44,15 @@
                 },
 
                 // Step 2 Info
-                title: @json(old('title', '')),
+                title: @json(old('title', $prefillTitle ?? '')),
                 project_type: @json(old('project_type', 'hardware_cctv')),
                 lead_technician_id: @json((string) session('new_technician_id', old('lead_technician_id', ''))),
-                budget: @json(old('budget', '')),
+                budget: @json(old('budget', $prefillBudget ?? '')),
                 po_number: @json(old('po_number', '')),
                 start_date: @json(old('start_date', now()->toDateString())),
                 deadline: @json(old('deadline', '')),
                 priority: @json(old('priority', 'medium')),
-                description: @json(old('description', '')),
+                description: @json(old('description', $prefillDescription ?? '')),
 
                 // Dynamic Templates by Project Type
                 templates: {
@@ -203,7 +204,7 @@
                     attendance_sync_mode: 'face_recognition'
                 },
 
-                materials: @json(old('materials', [])),
+                materials: @json(old('materials', $prefillMaterials ?? [])),
                 oldRequirements: @json(old('requirements', [])),
                 oldHardwareSpecs: @json(old('hardware_specs', [])),
 
@@ -368,6 +369,7 @@
             <input type="hidden" name="current_step" :value="step">
             <input type="hidden" name="project_code" value="{{ $nextCode }}">
             <input type="hidden" name="site_id" :value="selectedSite?.id">
+            <input type="hidden" name="lead_id" :value="lead_id || (selectedSite?.lead_id || '')">
 
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- STEP 1: SITE SELECTION                                            --}}

@@ -38,7 +38,7 @@
             <div class="hidden sm:flex ld-views items-center justify-start gap-2">
                 <span class="ld-chip">{{ $viewTitle }}</span>
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
-                    <button type="button" class="ld-icon-btn" title="Switch View" aria-label="Other attendance views" :aria-expanded="menu === 'views'" @click="open('views')">
+                    <button type="button" class="ld-icon-btn btn-icon" title="Switch View" aria-label="Other attendance views" :aria-expanded="menu === 'views'" @click="open('views')">
                         <svg class="icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu left-0" x-show="menu === 'views'" x-cloak style="width: 250px;">
@@ -172,7 +172,7 @@
                     </button>
 
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                        <button type="button" class="ld-outline !inline-flex items-center justify-center p-2 rounded-xl shrink-0 cursor-pointer" style="min-height: 38px; width: 38px;" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
+                        <button type="button" class="ld-outline btn-icon !inline-flex items-center justify-center p-2 rounded-xl shrink-0 cursor-pointer" style="min-height: 38px; width: 38px;" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>

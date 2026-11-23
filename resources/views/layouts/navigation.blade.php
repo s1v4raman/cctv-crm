@@ -441,8 +441,8 @@
             </div>
 
             <div class="flex items-center gap-1 shrink-0" :class="sidebarCollapsed ? 'lg:flex-col' : ''">
-                <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="btn-icon w-8 h-8 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                         <circle cx="8" cy="6" r="2"/>
                         <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
@@ -453,8 +453,12 @@
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="inline-flex shrink-0">
                     @csrf
-                    <button aria-label="{{ __('Log Out') }}" type="submit" title="{{ __('Log Out') }}" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <button type="submit"
+                            id="sidebar-logout-btn"
+                            aria-label="{{ __('Log Out') }}"
+                            title="{{ __('Log Out') }}"
+                            class="btn-icon sidebar-logout-btn w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
                     </button>

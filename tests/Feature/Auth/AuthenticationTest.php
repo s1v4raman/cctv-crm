@@ -201,7 +201,7 @@ class AuthenticationTest extends TestCase
         $response->assertSessionHasErrors(['email']);
     }
 
-    public function test_authenticated_users_see_header_and_sidebar_logout_buttons_across_pages(): void
+    public function test_authenticated_users_see_sidebar_logout_buttons_across_pages(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $employee = User::factory()->create(['role' => 'staff']);
@@ -210,25 +210,29 @@ class AuthenticationTest extends TestCase
         // 1. Admin visits dashboard
         $response = $this->actingAs($admin)->get(route('dashboard'));
         $response->assertStatus(200);
-        $response->assertSee('id="header-logout-btn"', false);
+        $response->assertSee('id="sidebar-logout-btn"', false);
+        $response->assertDontSee('id="header-logout-btn"', false);
         $response->assertSee(route('logout'), false);
 
         // 2. Employee visits quotations index
         $response = $this->actingAs($employee)->get(route('quotations.index'));
         $response->assertStatus(200);
-        $response->assertSee('id="header-logout-btn"', false);
+        $response->assertSee('id="sidebar-logout-btn"', false);
+        $response->assertDontSee('id="header-logout-btn"', false);
         $response->assertSee(route('logout'), false);
 
         // 3. Technician visits technician dashboard
         $response = $this->actingAs($technician)->get(route('technician.dashboard'));
         $response->assertStatus(200);
-        $response->assertSee('id="header-logout-btn"', false);
+        $response->assertSee('id="sidebar-logout-btn"', false);
+        $response->assertDontSee('id="header-logout-btn"', false);
         $response->assertSee(route('logout'), false);
 
         // 4. Any user visits profile edit
         $response = $this->actingAs($employee)->get(route('profile.edit'));
         $response->assertStatus(200);
-        $response->assertSee('id="header-logout-btn"', false);
+        $response->assertSee('id="sidebar-logout-btn"', false);
+        $response->assertDontSee('id="header-logout-btn"', false);
         $response->assertSee(route('logout'), false);
     }
 }

@@ -64,7 +64,7 @@
             <span class="ld-chip">{{ $currentView['label'] }}</span>
             @if(count($views) > 1)
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
-                    <button type="button" class="ld-icon-btn" title="Other views" aria-label="Other views" :aria-expanded="menu === 'views'" @click="open('views')">
+                    <button type="button" class="ld-icon-btn btn-icon" title="{{ __('Other views') }}" aria-label="{{ __('Other views') }}" :aria-expanded="menu === 'views'" @click="open('views')">
                         <svg class="icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu left-0" x-show="menu === 'views'" x-cloak>
@@ -151,18 +151,18 @@
 
                 {{-- Dedicated Top Scroll Navigation Controls --}}
                 <div class="hidden sm:inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 p-0.5 shadow-2xs mr-1" title="{{ __('Scroll table records') }}">
-                    <button type="button" @click="scrollUp()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Up (Previous Records)') }}" aria-label="{{ __('Scroll Up') }}">
+                    <button type="button" @click="scrollUp()" class="btn-icon px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Up (Previous Records)') }}" aria-label="{{ __('Scroll Up') }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                         <span class="text-[11px]">{{ __('Up') }}</span>
                     </button>
-                    <button type="button" @click="scrollDown()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Down (Next Records)') }}" aria-label="{{ __('Scroll Down') }}">
+                    <button type="button" @click="scrollDown()" class="btn-icon px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Down (Next Records)') }}" aria-label="{{ __('Scroll Down') }}">
                         <span class="text-[11px]">{{ __('Down') }}</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </div>
 
                 <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                    <button type="button" class="ld-outline" title="{{ __('More actions') }}" aria-label="{{ __('More actions') }}" :aria-expanded="menu === 'more'" @click="open('more')">
+                    <button type="button" class="ld-outline btn-icon" title="{{ __('More actions') }}" aria-label="{{ __('More actions') }}" :aria-expanded="menu === 'more'" @click="open('more')">
                         <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak style="min-width: 220px">
@@ -230,7 +230,7 @@
                                 <th class="ld-cols" style="width: 72px; text-align: right">
                                     @if(count($columns) > 0)
                                         <div class="relative inline-block" @click.outside="menu === 'cols' && (menu = null)">
-                                            <button type="button" class="ld-icon-btn" title="{{ __('Choose columns') }}" aria-label="{{ __('Choose columns') }}" :aria-expanded="menu === 'cols'" @click="open('cols')">
+                                            <button type="button" class="ld-icon-btn btn-icon" title="{{ __('Choose columns') }}" aria-label="{{ __('Choose columns') }}" :aria-expanded="menu === 'cols'" @click="open('cols')">
                                                 <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
                                             </button>
                                             <div class="ld-menu right-0 text-left" x-show="menu === 'cols'" x-cloak>
@@ -268,11 +268,11 @@
                         <span>{{ __('Total Records') }} <strong>{{ $paginator->total() }}</strong></span>
                         {{-- Dedicated Scroll Up / Down Controls --}}
                         <div class="hidden sm:inline-flex items-center gap-0.5 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 p-0.5 shadow-2xs" title="{{ __('Scroll table records') }}">
-                            <button type="button" @click="scrollUp()" class="px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Up (Previous Records)') }}" aria-label="{{ __('Scroll Up') }}">
+                            <button type="button" @click="scrollUp()" class="btn-icon px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Up (Previous Records)') }}" aria-label="{{ __('Scroll Up') }}">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                                 <span class="text-[11px]">{{ __('Up') }}</span>
                             </button>
-                            <button type="button" @click="scrollDown()" class="px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Down (Next Records)') }}" aria-label="{{ __('Scroll Down') }}">
+                            <button type="button" @click="scrollDown()" class="btn-icon px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Down (Next Records)') }}" aria-label="{{ __('Scroll Down') }}">
                                 <span class="text-[11px]">{{ __('Down') }}</span>
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>

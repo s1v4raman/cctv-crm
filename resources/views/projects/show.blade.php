@@ -520,6 +520,9 @@
             </div>
         @endif
 
+        {{-- Guided Workflow Pipeline: Direct Next Step Action Banner --}}
+        <x-workflow-stage-banner stage="project" :model="$project" />
+
         {{-- 6-Tab Navigation Bar --}}
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3 shadow-xs overflow-hidden">
             <nav class="flex items-center space-x-6 text-sm font-bold overflow-x-auto whitespace-nowrap scrollbar-none">
@@ -2270,7 +2273,7 @@
                     </div>
                     <button type="button" @click="taskModalOpen = true" class="btn-primary">Add task</button>
                     <div class="relative" @click.outside="moreOpen = false">
-                        <button type="button" @click="moreOpen = !moreOpen" class="btn-secondary !p-2 inline-flex items-center justify-center shrink-0" aria-label="More task actions" :aria-expanded="moreOpen">
+                        <button type="button" @click="moreOpen = !moreOpen" class="btn-secondary btn-icon !p-2 inline-flex items-center justify-center shrink-0" aria-label="More task actions" :aria-expanded="moreOpen">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div x-show="moreOpen" x-cloak 

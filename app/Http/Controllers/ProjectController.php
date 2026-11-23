@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Lead;
 use App\Models\Product;
 use App\Models\Project;
+use App\Models\Quotation;
 use App\Models\ProjectAuditLog;
 use App\Models\ProjectDocument;
 use App\Models\ProjectMaterial;
@@ -167,6 +168,61 @@ class ProjectController extends Controller
             return $v->name_key ?: Supplier::normalizeNameKey($v->name);
         })->filter()->unique()->values()->all();
 
+        // Check for quotation or lead pre-fill params
+        $prefillQuotation = null;
+        $prefillLead = null;
+        $prefillSite = null;
+        $prefillTitle = '';
+        $prefillBudget = '';
+        $prefillDescription = '';
+        $prefillMaterials = [];
+
+        if ($qId = request('quotation_id')) {
+            $prefillQuotation = Quotation::with(['lead', 'items.product'])->find($qId);
+            if ($prefillQuotation && $prefillQuotation->lead) {
+                $prefillLead = $prefillQuotation->lead;
+            }
+        }
+        if (!$prefillLead && ($lId = request('lead_id'))) {
+            $prefillLead = Lead::find($lId);
+        }
+
+        if ($prefillLead) {
+            $prefillSite = Site::where('lead_id', $prefillLead->id)->first();
+            if (!$prefillSite) {
+                $prefillSite = Site::create([
+                    'site_code' => Site::generateSiteCode(),
+                    'lead_id' => $prefillLead->id,
+                    'name' => $prefillLead->customer_name . ' - Site',
+                    'client_name' => $prefillLead->customer_name,
+                    'client_phone' => $prefillLead->phone,
+                    'address' => $prefillLead->site_address ?: 'Site Address Pending',
+                    'city' => 'Coimbatore',
+                ]);
+            }
+            $prefillTitle = $prefillLead->customer_name . ' - CCTV Project';
+            $prefillDescription = $prefillQuotation 
+                ? "Converted from Quotation #{$prefillQuotation->quotation_no} for {$prefillLead->customer_name}" 
+                : "Created from Lead {$prefillLead->customer_name}";
+            $prefillBudget = $prefillQuotation ? (string) ($prefillQuotation->total ?? $prefillQuotation->grand_total ?? '') : '';
+
+            if ($prefillQuotation && $prefillQuotation->items) {
+                foreach ($prefillQuotation->items as $item) {
+                    $name = $item->product?->name ?: ($item->item_name ?: $item->description);
+                    if ($name) {
+                        $prefillMaterials[] = [
+                            'item_name' => $name,
+                            'quantity' => (float) ($item->quantity ?: 1),
+                            'unit' => $item->product?->unit ?: 'nos',
+                            'source' => 'warehouse',
+                            'shop_name' => '',
+                            'notes' => 'From Quotation #' . $prefillQuotation->quotation_no,
+                        ];
+                    }
+                }
+            }
+        }
+
         // Auto-suggest next project code safely
         $year = date('Y');
         $lastProject = Project::withTrashed()
@@ -193,7 +249,13 @@ class ProjectController extends Controller
             'products',
             'vendors',
             'savedProductsMap',
-            'savedVendorsSet'
+            'savedVendorsSet',
+            'prefillSite',
+            'prefillTitle',
+            'prefillBudget',
+            'prefillDescription',
+            'prefillMaterials',
+            'prefillLead'
         ));
     }
 
@@ -208,6 +270,7 @@ class ProjectController extends Controller
 
         $rules = [
             'site_id' => 'nullable|exists:sites,id',
+            'lead_id' => 'nullable|exists:leads,id',
             'project_code' => 'nullable|string|max:100',
             'title' => 'nullable|string|max:255',
             'project_type' => $isDraft ? 'nullable|string' : 'required|in:hardware_cctv,hardware_attendance,networking,access_control,software_web,hybrid',
@@ -280,6 +343,18 @@ class ProjectController extends Controller
         $validated['project_code'] = $proposedCode;
         $validated['created_by'] = Auth::id();
         $validated['assigned_to'] = $validated['lead_technician_id'] ?? Auth::id();
+
+        if ($request->filled('lead_id')) {
+            $validated['lead_id'] = $request->input('lead_id');
+        } elseif ($site && $site->lead_id) {
+            $validated['lead_id'] = $site->lead_id;
+        }
+
+        if ($site) {
+            $validated['site_address'] = $validated['site_address'] ?? $site->address;
+            $validated['contact_person'] = $validated['contact_person'] ?? $site->client_name;
+            $validated['contact_phone'] = $validated['contact_phone'] ?? $site->client_phone;
+        }
 
         // Default status
         if ($isDraft) {
@@ -1069,7 +1144,7 @@ class ProjectController extends Controller
      */
     protected function authorizeAddingProjects(): void
     {
-        abort_unless(Auth::user()->can('create', Project::class), 403, 'Only administrators can add projects.');
+        abort_unless(Auth::user()->can('create', Project::class), 403, 'You do not have permission to add projects.');
     }
 
     protected function getExecutingCompanies()

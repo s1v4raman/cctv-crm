@@ -46,6 +46,9 @@ class Site extends Model
     protected static function booted(): void
     {
         static::creating(function (Site $site) {
+            if (empty($site->site_code)) {
+                $site->site_code = static::generateSiteCode();
+            }
             if (empty($site->contact_person)) {
                 $site->contact_person = $site->client_name ?: 'Site Manager';
             }
