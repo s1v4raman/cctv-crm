@@ -245,8 +245,14 @@ class QuotationController extends Controller
         $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
         $pdfContent = $pdf->output();
 
-        $recipientEmail = trim((string) $request->query('email', $quotation->lead?->email ?? ''));
-        $customerName   = $quotation->lead?->customer_name ?? 'Customer';
+        $recipientEmail = trim((string) $request->query('email', ''));
+        if ($recipientEmail === '') {
+            $recipientEmail = trim((string) ($quotation->lead?->email ?? $quotation->customer_email ?? ''));
+        }
+        $customerName = trim((string) ($quotation->lead?->customer_name ?? $quotation->customer_name ?? 'Customer'));
+        if ($customerName === '') {
+            $customerName = 'Customer';
+        }
         $subject        = trim((string) $request->query('subject', "Official Quotation #{$quotation->quotation_no} - CCTV Installation & Security Proposal"));
         $customNote     = trim((string) $request->query('custom_note', ''));
 
@@ -309,7 +315,11 @@ class QuotationController extends Controller
 
         $eml = "From: =?UTF-8?B?" . base64_encode($fromName) . "?= <{$fromAddress}>\r\n";
         if ($recipientEmail !== '') {
-            $eml .= "To: {$recipientEmail}\r\n";
+            if ($customerName !== 'Customer') {
+                $eml .= "To: =?UTF-8?B?" . base64_encode($customerName) . "?= <{$recipientEmail}>\r\n";
+            } else {
+                $eml .= "To: <{$recipientEmail}>\r\n";
+            }
         }
         $eml .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
         $eml .= "Date: " . date('r') . "\r\n";
@@ -701,10 +711,33 @@ class QuotationController extends Controller
             'custom_message' => ['nullable', 'string', 'max:2000'],
             'pdf_format'     => ['nullable', 'in:1,2,3,4'],
             'pricing_mode'   => ['nullable', 'in:itemized,total_only'],
+            'smtp_username'  => ['nullable', 'string', 'max:255'],
+            'smtp_password'  => ['nullable', 'string', 'max:255'],
+            'smtp_host'      => ['nullable', 'string', 'max:255'],
+            'smtp_port'      => ['nullable', 'integer'],
+            'smtp_encryption'=> ['nullable', 'string', 'max:10'],
         ]);
 
         if ($quotation->status === 'pending_approval' && Auth::user()->isTechnician()) {
             return back()->with('error', 'This quotation is pending Admin pricing and product approval. Once approved, you will be able to share it with the customer.');
+        }
+
+        // Save on-the-fly SMTP credentials if supplied from the Quick Setup drawer
+        if ($request->filled('smtp_username') && $request->filled('smtp_password')) {
+            $settings = \App\Models\GatewaySetting::getSettings();
+            $smtpUser = trim((string) $request->input('smtp_username'));
+            $isGmail = str_contains(strtolower($smtpUser), '@gmail.com');
+            $settings->update([
+                'smtp_mailer'       => 'smtp',
+                'smtp_host'         => $request->input('smtp_host') ?: ($isGmail ? 'smtp.gmail.com' : 'smtp.gmail.com'),
+                'smtp_port'         => (int) ($request->input('smtp_port') ?: 587),
+                'smtp_encryption'   => $request->input('smtp_encryption') ?: 'tls',
+                'smtp_username'     => $smtpUser,
+                'smtp_password'     => trim((string) $request->input('smtp_password')),
+                'smtp_from_address' => $smtpUser,
+                'smtp_from_name'    => $settings->smtp_from_name ?: config('app.name', 'Precision IT Systems'),
+            ]);
+            \App\Services\MailConfigService::applyDynamicMailConfig();
         }
 
         $recipientEmail = $validated['email'];

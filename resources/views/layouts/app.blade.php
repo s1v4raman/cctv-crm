@@ -652,6 +652,15 @@
                 border: 1px solid var(--input-border) !important;
             }
 
+            .crm-topbar #header-logout-btn {
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
+            }
+            html.dark .crm-topbar #header-logout-btn {
+                background-color: var(--table-header-bg) !important;
+                border: 1px solid var(--input-border) !important;
+            }
+
             /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
             .crm-user-avatar {
                 border-radius: 9999px !important;
@@ -1085,8 +1094,8 @@
             }
 
             /* Universal Clean Buttons: Remove decorative icons inside buttons across all pages for all users */
-            button:not(.btn-icon):not(.allow-brand-icon):not(#header-theme-toggle-btn):not(#header-notification-btn):not([aria-label*="close" i]):not([aria-label*="Close"]):not(.crm-toast__close):not(.pwa-close):not([class*="close"]) > svg,
-            a[class*="btn"]:not(.btn-icon):not(.allow-brand-icon):not([aria-label*="close" i]):not([class*="close"]) > svg,
+            button:not(.btn-icon):not(.btn-close):not(.allow-brand-icon):not(#header-theme-toggle-btn):not(#header-notification-btn):not(#header-logout-btn):not([aria-label*="close" i]):not([aria-label*="Close"]):not([aria-label*="clear" i]):not([aria-label*="Clear"]):not(.crm-toast__close):not(.pwa-close):not([class*="close"]):not([class*="clear"]) > svg,
+            a[class*="btn"]:not(.btn-icon):not(.allow-brand-icon):not([aria-label*="close" i]):not([aria-label*="clear" i]):not([class*="close"]):not([class*="clear"]) > svg,
             .btn-primary svg,
             .btn-secondary svg,
             .btn-danger svg,
@@ -1099,6 +1108,15 @@
             .btn-cancel svg,
             .btn-head-secondary svg {
                 display: none !important;
+            }
+
+            /* Explicit override to guarantee clear and close button icons always display */
+            button.btn-icon > svg,
+            button.btn-close > svg,
+            button[aria-label*="Clear" i] > svg,
+            button[aria-label*="Close" i] > svg,
+            .crm-search-clear-btn svg {
+                display: inline-block !important;
             }
         </style>
 
@@ -1447,7 +1465,7 @@
                                             </svg>
                                         </template>
                                         <template x-if="!loading && query.length > 0">
-                                            <x-close-button size="sm" label="Clear search" @click="clear()" />
+                                            <x-close-button size="sm" label="Clear search" class="crm-search-clear-btn" @click="clear()" />
                                         </template>
                                     </div>
                                 </div>
@@ -1824,6 +1842,20 @@
                                     </form>
                                 </div>
                             </div>
+
+                            {{-- Dedicated Quick Logout Header Button (All Pages & All Users) --}}
+                            <form method="POST" action="{{ route('logout') }}" class="inline-flex items-center">
+                                @csrf
+                                <button type="submit"
+                                        id="header-logout-btn"
+                                        aria-label="{{ __('Log Out') }}"
+                                        title="{{ __('Log Out') }}"
+                                        class="h-9 w-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 hover:border-rose-200 dark:hover:border-rose-900 transition-all cursor-pointer select-none shadow-2xs shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
 
                         @if(auth()->user()->isInternal())

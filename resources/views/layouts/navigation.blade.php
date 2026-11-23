@@ -421,27 +421,27 @@
     </nav>
 
     {{-- Sidebar Bottom: Comfortable User Profile & Quick Logout --}}
-    <div class="crm-sidebar-footer shrink-0 p-3.5 border-t border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors">
-        <div class="flex items-center justify-between gap-2.5" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
-            <div class="flex items-center gap-3 min-w-0">
+    <div class="crm-sidebar-footer shrink-0 p-3 border-t border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors">
+        <div class="flex items-center justify-between gap-1.5" :class="sidebarCollapsed ? 'lg:flex-col lg:justify-center lg:gap-2' : ''">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
                 @if(Auth::user()->avatar_url)
-                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-                    <div class="w-9 h-9 rounded-full text-white items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb); display: none;">
+                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                    <div class="w-8 h-8 rounded-full text-white items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb); display: none;">
                         {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @else
-                    <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
+                    <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
                         {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
-                <div class="min-w-0 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                    <span class="block text-sm font-semibold text-[var(--text-main)] truncate">{{ Auth::user()->name }}</span>
-                    <span class="block text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">{{ __(Auth::user()->role_title) }}</span>
+                <div class="min-w-0 flex-1 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                    <span class="block text-xs font-semibold text-[var(--text-main)] truncate leading-tight">{{ Auth::user()->name }}</span>
+                    <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold truncate leading-tight">{{ __(Auth::user()->role_title) }}</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1 shrink-0" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="p-2 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center">
+            <div class="flex items-center gap-1 shrink-0" :class="sidebarCollapsed ? 'lg:flex-col' : ''">
+                <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                         <circle cx="8" cy="6" r="2"/>
@@ -451,9 +451,9 @@
                         <circle cx="10" cy="18" r="2"/>
                     </svg>
                 </a>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" class="inline-flex shrink-0">
                     @csrf
-                    <button aria-label="{{ __('Log Out') }}" type="submit" title="{{ __('Log Out') }}" class="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center">
+                    <button aria-label="{{ __('Log Out') }}" type="submit" title="{{ __('Log Out') }}" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>

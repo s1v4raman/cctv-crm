@@ -720,10 +720,16 @@
 
                 {{-- Recipient Customer Email --}}
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
-                        {{ __('Recipient Customer Email') }} <span class="text-rose-500">*</span>
-                    </label>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                            <svg class="w-3.5 h-3.5 shrink-0 inline-block mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
+                            {{ __('Recipient Customer Email') }} <span class="text-rose-500">*</span>
+                        </label>
+                        <button type="button" onclick="copyModalRecipientEmail(this)" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>{{ __('Copy Email') }}</span>
+                        </button>
+                    </div>
                     <input type="email" id="email-modal-recipient" name="email" required 
                            value="{{ old('email', $quotation->lead?->email) }}" 
                            placeholder="customer@gmail.com" 
@@ -811,6 +817,38 @@
                             </svg>
                             <span>{{ __('Outlook (Auto-Attach PDF)') }}</span>
                         </button>
+                    </div>
+                </div>
+
+                {{-- Quick SMTP Setup Drawer (One-Time Setup for Direct PDF Dispatch) --}}
+                @php
+                    $quickGatewaySettings = \App\Models\GatewaySetting::getSettings();
+                    $quickSmtpReady = \App\Services\MailConfigService::isSmtpConfigured();
+                @endphp
+                <div id="email-quick-smtp-drawer" class="{{ $quickSmtpReady ? 'hidden' : '' }} p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-xs space-y-2.5 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                            ⚙️ {{ __('One-Time Email Server Setup (Send with attached PDF directly to inbox)') }}
+                        </span>
+                        <button type="button" onclick="toggleQuickSmtpDrawer()" class="text-amber-700 dark:text-amber-300 underline font-semibold cursor-pointer">
+                            {{ $quickSmtpReady ? __('Edit Credentials') : __('Hide') }}
+                        </button>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                        {{ __('To send quotation emails with the PDF attached directly from your Gmail / Google Workspace account, enter your Gmail address and 16-character Google App Password once:') }}
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">{{ __('Sender Gmail Address') }}</label>
+                            <input type="email" id="quick-smtp-user" value="{{ $quickGatewaySettings->smtp_username ?: 'sivaraman02032003@gmail.com' }}" placeholder="yourname@gmail.com" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">{{ __('Google App Password (16 chars)') }}</label>
+                            <input type="password" id="quick-smtp-pass" value="{{ $quickGatewaySettings->smtp_password ?: '' }}" placeholder="xxxx xxxx xxxx xxxx" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono">
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-500">
+                        {{ __('Don\'t have an App Password? Go to') }} <a href="https://myaccount.google.com/apppasswords" target="_blank" class="underline text-blue-600 font-bold">{{ __('Google Account > App Passwords') }}</a> {{ __('to generate one in 30 seconds.') }}
                     </div>
                 </div>
 
@@ -1835,6 +1873,24 @@
         setTimeout(() => link.remove(), 500);
     }
 
+    function copyModalRecipientEmail(btn = null) {
+        const emailInput = document.getElementById('email-modal-recipient');
+        const email = emailInput ? emailInput.value.trim() : '';
+        if (!email) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(() => {
+                if (btn) {
+                    const span = btn.querySelector('span');
+                    if (span) {
+                        const orig = span.innerText;
+                        span.innerText = '✓ Copied!';
+                        setTimeout(() => span.innerText = orig, 2000);
+                    }
+                }
+            }).catch(() => {});
+        }
+    }
+
     function showEmailAppGuideToast(email, filename, clientType = 'outlook') {
         let existing = document.getElementById('email-app-toast');
         if (existing) existing.remove();
@@ -1854,11 +1910,19 @@
                 <p class="text-slate-300 mt-1 leading-relaxed">
                     ${clientType === 'gmail' 
                         ? `Opened Gmail compose to <strong class="text-white">${email}</strong> with pre-filled proposal. The PDF is ready in your browser.`
-                        : `Generated draft with <strong class="text-white">${filename}</strong> automatically attached. Opening in Outlook—simply review and click <strong>Send</strong>!`
+                        : `Draft with <strong class="text-white">${filename}</strong> automatically attached. Opening in Outlook—customer email has been automatically copied to your clipboard!`
                     }
                 </p>
+                ${clientType === 'outlook' ? `
+                <div class="mt-2.5 pt-2 border-t border-slate-700/80 flex items-center justify-between gap-2">
+                    <span class="text-[11px] text-amber-300 font-mono truncate max-w-[180px]">${email}</span>
+                    <button type="button" onclick="navigator.clipboard.writeText('${email}'); this.innerText='✓ Copied!';" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold shrink-0 transition cursor-pointer">
+                        Paste / Copy Email
+                    </button>
+                </div>
+                ` : ''}
             </div>
-            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none">&times;</button>
+            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none cursor-pointer">&times;</button>
         `;
         document.body.appendChild(toast);
         setTimeout(() => {
@@ -1866,10 +1930,22 @@
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 400);
             }
-        }, 10000);
+        }, 12000);
     }
 
-    function executeEmailAppDispatch(clientType = 'outlook') {
+    function toggleQuickSmtpDrawer(forceOpen = null) {
+        const drawer = document.getElementById('email-quick-smtp-drawer');
+        if (!drawer) return;
+        if (forceOpen === true) {
+            drawer.classList.remove('hidden');
+        } else if (forceOpen === false) {
+            drawer.classList.add('hidden');
+        } else {
+            drawer.classList.toggle('hidden');
+        }
+    }
+
+    async function executeEmailAppDispatch(clientType = 'outlook') {
         const emailInput = document.getElementById('email-modal-recipient');
         const email = emailInput ? emailInput.value.trim() : '';
 
@@ -1894,40 +1970,40 @@
         const noteInput = document.getElementById('email-modal-custom-note');
         const customNote = noteInput ? noteInput.value.trim() : '';
 
-        const filename = `Quotation_${emailQuotationData.quoteNo}_${getCustomerSafeName()}.pdf`;
+        const safeCustomer = getCustomerSafeName();
+        const filename = `Quotation_${emailQuotationData.quoteNo}_${safeCustomer}.pdf`;
 
         // Build clean email message body (Strictly proposal details, NO download links!)
         const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         const formatName = emailQuotationData.formatNames[format] || `Format ${format}`;
 
         let body = `Dear ${emailQuotationData.customerName || 'Valued Customer'},\n\n`
-                 + `Thank you for contacting us regarding your CCTV surveillance and security requirements.\n`
-                 + `Please find attached our official quotation proposal and pricing schedule:\n\n`
-                 + `Quotation Number: #${emailQuotationData.quoteNo}\n`
+                 + `Thank you for contacting Precision IT Systems. Please find your official ${formatName} details below:\n\n`
+                 + `Quotation No: #${emailQuotationData.quoteNo}\n`
                  + `Date: ${dateStr}\n`
-                 + `Proposal Style: ${formatName}\n`
-                 + `Pricing Breakdown: ${pricingMode === 'total_only' ? 'Turnkey Total Package' : 'Itemized with Product Costs'}\n\n`;
+                 + `Valid Until: 15 days from issue\n`
+                 + `Pricing Breakdown: ${pricingMode === 'total_only' ? 'Turnkey Total Cost' : 'Itemized with Product Costs'}\n\n`;
 
         if (customNote) {
-            body += `Special Note from Engineering Team:\n${customNote}\n\n`;
+            body += `Special Note:\n${customNote}\n\n`;
         }
 
         body += `----------------------------------------------\n`
-              + `📎 The official signed PDF proposal document (${filename}) has been automatically attached to this email.\n`
+              + `📎 The official signed PDF proposal document (${filename}) is attached to this email.\n`
               + `----------------------------------------------\n\n`
               + `Please feel free to reply directly to this email or call us if you have any questions.\n\n`
               + `Best Regards,\n`
-              + `Engineering & Sales Team\n`
               + `Precision IT Systems`;
 
-        // 3. Dispatch to Outlook (.eml with embedded PDF attachment) or Webmail
-        if (clientType === 'gmail') {
-            downloadEmailModalPdf();
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.open(gmailUrl, '_blank');
-        } else {
-            // Outlook: Trigger RFC-822 .eml draft file with embedded Base64 PDF attachment!
-            // When opened by Windows, Outlook automatically launches in compose mode with PDF already attached!
+        // 1. Outlook / Native Email App:
+        if (clientType === 'outlook') {
+            // Automatically copy customer email directly to system clipboard
+            // When Outlook opens, user can instantly paste (Ctrl+V) into the To: field if needed!
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).catch(() => {});
+            }
+
+            // Trigger RFC-822 .eml draft file with embedded Base64 PDF attachment & pre-filled To: header!
             const emlUrl = `/quotations/${emailQuotationData.id}/download-eml?`
                 + `email=${encodeURIComponent(email)}`
                 + `&subject=${encodeURIComponent(subject)}`
@@ -1941,17 +2017,21 @@
             document.body.appendChild(downloadLink);
             downloadLink.click();
             setTimeout(() => downloadLink.remove(), 600);
+            showEmailAppGuideToast(email, filename, 'outlook');
+        } else {
+            // Gmail Web
+            downloadEmailModalPdf();
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailUrl, '_blank');
+            showEmailAppGuideToast(email, filename, 'gmail');
+
+            // Copy clean proposal draft text to clipboard for Gmail
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(body).catch(() => {});
+            }
         }
 
-        // 4. Copy clean proposal draft text to clipboard
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(body).catch(() => {});
-        }
-
-        // 5. Show toast guide
-        showEmailAppGuideToast(email, filename, clientType);
-
-        // 6. Background sync to CRM
+        // Background sync to CRM
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const formData = new FormData();
         formData.append('email', email);
@@ -1963,12 +2043,6 @@
         fetch(`/quotations/${emailQuotationData.id}/send-email`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            body: formData
-        }).catch(() => {});
                 'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -2000,6 +2074,10 @@
         const noteInput = document.getElementById('email-modal-custom-note');
         const customNote = noteInput ? noteInput.value.trim() : '';
 
+        // Check if quick SMTP credentials are provided
+        const smtpUser = document.getElementById('quick-smtp-user')?.value.trim();
+        const smtpPass = document.getElementById('quick-smtp-pass')?.value.trim();
+
         if (btn) {
             btn.disabled = true;
             btn.innerHTML = `<span style="color:#ffffff !important;">Compiling & Sending PDF...</span>`;
@@ -2013,6 +2091,11 @@
             formData.append('pdf_format', format);
             formData.append('pricing_mode', pricingMode);
             formData.append('custom_message', customNote);
+
+            if (smtpUser && smtpPass) {
+                formData.append('smtp_username', smtpUser);
+                formData.append('smtp_password', smtpPass);
+            }
 
             const res = await fetch(`/quotations/${emailQuotationData.id}/send-email`, {
                 method: 'POST',
@@ -2041,8 +2124,10 @@
                     btn.innerHTML = originalHtml;
                 }
                 if (data.is_log_mode) {
-                    crmAlert(data.message || 'Live SMTP is not configured in Settings. Opening Gmail Web to send immediately...');
-                    executeEmailAppDispatch('gmail');
+                    toggleQuickSmtpDrawer(true);
+                    const passInput = document.getElementById('quick-smtp-pass');
+                    if (passInput) passInput.focus();
+                    crmAlert('To send emails with the PDF attached directly to the customer, please enter your Gmail address and 16-character Google App Password in the setup box shown above.');
                 } else {
                     crmAlert(data.message || 'Server email dispatch failed. ' + (data.error || 'Please check SMTP settings.'));
                 }

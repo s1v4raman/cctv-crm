@@ -96,8 +96,8 @@ class QuotationEmailAutomaticAttachmentTest extends TestCase
         // 1. Must contain X-Unsent: 1 header so Outlook opens in Compose/Edit mode with Send button active!
         $this->assertStringContainsString('X-Unsent: 1', $content);
 
-        // 2. Must contain recipient and subject headers
-        $this->assertStringContainsString('To: babu@precisionsecurity.com', $content);
+        // 2. Must contain recipient and subject headers with proper email enclosure
+        $this->assertStringContainsString('<babu@precisionsecurity.com>', $content);
 
         // 3. Must contain PDF attachment headers
         $this->assertStringContainsString('Content-Type: application/pdf; name="Quotation_QT-20261122-0024_babu_ramanathan.pdf"', $content);
@@ -169,5 +169,30 @@ class QuotationEmailAutomaticAttachmentTest extends TestCase
         $response->assertSee('Outlook (Auto-Attach PDF)');
         $response->assertSee('Gmail Web');
         $response->assertSee('download-eml');
+        $response->assertSee('email-quick-smtp-drawer');
+    }
+
+    public function test_send_email_saves_quick_smtp_credentials_and_attempts_dispatch(): void
+    {
+        Mail::fake();
+
+        $response = $this->actingAs($this->admin)->postJson(route('quotations.send-email', $this->quotation), [
+            'email'          => 'customer@company.com',
+            'subject'        => 'Custom Subject',
+            'smtp_username'  => 'sivaraman02032003@gmail.com',
+            'smtp_password'  => 'abcd efgh ijkl mnop',
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('gateway_settings', [
+            'smtp_username' => 'sivaraman02032003@gmail.com',
+            'smtp_password' => 'abcd efgh ijkl mnop',
+            'smtp_host'     => 'smtp.gmail.com',
+        ]);
+
+        Mail::assertSent(QuotationEmailWithPdf::class, function ($mail) {
+            return $mail->hasTo('customer@company.com');
+        });
     }
 }
