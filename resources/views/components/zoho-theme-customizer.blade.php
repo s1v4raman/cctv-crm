@@ -130,6 +130,42 @@
                 </template>
             </div>
         </div>
+
+        {{-- Section 4: Form Elements Border & Outline Color (All 27 Form Controls) --}}
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2">
+            <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>{{ __('Form Border Color') }}</span>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] font-mono text-slate-400 lowercase" x-text="formBorderColor"></span>
+                    <button type="button" 
+                            @click="setFormBorder(accent)" 
+                            title="{{ __('Reset to Active Theme Color') }}"
+                            class="text-[10px] text-slate-400 hover:text-emerald-500 underline ml-1 cursor-pointer">
+                        {{ __('Sync Theme') }}
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <template x-for="b in borderColors" :key="b.hex">
+                    <button :aria-label="'Use form border colour ' + b.hex" type="button" 
+                            @click="setFormBorder(b.hex)" 
+                            :title="b.name"
+                            class="w-6 h-6 rounded-full flex items-center justify-center transition-transform hover:scale-115 active:scale-95 cursor-pointer shadow-xs focus:outline-none ring-offset-1 ring-offset-white dark:ring-offset-[#0f172a]"
+                            :style="{ backgroundColor: b.hex }"
+                            :class="formBorderColor.toLowerCase() === b.hex.toLowerCase() ? 'ring-2 ring-slate-900 dark:ring-white scale-110' : ''">
+                        <svg x-show="formBorderColor.toLowerCase() === b.hex.toLowerCase()" class="w-3 h-3 text-white filter drop-shadow-xs" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </button>
+                </template>
+                {{-- Custom color picker input --}}
+                <label class="w-6 h-6 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer overflow-hidden relative" title="{{ __('Pick Custom Color') }}">
+                    <input type="color" :value="formBorderColor" @input="setFormBorder($event.target.value)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
+                    <span class="w-3.5 h-3.5 rounded-full" :style="{ backgroundColor: formBorderColor }"></span>
+                </label>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -139,29 +175,50 @@ window.zohoThemeManager = function(cfg = {}) {
     const accentKey = currentUserId ? ('crm_accent_user_' + currentUserId) : 'crm_accent';
     const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
     const styleKey = currentUserId ? ('crm_theme_style_user_' + currentUserId) : 'crm_theme_style';
+    const formBorderKey = currentUserId ? ('crm_form_border_user_' + currentUserId) : 'crm_form_border_color';
 
     let storedMode = null;
     let storedStyle = null;
     let storedAccent = null;
+    let storedFormBorder = null;
     try {
         storedMode = localStorage.getItem(modeKey);
         storedStyle = localStorage.getItem(styleKey);
         storedAccent = localStorage.getItem(accentKey);
+        storedFormBorder = localStorage.getItem(formBorderKey) || localStorage.getItem('crm_form_border_color');
     } catch(e) {}
 
     const initialMode = storedMode || cfg.userMode || 'auto';
     const initialStyle = storedStyle || cfg.userStyle || 'dark';
     const initialAccent = storedAccent || cfg.userAccent || '#2563eb';
+    let initialFormBorder = storedFormBorder;
+    if (!initialFormBorder || initialFormBorder === '#2ba000') {
+        initialFormBorder = initialAccent;
+    }
 
     return {
         userId: currentUserId,
         accentKey: accentKey,
         modeKey: modeKey,
         styleKey: styleKey,
+        formBorderKey: formBorderKey,
         open: false,
         mode: initialMode,
         themeStyle: initialStyle,
         accent: initialAccent,
+        formBorderColor: initialFormBorder,
+        borderColors: [
+            { name: 'Default Green (Ref)', hex: '#2ba000' },
+            { name: 'Royal Blue', hex: '#2563eb' },
+            { name: 'Forest Green', hex: '#16a34a' },
+            { name: 'Teal', hex: '#0d9488' },
+            { name: 'Amber Gold', hex: '#d97706' },
+            { name: 'Gold', hex: '#c89c14' },
+            { name: 'Terracotta', hex: '#c2410c' },
+            { name: 'Ruby Red', hex: '#be123c' },
+            { name: 'Deep Purple', hex: '#581c87' },
+            { name: 'Ocean Blue', hex: '#0284c7' }
+        ],
         colors: [
             { name: 'Royal Blue', hex: '#2563eb' },
             { name: 'Navy', hex: '#1e293b' },
@@ -187,6 +244,13 @@ window.zohoThemeManager = function(cfg = {}) {
                     if (e.detail.mode) this.mode = e.detail.mode;
                     if (e.detail.accent) this.accent = e.detail.accent;
                     if (e.detail.themeStyle) this.themeStyle = e.detail.themeStyle;
+                }
+            });
+
+            // Watch for form border color changes
+            window.addEventListener('crm:form-border-changed', (e) => {
+                if (e.detail && e.detail.color) {
+                    this.formBorderColor = e.detail.color;
                 }
             });
 
@@ -216,9 +280,29 @@ window.zohoThemeManager = function(cfg = {}) {
         },
         setAccent(hex) {
             this.accent = hex;
-            try { localStorage.setItem(this.accentKey, hex); } catch(e) {}
+            this.formBorderColor = hex;
+            try {
+                localStorage.setItem(this.accentKey, hex);
+                localStorage.setItem(this.formBorderKey, hex);
+                localStorage.setItem('crm_form_border_color', hex);
+            } catch(e) {}
+            if (typeof window.setFormBorderColor === 'function') {
+                window.setFormBorderColor(hex, true);
+            }
             this.applyTheme();
             this.persistToDatabase();
+        },
+        setFormBorder(hex) {
+            this.formBorderColor = hex;
+            if (typeof window.setFormBorderColor === 'function') {
+                window.setFormBorderColor(hex, true);
+            } else {
+                try {
+                    localStorage.setItem(this.formBorderKey, hex);
+                    localStorage.setItem('crm_form_border_color', hex);
+                } catch(e) {}
+                document.documentElement.style.setProperty('--crm-form-border-color', hex);
+            }
         },
         async persistToDatabase() {
             if (!this.userId) return;

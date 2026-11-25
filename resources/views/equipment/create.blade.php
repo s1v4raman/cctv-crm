@@ -26,6 +26,29 @@
                         <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
                     @endif
 
+                    {{-- Duplicate Serial Warning Banner (Workflow: "Duplicate serial: Warn, not saved twice") --}}
+                    <div x-show="duplicateWarning" x-cloak class="mb-5 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-400 dark:border-rose-600 text-rose-900 dark:text-rose-100 text-sm shadow-sm flex items-start gap-3">
+                        <span class="text-xl shrink-0">⚠️</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm tracking-wide flex items-center gap-2">
+                                <span>Duplicate serial: Warn, not saved twice</span>
+                            </div>
+                            <p class="text-xs text-rose-800 dark:text-rose-200 mt-1" x-text="duplicateWarning"></p>
+                        </div>
+                    </div>
+
+                    {{-- Model Not Found Helper Banner (Workflow: "Model not found: Pick it once, saved") --}}
+                    <div x-show="modelNotFound" x-cloak class="mb-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-100 text-xs shadow-xs flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base shrink-0">ℹ️</span>
+                            <div>
+                                <strong>Model not found:</strong> Pick it once, saved.
+                                <span class="text-slate-600 dark:text-slate-300 block text-[11px] mt-0.5">Please select matching model from catalog or enter the descriptive name below.</span>
+                            </div>
+                        </div>
+                        <button type="button" @click="modelNotFound = false" class="text-xs text-amber-700 dark:text-amber-300 hover:underline shrink-0">Dismiss</button>
+                    </div>
+
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Hardware & Site Details</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
@@ -102,41 +125,35 @@
                         <input aria-label="Equipment Name / Description" type="text" id="equipment_name_input" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
                     </div>
 
+                    {{-- Single Hardware Scan Bar (Mobile Scan + Barcode Machine) --}}
+                    <div class="mb-4 p-3 rounded-[4px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ __('Single Hardware Scan') }}</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Scan the hardware label once to automatically fill both Serial Number and MAC Address.') }}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'mobile')"
+                                    class="btn-primary h-[38px] px-3.5 rounded-[4px] text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer">
+                                <span>{{ __('Mobile Scan') }}</span>
+                            </button>
+                            <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'machine')"
+                                    class="h-[38px] px-3.5 rounded-[4px] text-xs font-semibold border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer">
+                                <span>{{ __('Barcode Machine') }}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                         {{-- Serial Number --}}
                         <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
-                                <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'machine')"
-                                            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
-                                        <span>⚡ {{ __('Barcode Machine') }}</span>
-                                    </button>
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'mobile')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
-                                        <span>📱 {{ __('Mobile Scan') }}</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <input aria-label="Serial number" type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <label class="crm-label mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
+                            <input aria-label="Serial number" type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono w-full h-[38px] text-sm rounded-[4px]">
                         </div>
 
                         {{-- MAC Address --}}
                         <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">MAC / IP Address (Optional)</label>
-                                <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'machine')"
-                                            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
-                                        <span>⚡ {{ __('Barcode Machine') }}</span>
-                                    </button>
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'mobile')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
-                                        <span>📱 {{ __('Mobile Scan') }}</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <input aria-label="Mac address" type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address') }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <label class="crm-label mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">MAC / IP Address (Optional)</label>
+                            <input aria-label="Mac address" type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address', request('mac')) }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono w-full h-[38px] text-sm rounded-[4px]">
                         </div>
                     </div>
 
@@ -209,7 +226,10 @@
             return {
                 products: productsList || [],
                 selectedProduct: null,
-                equipmentName: '{{ old('equipment_name', '') }}',
+                equipmentName: '{{ old('equipment_name', request('model', '')) }}',
+                duplicateWarning: '',
+                modelNotFound: false,
+                isLookingUp: false,
                 installDate: '{{ old('installation_date', date('Y-m-d')) }}',
                 mfgExpiry: '{{ old('manufacturer_warranty_expiry', '') }}',
                 serviceExpiry: '{{ old('service_warranty_expiry', '') }}',
@@ -229,6 +249,7 @@
                                 if (val) {
                                     const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(val) : { serial: val, mac: '', model: '' };
                                     this.handleScanResult(val, parsed, null, inputId);
+                                    this.fetchLookup(val, parsed);
                                     el.classList.add('ring-2', 'ring-emerald-500');
                                     setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1200);
                                 }
@@ -237,53 +258,156 @@
                     };
                     bindHardwareGun('serial_number_input');
                     bindHardwareGun('mac_address_input');
+
+                    // If URL or page loaded with a serial number, auto-lookup to populate Model & MAC
+                    this.$nextTick(() => {
+                        const sVal = document.getElementById('serial_number_input')?.value?.trim();
+                        if (sVal && (!this.equipmentName || !document.getElementById('mac_address_input')?.value)) {
+                            this.fetchLookup(sVal);
+                        }
+                    });
+                },
+                async fetchLookup(code, parsedCode = null) {
+                    const parsed = parsedCode || (window.parseDeviceBarcode ? window.parseDeviceBarcode(code) : { serial: code, mac: '', model: '' });
+                    const isStrictMac = (str) => {
+                        if (!str) return false;
+                        const s = String(str).replace(/^MAC[:\s=-]*/i, '').trim();
+                        return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s) ||
+                               (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s));
+                    };
+
+                    const targetSerial = (!isStrictMac(parsed.serial) && !isStrictMac(code)) ? (parsed.serial || code) : '';
+                    const targetMac = parsed.mac || (isStrictMac(code) ? code : '');
+                    if (!targetSerial && !targetMac && !parsed.ean && !parsed.model) return;
+                    this.isLookingUp = true;
+
+                    try {
+                        const q = new URLSearchParams();
+                        if (targetSerial) q.set('serial', targetSerial);
+                        if (targetMac) q.set('mac', targetMac);
+                        if (parsed.model) q.set('model', parsed.model);
+                        if (parsed.ean) q.set('ean', parsed.ean);
+                        if (this.selectedProduct && this.selectedProduct.id) {
+                            q.set('product_id', this.selectedProduct.id);
+                        }
+
+                        const res = await fetch(`/api/equipment/lookup-serial?${q.toString()}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.handleScanResult(code, parsed, data, targetSerial ? 'serial_number_input' : 'mac_address_input');
+                        }
+                    } catch (e) {
+                        console.error('Lookup failed', e);
+                    } finally {
+                        this.isLookingUp = false;
+                    }
                 },
                 handleScanResult(rawCode, parsed, lookupData, targetId) {
                     const sInput = document.getElementById('serial_number_input');
                     const mInput = document.getElementById('mac_address_input');
+                    const nameInput = document.getElementById('equipment_name_input');
 
-                    // 1. Single Scan Multi-Data Population: Fill both S/N and MAC simultaneously
-                    if (parsed && parsed.serial) {
-                        if (sInput) {
-                            sInput.value = parsed.serial;
-                            sInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            sInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    } else if (targetId === 'serial_number_input' && !parsed?.mac && rawCode) {
-                        if (sInput) {
-                            sInput.value = rawCode;
-                            sInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    const isStrictMac = (str) => {
+                        if (!str) return false;
+                        const s = String(str).replace(/^MAC[:\s=-]*/i, '').trim();
+                        return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s) ||
+                               (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s));
+                    };
+
+                    const isStrictEan = (str) => {
+                        return /^\d{12,14}$/.test(String(str).trim());
+                    };
+
+                    // 1. Strictly extract and assign MAC address (NEVER assign non-MAC strings into MAC field)
+                    let detectedMac = '';
+                    if (parsed && parsed.mac && isStrictMac(parsed.mac)) {
+                        detectedMac = parsed.mac;
+                    } else if (lookupData && (lookupData.mac || lookupData.mac_address) && isStrictMac(lookupData.mac || lookupData.mac_address)) {
+                        detectedMac = lookupData.mac || lookupData.mac_address;
+                    } else if (isStrictMac(rawCode)) {
+                        detectedMac = rawCode.replace(/^MAC[:\s=-]*/i, '').trim().toUpperCase();
+                        if (detectedMac.length === 12 && !detectedMac.includes(':')) {
+                            detectedMac = detectedMac.match(/.{1,2}/g).join(':');
                         }
                     }
 
-                    if (parsed && parsed.mac) {
-                        if (mInput) {
-                            mInput.value = parsed.mac;
-                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            mInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    } else if (targetId === 'mac_address_input' && !parsed?.serial && rawCode) {
-                        if (mInput) {
-                            mInput.value = rawCode;
-                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    if (detectedMac && mInput) {
+                        mInput.value = detectedMac;
+                        mInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        mInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+
+                    // 2. Strictly extract and assign Serial Number (NEVER assign pure MAC or EAN overwriting existing serial)
+                    let detectedSerial = '';
+                    if (parsed && parsed.serial && !isStrictMac(parsed.serial)) {
+                        detectedSerial = parsed.serial;
+                    } else if (lookupData && (lookupData.serial || lookupData.serial_number) && !isStrictMac(lookupData.serial || lookupData.serial_number)) {
+                        detectedSerial = lookupData.serial || lookupData.serial_number;
+                    } else if (rawCode && !isStrictMac(rawCode)) {
+                        const cleanRaw = String(rawCode).replace(/^(?:S\/N|SN|SERIAL)[:\s=-]*/i, '').trim();
+                        // If it's pure 12-14 digits (EAN), only use as serial if no serial exists at all
+                        if (isStrictEan(cleanRaw)) {
+                            if (!sInput || !sInput.value.trim()) {
+                                detectedSerial = cleanRaw;
+                            }
+                        } else {
+                            detectedSerial = cleanRaw;
                         }
                     }
 
-                    // 2. Auto-fill Product Name / Equipment Name & Select Catalog Model
+                    if (detectedSerial && sInput) {
+                        sInput.value = detectedSerial;
+                        sInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        sInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+
+                    // 3. Auto-fill Product / Model Name into equipmentName & Select Catalog Model
+                    if (parsed && parsed.model && !this.equipmentName) {
+                        this.equipmentName = parsed.model;
+                        if (nameInput) nameInput.value = parsed.model;
+                    }
+
                     if (lookupData) {
-                        if (lookupData.equipment_name || lookupData.product_name) {
-                            this.equipmentName = lookupData.equipment_name || lookupData.product_name;
-                        }
-                        if (lookupData.product_id) {
+                        // Only update product selection if catalog product found or no product selected yet
+                        if (lookupData.found && lookupData.product_id) {
+                            const pSelect = document.querySelector('select[name="product_id"]');
+                            if (pSelect) {
+                                pSelect.value = lookupData.product_id;
+                                this.onProductChange(lookupData.product_id);
+                            }
+                            const modelName = lookupData.equipment_name || lookupData.product_name || lookupData.model;
+                            if (modelName) {
+                                this.equipmentName = modelName;
+                                if (nameInput) nameInput.value = modelName;
+                            }
+                        } else if (!this.selectedProduct && lookupData.product_id) {
                             const pSelect = document.querySelector('select[name="product_id"]');
                             if (pSelect) {
                                 pSelect.value = lookupData.product_id;
                                 this.onProductChange(lookupData.product_id);
                             }
                         }
-                        if (lookupData.mac_address && mInput && !mInput.value) {
-                            mInput.value = lookupData.mac_address;
-                            mInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+                        if (!this.equipmentName) {
+                            const fallbackName = lookupData.equipment_name || lookupData.product_name || lookupData.model;
+                            if (fallbackName) {
+                                this.equipmentName = fallbackName;
+                                if (nameInput) nameInput.value = fallbackName;
+                            }
+                        }
+
+                        // Duplicate serial warning from diagram: "Duplicate serial: Warn, not saved twice"
+                        if (lookupData.is_duplicate) {
+                            this.duplicateWarning = lookupData.duplicate_warning || `Serial '${detectedSerial || rawCode}' is already registered in the system.`;
+                        } else {
+                            this.duplicateWarning = '';
+                        }
+
+                        // Model not found helper from diagram: "Model not found: Pick it once, saved"
+                        if (lookupData.model_not_found && !this.selectedProduct) {
+                            this.modelNotFound = true;
+                        } else if (lookupData.product_id || this.selectedProduct) {
+                            this.modelNotFound = false;
                         }
                     }
 
@@ -301,6 +425,7 @@
                                 pSelect.value = matched.id;
                                 this.onProductChange(matched.id);
                             }
+                            this.modelNotFound = false;
                         }
                     }
                 },
@@ -310,6 +435,7 @@
                         if (!this.equipmentName) {
                             this.equipmentName = this.selectedProduct.name;
                         }
+                        this.modelNotFound = false;
                         this.calculateWarranties();
                     }
                 },

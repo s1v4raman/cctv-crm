@@ -526,28 +526,34 @@
         {{-- 6-Tab Navigation Bar --}}
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3 shadow-xs overflow-hidden">
             <nav class="flex items-center space-x-6 text-sm font-bold overflow-x-auto whitespace-nowrap scrollbar-none">
-                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>{{ __('Overview') }}</span>
                 </button>
-                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     <span>{{ __('Materials') }}</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
-                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>{{ __('Documents') }}</span> <span class="text-slate-400 font-normal">{{ $project->documents->count() }}</span>
                     @if($uninvoicedDcCount > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} {{ __('unbilled') }}</span>
                     @endif
                 </button>
-                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="3" ry="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span>{{ __('Work days') }}</span> <span class="text-slate-400 font-normal">{{ $project->workDays->count() }}</span>
                 </button>
-                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     <span>{{ __('IP devices') }}</span> <span class="text-slate-400 font-normal">{{ $project->ipDevices->count() }}</span>
                 </button>
-                <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     <span>{{ __('Tasks') }}</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);' }}">{{ $taskCompletionPercentage }}%</span>
@@ -570,7 +576,10 @@
                         <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                                 <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
+                                        <circle cx="12" cy="8" r="2.5"/>
+                                    </svg>
                                     {{ __('Site') }}
                                 </h3>
                                 <a href="{{ $project->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition">
@@ -601,22 +610,22 @@
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                                 @if($project->project_type === 'software_web')
-                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                                    <svg class="w-4 h-4 text-cyan-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                                     <span>{{ __('Web Engineering & Application Scope') }}</span>
                                 @elseif($project->project_type === 'networking')
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
                                     <span>{{ __('Network Cabling & Infrastructure Scope') }}</span>
                                 @elseif($project->project_type === 'access_control')
-                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                    <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                     <span>{{ __('Access Control & Security Scope') }}</span>
                                 @elseif($project->project_type === 'hardware_attendance')
-                                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                    <svg class="w-4 h-4 text-purple-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 002 2v8a2 2 0 002 2z"/></svg>
                                     <span>{{ __('Scope') }}</span>
                                 @elseif($project->project_type === 'hybrid')
-                                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                    <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                                     <span>{{ __('Scope') }}</span>
                                 @else
-                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     <span>{{ __('Scope') }}</span>
                                 @endif
                             </h3>
@@ -827,7 +836,7 @@
                         <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                                 <span class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                                    <svg class="w-4 h-4 text-cyan-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                                     <span>Web Application &amp; Deployment Links</span>
                                 </span>
                                 @if(!empty($project->software_specs['webpage_url']))
@@ -875,7 +884,7 @@
                         <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                                 <span class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                    <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 002 2v8a2 2 0 002 2z"/></svg>
                                     <span>Terminal &amp; Camera Hardware Specifications</span>
                                 </span>
                                 <button type="button" @click="currentTab = 'ip_devices'" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1">
@@ -925,8 +934,10 @@
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
-                                Project Team
+                                <svg class="w-4 h-4 shrink-0" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <span>Project Team</span>
                             </h3>
                             <div class="flex items-center gap-1.5">
                                 @if(auth()->user()->isAdmin())
@@ -984,8 +995,9 @@
                                                 <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
                                             </div>
                                             @if($project->leadTechnician->phone)
-                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg text-white font-bold text-[11px] shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
-                                                    Call
+                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-white font-bold text-[11px] shadow-xs" style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
+                                                    <svg class="w-3.5 h-3.5 shrink-0 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="stroke: #ffffff !important;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                                    <span>Call</span>
                                                 </a>
                                             @endif
                                         </div>
@@ -1077,7 +1089,10 @@
 
                     {{-- Audit Trail Log --}}
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
-                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">History</h3>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>{{ __('History') }}</span>
+                        </h3>
 
                         <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
                             @forelse($project->auditLogs as $log)
@@ -1766,7 +1781,7 @@
                     <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <div>
                             <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Worker-wise {{ auth()->user()->isAdmin() ? 'Labor Cost & Settlement ' : '' }}Analysis ({{ count($workerAnalysis) }} Workers)</span>
                             </h4>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Quotation {{ $quotation->quotation_no ?? 'NP/26-27/003' }}</title>
+    <title>{{ ($docType ?? ($quotation->doc_type ?? 'quotation')) === 'invoice' ? ('Tax Invoice ' . (method_exists($quotation, 'getFormattedInvoiceNo') ? $quotation->getFormattedInvoiceNo('2') : 'NP/26-27/0017')) : ('Quotation ' . ($quotation->quotation_no ?? 'NP/26-27/003')) }}</title>
     <style>
         @page {
             size: A4 portrait;
@@ -19,7 +19,9 @@
         .company-header {
             font-size: 7.4pt;
             line-height: 1.25;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+            border-bottom: 1.5px solid #555555;
         }
         .company-title {
             font-size: 10pt;
@@ -271,6 +273,12 @@
     }
     if ($totalQty === 0) $totalQty = 523;
 
+    $docType = $docType ?? $quotation->doc_type ?? 'quotation';
+    $isInvoice = ($docType === 'invoice');
+    $invoiceNo = method_exists($quotation, 'getFormattedInvoiceNo')
+        ? $quotation->getFormattedInvoiceNo('2')
+        : 'NP/26-27/0017';
+
     $amountInWords = ucwords(str_replace('-', ' ', \App\Models\Quotation::numberToWords($roundedTotal))) . ' Rupees only';
 @endphp
 
@@ -284,8 +292,8 @@
         <div>State: 33-Tamil Nadu</div>
     </div>
 
-    {{-- Quotation Title --}}
-    <div class="doc-title">Quotation</div>
+    {{-- Document Title --}}
+    <div class="doc-title">{{ $isInvoice ? 'Tax Invoice' : 'Quotation' }}</div>
 
     {{-- Address & Details 3-Column Grid --}}
     <table class="address-grid">
@@ -306,8 +314,8 @@
                 @endforeach
             </td>
             <td class="col-meta">
-                <div class="grid-header">Quotation Details</div>
-                <div>Quote No. : {{ $quoteNo }}</div>
+                <div class="grid-header">{{ $isInvoice ? 'Invoice Details' : 'Quotation Details' }}</div>
+                <div>{{ $isInvoice ? 'Invoice No. :' : 'Quote No. :' }} {{ $isInvoice ? $invoiceNo : $quoteNo }}</div>
                 <div>Date : {{ $formattedDate }}</div>
                 <div>Place of supply: 33-Tamil Nadu</div>
             </td>
@@ -359,7 +367,7 @@
                         $taxable = (float)($item->total ?? ($unitPrice * $qty));
                         $itemGst = round($taxable * ($taxPercent / 100), 2);
                         $lineTotal = round($taxable + $itemGst, 2);
-                        $hsn = $item->hsn_code ?? '8525';
+                        $hsn = $item->hsn_code;
                         $unit = $item->unit ?? 'Nos';
                     @endphp
                     <tr>

@@ -36,17 +36,15 @@
             <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" />
         </div>
 
-        {{-- Clean Modern Dual-Mode Selector Tabs: Mobile Based Scan vs Barcode Machine Scan --}}
-        <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 select-none text-xs sm:text-sm">
+        {{-- Plain text tabs with 2px underline — project style guide --}}
+        <div class="flex border-b border-slate-200 dark:border-slate-700 select-none">
             <button type="button" id="{{ $modalId }}-tab-mobile" onclick="switchScannerMode('{{ $modalId }}', 'mobile')"
-                    class="py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs"
-                    style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
-                <span id="{{ $modalId }}-tab-mobile-text" class="font-bold" style="color: #ffffff !important;">📱 {{ __('Mobile Based Scan') }}</span>
+                    class="px-4 py-2.5 text-sm font-semibold border-b-2 border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)] -mb-px cursor-pointer transition-colors">
+                <span id="{{ $modalId }}-tab-mobile-text">{{ __('Mobile Scan') }}</span>
             </button>
             <button type="button" id="{{ $modalId }}-tab-laptop" onclick="switchScannerMode('{{ $modalId }}', 'machine')"
-                    class="py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60"
-                    style="color: #334155;">
-                <span id="{{ $modalId }}-tab-laptop-text" class="font-bold text-slate-700 dark:text-slate-300" style="color: #334155;">⚡ {{ __('Barcode Machine Scan') }}</span>
+                    class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 -mb-px cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+                <span id="{{ $modalId }}-tab-laptop-text">{{ __('Barcode Machine') }}</span>
             </button>
         </div>
 
@@ -55,31 +53,28 @@
         {{-- ═══════════════════════════════════════════════════════════ --}}
         <div id="{{ $modalId }}-mobile-pane" class="space-y-4">
             
-            {{-- Laptop / Desktop View: Clean QR Code Pairing Card --}}
-            <div id="{{ $modalId }}-mobile-desktop-view" class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-center space-y-3">
-                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-xs text-xl">
-                    📱
-                </div>
-                <div>
+            {{-- Desktop / Laptop View: QR Code Pairing Card --}}
+            <div id="{{ $modalId }}-mobile-desktop-view" class="p-4 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center space-y-3">
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <svg class="w-5 h-5 text-[var(--crm-accent,#2563eb)] shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3m-3 3h3m-3 3h3"/></svg>
                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Scan Hardware with Smartphone Camera') }}</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                        {{ __('Scan this QR code with your mobile camera. Point your phone at the hardware device, barcode, or S/N sticker — data will automatically appear on this webpage for analysis & save.') }}
-                    </p>
                 </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                    {{ __('Scan this QR code with your mobile camera. Point your phone at the hardware device, barcode, or S/N sticker — data will automatically appear on this webpage for analysis & save.') }}
+                </p>
 
                 {{-- QR Code Display --}}
                 <div class="flex flex-col items-center justify-center py-2">
-                    <div class="p-2.5 bg-white rounded-2xl border-2 border-slate-200 dark:border-slate-700 shadow-md inline-block">
-                        <img id="{{ $modalId }}-qr-img" src="" alt="Mobile Scanner QR Code" class="w-44 h-44 object-contain rounded-lg">
+                    <div class="p-2 bg-white rounded-[4px] border border-slate-200 dark:border-slate-700 inline-block">
+                        <img id="{{ $modalId }}-qr-img" src="" alt="Mobile Scanner QR Code" class="w-44 h-44 object-contain">
                     </div>
-                    <div id="{{ $modalId }}-mobile-status" class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
-                        <span>{{ __('Waiting for phone connection...') }}</span>
+                    <div id="{{ $modalId }}-mobile-status" class="mt-2 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                        {{ __('Waiting for phone connection...') }}
                     </div>
                 </div>
 
                 {{-- Host / IP Configuration --}}
-                <div class="mt-2 p-3 bg-white dark:bg-slate-900/80 rounded-xl text-left space-y-2 border border-slate-200 dark:border-slate-700/80">
+                <div class="mt-2 p-3 bg-white dark:bg-slate-900/80 rounded-[4px] text-left space-y-2 border border-slate-200 dark:border-slate-700">
                     <div class="flex items-center justify-between">
                         <label for="{{ $modalId }}-custom-ip" class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
                             {{ __('Server Wi-Fi Address / Host:') }}
@@ -89,10 +84,9 @@
                     <div class="flex items-center gap-1.5">
                         <input type="text" id="{{ $modalId }}-custom-ip" value="{{ $lanIp }}:{{ request()->getPort() ?: 8000 }}"
                                placeholder="e.g. 192.168.29.168:8000"
-                               class="flex-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 font-mono text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500">
+                               class="flex-1 text-xs rounded-[4px] border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 font-mono text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500">
                         <button type="button" onclick="updateScannerQrUrl('{{ $modalId }}')"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition cursor-pointer shrink-0"
-                                style="background-color: #2563eb !important; color: #ffffff !important;">
+                                class="btn-primary px-3 h-[30px] rounded-[4px] text-xs font-bold cursor-pointer shrink-0">
                             <span>{{ __('Update QR') }}</span>
                         </button>
                     </div>
@@ -108,21 +102,49 @@
                 </div>
             </div>
 
-            {{-- Mobile Phone Direct View: Native Camera Trigger --}}
+            {{-- Mobile Phone Direct View: Native Live Camera Stream --}}
             <div id="{{ $modalId }}-mobile-phone-view" style="display:none;" class="space-y-3">
-                <input type="file" id="{{ $modalId }}-phone-camera-input" accept="image/*" capture="environment" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" class="hidden">
-                <div onclick="document.getElementById('{{ $modalId }}-phone-camera-input').click()"
-                     class="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 text-center select-none cursor-pointer flex flex-col items-center justify-center space-y-3 shadow-inner">
-                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
-                        📷
+                <div class="relative bg-black rounded-[4px] overflow-hidden w-full aspect-[4/3] flex items-center justify-center border border-slate-800 select-none cursor-pointer"
+                     onclick="startMobileDirectCamera('{{ $modalId }}', true)">
+                    <video id="{{ $modalId }}-mobile-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+                    {{-- Captured photo preview for HTTP camera fallback --}}
+                    <img id="{{ $modalId }}-mobile-cam-preview" class="hidden w-full h-full object-cover" alt="Captured Barcode">
+                    <input type="file" id="{{ $modalId }}-mobile-capture-fallback" accept="image/*" capture="environment" style="display:none;" onchange="handleMobileDirectImageCapture(event, '{{ $modalId }}')">
+
+                    {{-- Reticle — corner marks only, no laser sweep --}}
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-4">
+                        <div class="relative w-full max-w-[240px] h-[130px] border border-blue-500/40 shadow-[0_0_0_9999px_rgba(3,7,18,0.65)] flex flex-col justify-between p-2">
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
+                                <div class="w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
+                            </div>
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
+                                <div class="w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-sm font-bold text-white mb-1">{{ __('Tap to Open Phone Camera') }}</div>
-                        <div class="text-xs text-slate-300 max-w-[240px] mx-auto">{{ __('Point phone camera directly at CCTV hardware barcode or S/N sticker') }}</div>
+
+                    <div id="{{ $modalId }}-mobile-cam-status" class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 bg-slate-900/90 text-slate-200">
+                        {{ __('Point camera at CCTV barcode or S/N sticker...') }}
                     </div>
-                    <button type="button" onclick="event.stopPropagation(); document.getElementById('{{ $modalId }}-phone-camera-input').click();"
-                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-xs shadow-lg inline-flex items-center gap-1.5 cursor-pointer">
-                        <span>📷 {{ __('Open Camera & Scan Tag') }}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="startMobileDirectCamera('{{ $modalId }}', true)"
+                            class="flex-1 h-[38px] sm:h-[52px] px-4 rounded-[4px] btn-primary font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                        <span>{{ __('Start / Re-scan Camera') }}</span>
+                    </button>
+                    <button type="button" onclick="switchMobileDirectCamera('{{ $modalId }}')"
+                            class="h-[38px] sm:h-[52px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer inline-flex items-center gap-1">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                        <span>{{ __('Flip') }}</span>
+                    </button>
+                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'machine')"
+                            class="h-[38px] sm:h-[52px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer">
+                        <span>{{ __('Scanner Gun') }}</span>
                     </button>
                 </div>
             </div>
@@ -134,19 +156,16 @@
         {{-- ═══════════════════════════════════════════════════════════ --}}
         <div id="{{ $modalId }}-laptop-pane" style="display:none;" class="space-y-4">
             
-            <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-4 text-center">
-                
-                {{-- Scanner Gun Icon --}}
-                <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-xs text-2xl">
-                    ⚡
-                </div>
+            <div class="p-4 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4 text-center">
 
-                <div>
+                {{-- Scanner Gun Header --}}
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <svg class="w-5 h-5 text-[var(--crm-accent,#2563eb)] shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z"/></svg>
                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Barcode Machine & Scanner Gun Station') }}</h4>
+                </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
                         {{ __('Connect your USB or Bluetooth barcode scanner machine / gun (Honeywell, Zebra, TVS, etc.). Pull the trigger on the hardware barcode to scan instantly into the webpage.') }}
                     </p>
-                </div>
 
                 {{-- Dedicated High-Speed Scanner Gun Input Box --}}
                 <div class="max-w-md mx-auto space-y-2">
@@ -154,38 +173,37 @@
                         <input type="text" id="{{ $modalId }}-manual-input"
                                placeholder="{{ __('Pull scanner gun trigger or type S/N...') }}"
                                onkeydown="if(event.key === 'Enter') { event.preventDefault(); const val = this.value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); } }"
-                               class="w-full text-center font-mono font-bold text-sm sm:text-base py-3 px-4 rounded-xl border-2 border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm focus:ring-4 focus:ring-blue-500/20 focus:outline-none tracking-wider">
+                               class="w-full text-center font-mono font-bold text-sm sm:text-base h-[38px] sm:h-[52px] px-4 rounded-[4px] border-2 border-[var(--crm-accent,#2563eb)] bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-4 focus:ring-blue-500/20 focus:outline-none tracking-wider">
                     </div>
 
                     <div class="flex items-center justify-center gap-2">
                         <button type="button"
                                 onclick="const val = document.getElementById('{{ $modalId }}-manual-input').value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); }"
-                                class="px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs transition cursor-pointer inline-flex items-center gap-1.5 text-white"
-                                style="background-color: #2563eb !important; color: #ffffff !important;">
+                                class="btn-primary h-[38px] px-5 rounded-[4px] text-xs font-bold cursor-pointer inline-flex items-center gap-1.5">
                             <span>{{ __('Apply Barcode / S/N') }} &rarr;</span>
                         </button>
                         <button type="button" onclick="const el = document.getElementById('{{ $modalId }}-manual-input'); if(el) { el.value = ''; el.focus(); }"
-                                class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">
+                                class="h-[38px] px-3 rounded-[4px] text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">
                             <span>{{ __('Clear') }}</span>
                         </button>
                     </div>
                 </div>
 
-                {{-- Active Listener Status Badge --}}
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>{{ __('Barcode Machine Listener Active — Ready for Trigger Pull') }}</span>
-                </div>
+                {{-- Active Listener Status — plain colored text, no pill --}}
+                <p class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                    {{ __('Barcode Machine Listener Active — Ready for Trigger Pull') }}
+                </p>
 
                 {{-- Photo Fallback Button --}}
-                <div class="pt-3 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between text-xs flex-wrap gap-2">
-                    <label class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 cursor-pointer inline-flex items-center gap-1.5 transition">
-                        <span>📁 {{ __('Upload Barcode Photo / Image') }}</span>
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-wrap gap-2">
+                    <label class="h-[30px] px-3 rounded-[4px] border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 cursor-pointer inline-flex items-center gap-1.5 transition">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                        <span>{{ __('Upload Barcode Photo / Image') }}</span>
                         <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
                     </label>
 
                     <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'mobile')" class="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
-                        <span>📱 {{ __('Switch to Mobile Phone Scan') }} &rarr;</span>
+                        <span>{{ __('Switch to Mobile Phone Scan') }} &rarr;</span>
                     </button>
                 </div>
 
@@ -193,14 +211,14 @@
 
         </div>
 
-        {{-- Scanned Result Preview & Multi-Attribute Feedback (Single-Scan S/N, MAC, EAN, Model) --}}
-        <div id="{{ $modalId }}-detected-pill" style="display:none;" class="p-3.5 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-400 dark:border-emerald-700 rounded-xl text-xs text-emerald-900 dark:text-emerald-100 flex flex-col gap-2 shadow-sm">
+        {{-- Scanned Result Preview & Multi-Attribute Feedback --}}
+        <div id="{{ $modalId }}-detected-pill" style="display:none;" class="p-3.5 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-400 dark:border-emerald-700 rounded-[4px] text-xs text-emerald-900 dark:text-emerald-100 flex flex-col gap-2">
             <div class="flex items-center justify-between border-b border-emerald-200 dark:border-emerald-800/80 pb-1.5">
                 <div class="flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                     <span class="font-bold text-emerald-900 dark:text-emerald-100 text-sm">{{ __('All Data Captured in 1 Scan!') }}</span>
                 </div>
-                <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full uppercase tracking-wider">{{ __('Applied') }}</span>
+                <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">{{ __('Applied') }}</span>
             </div>
             <div id="{{ $modalId }}-multi-preview" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-mono">
                 <!-- Dynamically populated tags for S/N, MAC, EAN, Model -->
@@ -211,7 +229,7 @@
         {{-- Modal Action Footer --}}
         <div class="pt-2 flex items-center justify-end">
             <button type="button" onclick="closeBarcodeScanner('{{ $modalId }}')"
-                    class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition cursor-pointer">
+                    class="h-[38px] px-4 rounded-[4px] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer">
                 {{ __('Cancel') }}
             </button>
         </div>
@@ -372,8 +390,10 @@ window.parseDeviceBarcode = function(rawCode) {
         }
     }
 
-    // 4. Multiline or Delimited Chunking (Split by newline, semicolon, comma, pipe, tab)
-    const chunks = raw.split(/[\r\n,;|/\t]+/).map(c => c.trim()).filter(Boolean);
+    // 4. Multiline or Delimited Chunking (Split by newline, semicolon, comma, pipe, tab, or spaces)
+    const chunks = (raw.includes('\n') || raw.includes(';') || raw.includes(',') || raw.includes('|') || raw.includes('\t') || raw.includes(' '))
+        ? raw.split(/[\r\n,;|/\t\s]+/).map(c => c.trim()).filter(Boolean)
+        : [raw];
     if (chunks.length > 1) {
         for (const chunk of chunks) {
             // Check MAC chunk
@@ -517,6 +537,10 @@ function closeBarcodeScanner(modalId) {
             state.stream.getTracks().forEach(t => t.stop());
             state.stream = null;
         }
+        if (state.mobileStream) {
+            state.mobileStream.getTracks().forEach(t => t.stop());
+            state.mobileStream = null;
+        }
         state.track = null;
         if (state.pollInterval) {
             clearInterval(state.pollInterval);
@@ -524,6 +548,137 @@ function closeBarcodeScanner(modalId) {
         }
     }
 }
+
+function triggerMobileDirectCapture(modalId) {
+    const input = document.getElementById(`${modalId}-mobile-capture-fallback`);
+    if (input) {
+        input.value = '';
+        input.click();
+    }
+}
+window.triggerMobileDirectCapture = triggerMobileDirectCapture;
+
+async function handleMobileDirectImageCapture(event, modalId) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const status = document.getElementById(`${modalId}-mobile-cam-status`);
+    const preview = document.getElementById(`${modalId}-mobile-cam-preview`);
+    const video = document.getElementById(`${modalId}-mobile-video`);
+    
+    if (preview) {
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+    }
+    if (video) video.classList.add('hidden');
+    if (status) status.innerText = 'Analyzing barcode from camera...';
+
+    // Decode image directly and invoke handleBarcodeDetected
+    handleBarcodeImageUpload(event, modalId);
+}
+window.handleMobileDirectImageCapture = handleMobileDirectImageCapture;
+
+async function startMobileDirectCamera(modalId, isUserGesture = true) {
+    const state = window.barcodeScannerState[modalId];
+    const video = document.getElementById(`${modalId}-mobile-video`);
+    const status = document.getElementById(`${modalId}-mobile-cam-status`);
+    const preview = document.getElementById(`${modalId}-mobile-cam-preview`);
+    if (!video) return;
+
+    const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+    if (!hasGetUserMedia) {
+        if (isUserGesture) {
+            if (status) status.innerText = 'Opening mobile camera...';
+            triggerMobileDirectCapture(modalId);
+        } else {
+            if (status) status.innerText = 'Camera Ready — Tap to scan barcode';
+        }
+        return;
+    }
+
+    try {
+        if (state && state.mobileStream) {
+            state.mobileStream.getTracks().forEach(t => t.stop());
+            state.mobileStream = null;
+        }
+
+        const facing = (state && state.facingMode) || 'environment';
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: { ideal: facing },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+            },
+            audio: false
+        });
+
+        if (state) state.mobileStream = stream;
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        if (preview) preview.classList.add('hidden');
+        await video.play();
+        if (status) status.innerText = 'Point camera at CCTV barcode...';
+
+        const scanLoop = async () => {
+            const modal = document.getElementById(modalId);
+            if (!modal || modal.style.display === 'none' || (state && state.activeTab !== 'mobile')) {
+                stream.getTracks().forEach(t => t.stop());
+                if (state) state.mobileStream = null;
+                return;
+            }
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                let detected = null;
+                if ('BarcodeDetector' in window) {
+                    try {
+                        const detector = new BarcodeDetector({
+                            formats: ['code_128', 'code_39', 'code_93', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'data_matrix']
+                        });
+                        const barcodes = await detector.detect(video);
+                        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                            detected = barcodes[0].rawValue;
+                        }
+                    } catch (e) {}
+                }
+
+                if (!detected && window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+                    try {
+                        const reader = new window.ZXing.BrowserMultiFormatReader();
+                        const res = await reader.decodeFromVideoElement(video);
+                        if (res && res.getText()) detected = res.getText();
+                    } catch (e) {}
+                }
+
+                if (detected) {
+                    stream.getTracks().forEach(t => t.stop());
+                    if (state) state.mobileStream = null;
+                    handleBarcodeDetected(modalId, detected);
+                    return;
+                }
+            }
+
+            requestAnimationFrame(scanLoop);
+        };
+        requestAnimationFrame(scanLoop);
+    } catch (err) {
+        console.warn('Failed to start mobile direct stream, falling back to camera snap:', err);
+        if (isUserGesture) {
+            if (status) status.innerText = 'Opening mobile camera...';
+            triggerMobileDirectCapture(modalId);
+        } else {
+            if (status) status.innerText = 'Camera Ready — Tap to scan barcode';
+        }
+    }
+}
+window.startMobileDirectCamera = startMobileDirectCamera;
+
+function switchMobileDirectCamera(modalId) {
+    const state = window.barcodeScannerState[modalId];
+    if (!state) return;
+    state.facingMode = (state.facingMode === 'user') ? 'environment' : 'user';
+    startMobileDirectCamera(modalId, true);
+}
+window.switchMobileDirectCamera = switchMobileDirectCamera;
 
 function switchScannerMode(modalId, mode) {
     const state = window.barcodeScannerState[modalId];
@@ -541,24 +696,12 @@ function switchScannerMode(modalId, mode) {
     if (isMachine) {
         // Machine / Scanner Gun Tab Active
         if (laptopTab) {
-            laptopTab.style.backgroundColor = '#2563eb';
-            laptopTab.style.color = '#ffffff';
-            laptopTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs bg-blue-600 text-white";
-            const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
-            if (ltText) {
-                ltText.style.color = '#ffffff';
-                ltText.className = "font-bold text-white";
-            }
+            laptopTab.style.cssText = '';
+            laptopTab.className = "px-4 py-2.5 text-sm font-semibold border-b-2 border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)] -mb-px cursor-pointer transition-colors";
         }
         if (mobileTab) {
-            mobileTab.style.backgroundColor = 'transparent';
-            mobileTab.style.color = '#334155';
-            mobileTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
-            const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
-            if (mbText) {
-                mbText.style.color = '#334155';
-                mbText.className = "font-bold text-slate-700 dark:text-slate-300";
-            }
+            mobileTab.style.cssText = '';
+            mobileTab.className = "px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 -mb-px cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 transition-colors";
         }
         if (laptopPane) laptopPane.style.display = 'block';
         if (mobilePane) mobilePane.style.display = 'none';
@@ -579,24 +722,12 @@ function switchScannerMode(modalId, mode) {
     } else {
         // Mobile Based Scan Tab Active
         if (laptopTab) {
-            laptopTab.style.backgroundColor = 'transparent';
-            laptopTab.style.color = '#334155';
-            laptopTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
-            const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
-            if (ltText) {
-                ltText.style.color = '#334155';
-                ltText.className = "font-bold text-slate-700 dark:text-slate-300";
-            }
+            laptopTab.style.cssText = '';
+            laptopTab.className = "px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 -mb-px cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 transition-colors";
         }
         if (mobileTab) {
-            mobileTab.style.backgroundColor = '#2563eb';
-            mobileTab.style.color = '#ffffff';
-            mobileTab.className = "py-2.5 px-3 rounded-lg font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-xs bg-blue-600 text-white";
-            const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
-            if (mbText) {
-                mbText.style.color = '#ffffff';
-                mbText.className = "font-bold text-white";
-            }
+            mobileTab.style.cssText = '';
+            mobileTab.className = "px-4 py-2.5 text-sm font-semibold border-b-2 border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)] -mb-px cursor-pointer transition-colors";
         }
         if (laptopPane) laptopPane.style.display = 'none';
         if (mobilePane) mobilePane.style.display = 'block';
@@ -606,6 +737,7 @@ function switchScannerMode(modalId, mode) {
         if (onMobileDevice) {
             if (desktopView) desktopView.style.display = 'none';
             if (phoneView) phoneView.style.display = 'block';
+            setTimeout(() => startMobileDirectCamera(modalId, false), 150);
         } else {
             if (desktopView) desktopView.style.display = 'block';
             if (phoneView) phoneView.style.display = 'none';
@@ -624,55 +756,67 @@ function switchScannerMode(modalId, mode) {
         const video = document.getElementById(`${modalId}-video`);
         if (video) video.srcObject = null;
 
-        // Generate session token and display QR code
+        // Request server-generated pairing token and render QR locally
         const modal = document.getElementById(modalId);
-        const customIpEl = document.getElementById(`${modalId}-custom-ip`);
-        let hostAndPort = customIpEl && customIpEl.value.trim() ? customIpEl.value.trim() : '';
-        if (!hostAndPort) {
-            const lanIp = (modal && modal.dataset.lanIp) ? modal.dataset.lanIp : window.location.hostname;
-            const port = window.location.port ? (':' + window.location.port) : '';
-            hostAndPort = lanIp + port;
-        }
-        hostAndPort = hostAndPort.replace(/^https?:\/\//i, '');
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        fetch('{{ route("scanner.pairings.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({})
+        })
+        .then(r => r.ok ? r.json() : Promise.reject(new Error('Pairing failed')))
+        .then(async pairing => {
+            const sessionToken = pairing.token;
+            state.sessionToken = sessionToken;
+            const baseUrl = pairing.url || `${window.location.origin}/mobile-scanner/${sessionToken}`;
+            const sep = baseUrl.includes('?') ? '&' : '?';
+            const mobileUrl = `${baseUrl}${sep}target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
 
-        const sessionToken = 'sc_' + Math.random().toString(36).substring(2, 10);
-        state.sessionToken = sessionToken;
+            const qrImg = document.getElementById(`${modalId}-qr-img`);
+            if (qrImg && window.QRCode && typeof window.QRCode.toDataURL === 'function') {
+                qrImg.src = await window.QRCode.toDataURL(mobileUrl, { width: 220, margin: 1 });
+            }
+            const directLink = document.getElementById(`${modalId}-direct-mobile-link`);
+            if (directLink) {
+                directLink.href = mobileUrl;
+            }
 
-        const mobileUrl = `${window.location.protocol}//${hostAndPort}/mobile-scanner/${sessionToken}?target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
-        const qrImg = document.getElementById(`${modalId}-qr-img`);
-        if (qrImg) {
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileUrl)}`;
-        }
-        const directLink = document.getElementById(`${modalId}-direct-mobile-link`);
-        if (directLink) {
-            directLink.href = mobileUrl;
-        }
-
-        // Start polling for remote scan from smartphone
-        if (state.pollInterval) clearInterval(state.pollInterval);
-        const mobileStatus = document.getElementById(`${modalId}-mobile-status`);
-        state.pollInterval = setInterval(async () => {
-            try {
-                const res = await fetch(`/api/mobile-scanner/poll/${sessionToken}`);
-                const data = await res.json();
-                if (data && (data.status === 'scanned' || data.code)) {
-                    clearInterval(state.pollInterval);
-                    state.pollInterval = null;
-                    if (mobileStatus) {
-                        mobileStatus.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-bold">✓ Scanned from phone!</span>`;
+            if (state.pollInterval) clearInterval(state.pollInterval);
+            const mobileStatus = document.getElementById(`${modalId}-mobile-status`);
+            state.pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/mobile-scanner/poll/${sessionToken}`, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const scannedCode = (Array.isArray(data.codes) && data.codes.length > 0)
+                        ? data.codes[data.codes.length - 1].code
+                        : data.code;
+                    if (data && data.status === 'scanned' && scannedCode) {
+                        clearInterval(state.pollInterval);
+                        state.pollInterval = null;
+                        if (mobileStatus) {
+                            mobileStatus.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-bold">Scanned from phone.</span>`;
+                        }
+                        handleBarcodeDetected(modalId, scannedCode);
+                    } else if (data && data.status === 'connected') {
+                        if (mobileStatus) {
+                            mobileStatus.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">Phone linked. Point camera at barcode.</span>`;
+                        }
                     }
-                    handleBarcodeDetected(modalId, data.code);
-                } else if (data && data.status === 'connected') {
-                    if (mobileStatus) {
-                        mobileStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-emerald-600 dark:text-emerald-400 font-semibold">Phone linked! Point camera at barcode...</span>`;
-                    }
-                }
-            } catch (err) {}
-        }, 1200);
+                } catch (err) {}
+            }, 1200);
+        })
+        .catch(() => {});
     }
 }
 
-function updateScannerQrUrl(modalId) {
+async function updateScannerQrUrl(modalId) {
     const state = window.barcodeScannerState[modalId];
     if (!state || !state.sessionToken) return;
     const modal = document.getElementById(modalId);
@@ -687,8 +831,8 @@ function updateScannerQrUrl(modalId) {
 
     const mobileUrl = `${window.location.protocol}//${hostAndPort}/mobile-scanner/${state.sessionToken}?target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
     const qrImg = document.getElementById(`${modalId}-qr-img`);
-    if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileUrl)}`;
+    if (qrImg && window.QRCode && typeof window.QRCode.toDataURL === 'function') {
+        qrImg.src = await window.QRCode.toDataURL(mobileUrl, { width: 220, margin: 1 });
     }
     const directLink = document.getElementById(`${modalId}-direct-mobile-link`);
     if (directLink) {
@@ -961,14 +1105,47 @@ async function handleBarcodeDetected(modalId, code) {
     const detectedText = document.getElementById(`${modalId}-detected-text`);
     const statusOverlay = document.getElementById(`${modalId}-status`);
 
+    const isStrictMac = (str) => {
+        if (!str) return false;
+        const s = String(str).replace(/^MAC[:\s=-]*/i, '').trim();
+        return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s) ||
+               (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s));
+    };
+
+    const isStrictEan = (str) => {
+        return /^\d{12,14}$/.test(String(str).trim());
+    };
+
     // SINGLE-SCAN MULTI-DATA POPULATION:
-    // Extract and populate ALL attributes (S/N, MAC, EAN, Model) simultaneously in the first scan
-    if (parsed.serial) {
+    // Strictly assign S/N, MAC, and EAN to their proper fields without cross-pollution
+    if (parsed.mac && isStrictMac(parsed.mac)) {
+        if (macInput) {
+            macInput.value = parsed.mac;
+            macInput.dispatchEvent(new Event('input', { bubbles: true }));
+            macInput.dispatchEvent(new Event('change', { bubbles: true }));
+            highlightScannerInput(macInput);
+        }
+    } else if (isStrictMac(cleanCode)) {
+        let normalized = cleanCode.replace(/^MAC[:\s=-]*/i, '').trim().toUpperCase();
+        if (normalized.length === 12 && !normalized.includes(':')) {
+            normalized = normalized.match(/.{1,2}/g).join(':');
+        }
+        if (macInput) {
+            macInput.value = normalized;
+            macInput.dispatchEvent(new Event('input', { bubbles: true }));
+            macInput.dispatchEvent(new Event('change', { bubbles: true }));
+            highlightScannerInput(macInput);
+        }
+    }
+
+    if (parsed.serial && !isStrictMac(parsed.serial)) {
         if (serialInput) {
-            serialInput.value = parsed.serial;
-            serialInput.dispatchEvent(new Event('input', { bubbles: true }));
-            serialInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(serialInput);
+            if (!isStrictEan(parsed.serial) || !serialInput.value.trim()) {
+                serialInput.value = parsed.serial;
+                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(serialInput);
+            }
         } else if (targetId && targetId !== 'mac_address_input') {
             const el = document.getElementById(targetId);
             if (el) {
@@ -978,48 +1155,22 @@ async function handleBarcodeDetected(modalId, code) {
                 highlightScannerInput(el);
             }
         }
-    }
-
-    if (parsed.mac) {
-        if (macInput) {
-            macInput.value = parsed.mac;
-            macInput.dispatchEvent(new Event('input', { bubbles: true }));
-            macInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(macInput);
-        } else if (targetId === 'mac_address_input') {
-            const el = document.getElementById(targetId);
-            if (el) {
-                el.value = parsed.mac;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-                highlightScannerInput(el);
-            }
-        }
-    }
-
-    // Fallback if neither S/N nor MAC was detected explicitly:
-    if (!parsed.serial && !parsed.mac) {
-        if (targetId === 'mac_address_input') {
-            if (macInput) {
-                macInput.value = cleanCode;
-                macInput.dispatchEvent(new Event('input', { bubbles: true }));
-                macInput.dispatchEvent(new Event('change', { bubbles: true }));
-                highlightScannerInput(macInput);
-            }
-        } else {
-            if (serialInput) {
-                serialInput.value = cleanCode;
+    } else if (!isStrictMac(cleanCode)) {
+        const cleanRaw = cleanCode.replace(/^(?:S\/N|SN|SERIAL)[:\s=-]*/i, '').trim();
+        if (serialInput) {
+            if (!isStrictEan(cleanRaw) || !serialInput.value.trim()) {
+                serialInput.value = cleanRaw;
                 serialInput.dispatchEvent(new Event('input', { bubbles: true }));
                 serialInput.dispatchEvent(new Event('change', { bubbles: true }));
                 highlightScannerInput(serialInput);
-            } else if (targetId) {
-                const el = document.getElementById(targetId);
-                if (el) {
-                    el.value = cleanCode;
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                    highlightScannerInput(el);
-                }
+            }
+        } else if (targetId && targetId !== 'mac_address_input') {
+            const el = document.getElementById(targetId);
+            if (el) {
+                el.value = cleanRaw;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(el);
             }
         }
     }
@@ -1037,29 +1188,50 @@ async function handleBarcodeDetected(modalId, code) {
         const lookupRes = await fetch(`/api/equipment/lookup-serial?${queryParams.toString()}`);
         if (lookupRes.ok) {
             lookupResult = await lookupRes.json();
-            if (lookupResult && (lookupResult.equipment_name || lookupResult.product_name)) {
-                const autoName = lookupResult.equipment_name || lookupResult.product_name;
+            if (lookupResult) {
+                const autoName = lookupResult.equipment_name || lookupResult.product_name || lookupResult.model || parsed.model;
                 const nameInput = document.getElementById('equipment_name_input') || document.querySelector('input[name="equipment_name"]');
-                if (nameInput && !nameInput.value) {
+                if (nameInput && autoName) {
                     nameInput.value = autoName;
                     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
                     nameInput.dispatchEvent(new Event('change', { bubbles: true }));
                     highlightScannerInput(nameInput);
                 }
+
+                if (serialInput && (lookupResult.serial || lookupResult.serial_number) && !serialInput.value) {
+                    serialInput.value = lookupResult.serial || lookupResult.serial_number;
+                    serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    highlightScannerInput(serialInput);
+                }
+
+                const resMac = lookupResult.mac || lookupResult.mac_address;
+                if (macInput && resMac && !macInput.value) {
+                    macInput.value = resMac;
+                    macInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    macInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    highlightScannerInput(macInput);
+                }
+
                 const productSelect = document.querySelector('select[name="product_id"]');
                 if (productSelect && lookupResult.product_id && !productSelect.value) {
                     productSelect.value = lookupResult.product_id;
                     productSelect.dispatchEvent(new Event('change', { bubbles: true }));
                 }
-                if (lookupResult.mac_address && macInput && !macInput.value) {
-                    macInput.value = lookupResult.mac_address;
-                    macInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    macInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    highlightScannerInput(macInput);
-                }
             }
         }
     } catch (e) {}
+
+    // Fallback model population from parsed barcode
+    if (parsed.model) {
+        const nameInput = document.getElementById('equipment_name_input') || document.querySelector('input[name="equipment_name"]');
+        if (nameInput && !nameInput.value) {
+            nameInput.value = parsed.model;
+            nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+            nameInput.dispatchEvent(new Event('change', { bubbles: true }));
+            highlightScannerInput(nameInput);
+        }
+    }
 
     // Multi-attribute preview inside modal
     const previewContainer = document.getElementById(`${modalId}-multi-preview`);

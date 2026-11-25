@@ -16,6 +16,7 @@ class Product extends Model
         'category',
         'brand',
         'model_no',
+        'ean',
         'description',
         'unit',
         'cost_price',

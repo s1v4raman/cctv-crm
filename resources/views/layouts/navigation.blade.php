@@ -25,7 +25,16 @@
         {{-- Technician Navigation --}}
         @if(auth()->user()->role === 'technician')
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">{{ __('Technician Portal') }}</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 flex items-center justify-between">
+                    <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">{{ __('Technician Portal') }}</span>
+                    <button type="button" 
+                            onclick="window.techVoice ? window.techVoice.handleFabClick() : null" 
+                            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 transition cursor-pointer"
+                            title="{{ __('Instant Voice Dictation / Speech Recognition') }}">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
+                        <span>{{ __('Voice') }}</span>
+                    </button>
+                </div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Field Work Orders (Wrench icon) --}}

@@ -34,6 +34,33 @@
                 document.documentElement.classList.remove('dark'); document.documentElement.setAttribute('data-theme', 'light');
             }
         }
+
+        // Early form border color hydration: tracks active user theme accent
+        let earlyAccent = null;
+        @if(auth()->check())
+            earlyAccent = localStorage.getItem('crm_accent_user_{{ auth()->id() }}');
+        @endif
+        if (!earlyAccent) earlyAccent = localStorage.getItem('crm_accent');
+        if (!earlyAccent) earlyAccent = {!! json_encode($userAccent ?? (auth()->check() ? auth()->user()->theme_accent : null)) !!} || '#2563eb';
+
+        let earlyFormBorder = null;
+        @if(auth()->check())
+            earlyFormBorder = localStorage.getItem('crm_form_border_user_{{ auth()->id() }}');
+        @endif
+        if (!earlyFormBorder) earlyFormBorder = localStorage.getItem('crm_form_border_color');
+        if (!earlyFormBorder || earlyFormBorder === '#2ba000') earlyFormBorder = earlyAccent;
+
+        document.documentElement.style.setProperty('--crm-form-border-color', earlyFormBorder);
+        let borderRgb = '37, 99, 235';
+        try {
+            let cleanBorder = earlyFormBorder.replace('#', '');
+            if (cleanBorder.length === 3) cleanBorder = cleanBorder.split('').map(function(c) { return c + c; }).join('');
+            let numBorder = parseInt(cleanBorder, 16);
+            if (!isNaN(numBorder)) {
+                borderRgb = ((numBorder >> 16) & 255) + ', ' + ((numBorder >> 8) & 255) + ', ' + (numBorder & 255);
+            }
+        } catch(e) {}
+        document.documentElement.style.setProperty('--crm-form-border-rgb', borderRgb);
     } catch(e) {}
 
     // Paper is white: a page printed from dark mode (quotation, invoice, payslip) prints in the light theme
@@ -65,12 +92,64 @@
     const accentKey = currentUserId ? ('crm_accent_user_' + currentUserId) : 'crm_accent';
     const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
     const styleKey = currentUserId ? ('crm_theme_style_user_' + currentUserId) : 'crm_theme_style';
+    const formBorderKey = currentUserId ? ('crm_form_border_user_' + currentUserId) : 'crm_form_border_color';
 
     window.crmCurrentUserId = currentUserId;
     window.crmAccentStorageKey = accentKey;
     window.crmModeStorageKey = modeKey;
     window.crmStyleStorageKey = styleKey;
+    window.crmFormBorderStorageKey = formBorderKey;
     window.crmUserDefaultAccent = dbAccent;
+
+    // Changeable Form Elements Border & Outline Color Engine
+    window.setFormBorderColor = function(hex, persist = true) {
+        if (!hex) hex = window.crmActiveAccent || dbAccent || '#2563eb';
+        hex = hex.trim();
+        let tr = 37, tg = 99, tb = 235;
+        try {
+            let clean = hex.replace('#', '');
+            if (clean.length === 3) clean = clean.split('').map(function(c) { return c + c; }).join('');
+            let num = parseInt(clean, 16);
+            if (!isNaN(num)) {
+                tr = (num >> 16) & 255;
+                tg = (num >> 8) & 255;
+                tb = num & 255;
+            }
+        } catch(e) {}
+
+        document.documentElement.style.setProperty('--crm-form-border-color', hex);
+        document.documentElement.style.setProperty('--crm-form-border-rgb', tr + ', ' + tg + ', ' + tb);
+
+        if (persist) {
+            try {
+                localStorage.setItem(formBorderKey, hex);
+                localStorage.setItem('crm_form_border_color', hex);
+            } catch(e) {}
+        }
+
+        let borderStyleEl = document.getElementById('crm-dynamic-form-border-overrides');
+        if (!borderStyleEl) {
+            borderStyleEl = document.createElement('style');
+            borderStyleEl.id = 'crm-dynamic-form-border-overrides';
+            (document.head || document.documentElement).appendChild(borderStyleEl);
+        }
+        borderStyleEl.textContent = `
+            :root {
+                --crm-form-border-color: ${hex} !important;
+                --crm-form-border-rgb: ${tr}, ${tg}, ${tb} !important;
+            }
+        `;
+
+        window.dispatchEvent(new CustomEvent('crm:form-border-changed', { detail: { color: hex } }));
+    };
+
+    window.getFormBorderColor = function() {
+        return getComputedStyle(document.documentElement).getPropertyValue('--crm-form-border-color').trim() || window.crmActiveAccent || dbAccent || '#2563eb';
+    };
+
+    window.resetFormBorderColor = function() {
+        window.setFormBorderColor(window.crmActiveAccent || dbAccent || '#2563eb', true);
+    };
 
     // Official Corporate Brand Logo Manager for Precision IT Systems
     window.recolorCrmBrandLogo = function(hex) {
@@ -117,9 +196,28 @@
         const linkDark = linkShade(255, function(l) { return l >= 0.28; });
         const linkDarkHover = linkShade(255, function(l) { return l >= 0.42; });
 
+        window.crmActiveAccent = hex;
         document.documentElement.style.setProperty('--crm-accent', hex);
         document.documentElement.style.setProperty('--crm-accent-hover', hoverHex);
         document.documentElement.style.setProperty('--crm-accent-rgb', tr + ', ' + tg + ', ' + tb);
+        document.documentElement.style.setProperty('--crm-form-border-color', hex);
+        document.documentElement.style.setProperty('--crm-form-border-rgb', tr + ', ' + tg + ', ' + tb);
+
+        try {
+            localStorage.setItem(formBorderKey, hex);
+            localStorage.setItem('crm_form_border_color', hex);
+        } catch(e) {}
+
+        let borderStyleEl = document.getElementById('crm-dynamic-form-border-overrides');
+        if (borderStyleEl) {
+            borderStyleEl.textContent = `
+                :root {
+                    --crm-form-border-color: ${hex} !important;
+                    --crm-form-border-rgb: ${tr}, ${tg}, ${tb} !important;
+                }
+            `;
+        }
+        window.dispatchEvent(new CustomEvent('crm:form-border-changed', { detail: { color: hex } }));
 
         let styleEl = document.getElementById('crm-dynamic-theme-overrides');
         if (!styleEl) {
@@ -140,6 +238,8 @@
                 --crm-accent-rgb: ${tr}, ${tg}, ${tb} !important;
                 --crm-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
                 --crm-accent-border: rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
+                --crm-form-border-color: ${hex} !important;
+                --crm-form-border-rgb: ${tr}, ${tg}, ${tb} !important;
                 --brand-blue: ${hex} !important;
                 --brand-blue-hover: ${hoverHex} !important;
                 --primary-btn-bg: ${hex} !important;
@@ -326,9 +426,23 @@
             html.dark .tech-card button svg,
             html.dark a.btn-secondary svg,
             html.dark .crm-label svg,
-            html.dark label svg {
-                stroke: #ffffff !important;
-                color: #ffffff !important;
+            html.dark label svg,
+            html.dark a[href^="tel:"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Map"] svg,
+            html.dark svg.text-black,
+            html.dark svg[class*="text-black"],
+            html.dark svg[stroke="#000000"],
+            html.dark svg[stroke="#000"],
+            html.dark svg[stroke="black"],
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]),
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]),
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) {
+                stroke: #e2e8f0 !important;
+                color: #e2e8f0 !important;
                 fill: none !important;
             }
             html.dark .btn-secondary svg *,
@@ -336,8 +450,41 @@
             html.dark .tech-card a svg *,
             html.dark .tech-card button svg *,
             html.dark .crm-label svg *,
-            html.dark label svg * {
-                stroke: #ffffff !important;
+            html.dark label svg *,
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Map"] svg *,
+            html.dark svg.text-black *,
+            html.dark svg[class*="text-black"] *,
+            html.dark svg[stroke="#000000"] *,
+            html.dark svg[stroke="#000"] *,
+            html.dark svg[stroke="black"] *,
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]) *,
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) *,
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) * {
+                stroke: #e2e8f0 !important;
+                fill: none !important;
+            }
+
+            /* Absolute Dark Mode Call & Action SVG Visibility (Always luminous currentColor, never dark/black) */
+            html.dark a[href^="tel:"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Call Technician"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Map"] svg {
+                stroke: currentColor !important;
+                color: inherit !important;
+                fill: none !important;
+            }
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Call Technician"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Map"] svg * {
+                stroke: currentColor !important;
                 fill: none !important;
             }
 
@@ -672,20 +819,299 @@
                 color: #ffffff !important;
             }
 
-            /* 11. FORM INPUT FOCUS & CHECKBOXES */
-            input[type="checkbox"]:checked,
-            input[type="radio"]:checked {
-                accent-color: ${hex} !important;
+            /* 11. UNIVERSAL FORM ELEMENT BORDER & OUTLINE SYSTEM (ALL 27 FORM CONTROLS)
+               Default: #2ba000 (crisp 2px solid outline with -1px offset, non-shifting)
+               Changeable dynamically via window.setFormBorderColor(hex) */
+
+            /* 1. Label */
+            label.form-label,
+            label.crm-label,
+            .crm-input-group label,
+            .form-group label,
+            label.block.font-semibold,
+            label.block.text-sm {
+                transition: color 0.15s ease, border-color 0.15s ease;
+            }
+            label:has(input:focus),
+            label:has(textarea:focus),
+            label:has(select:focus),
+            .crm-input-group:focus-within > label,
+            .form-group:focus-within > label {
+                color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+            label.crm-option-label:focus-within,
+            label.crm-option-label.is-active,
+            label.crm-pill-label:has(input:checked) {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: -1px !important;
             }
 
-            input:focus,
-            select:focus,
+            /* 2. Text field / Text box */
+            input[type="text"]:focus,
+            input[type="text"]:focus-visible,
+            input[type="text"]:active,
+            input:not([type]):focus,
+            input:not([type]):focus-visible,
+            input.crm-input:focus,
+            input.crm-input:focus-visible,
+            .crm-input:focus,
+            .crm-input:focus-visible,
+            input.form-control:focus,
+            input.form-input:focus,
+
+            /* 3. Text area */
             textarea:focus,
+            textarea:focus-visible,
+            textarea:active,
+            textarea.crm-textarea:focus,
+            textarea.crm-textarea:focus-visible,
+            .crm-textarea:focus,
+            .crm-textarea:focus-visible,
+
+            /* 4. Search field / Search bar */
             input[type="search"]:focus,
-            input[placeholder*="Search"]:focus {
-                border-color: ${hex} !important;
-                --tw-ring-color: ${hex} !important;
-                outline-color: ${hex} !important;
+            input[type="search"]:focus-visible,
+            input[type="search"]:active,
+            input[placeholder*="Search" i]:focus,
+            input[placeholder*="Search" i]:focus-visible,
+            input[placeholder*="search" i]:focus,
+            input[placeholder*="search" i]:focus-visible,
+            input[name*="search" i]:focus,
+            input[id*="search" i]:focus,
+            .crm-search-input:focus,
+            .crm-search-input:focus-visible,
+            .ld-search-input:focus,
+            .crm-combobox-search-input:focus,
+            .crm-combobox-search-input:focus-visible,
+
+            /* 5. Email field */
+            input[type="email"]:focus,
+            input[type="email"]:focus-visible,
+            input[type="email"]:active,
+
+            /* 6. Password field */
+            input[type="password"]:focus,
+            input[type="password"]:focus-visible,
+            input[type="password"]:active,
+
+            /* 7. Number field */
+            input[type="number"]:focus,
+            input[type="number"]:focus-visible,
+            input[type="number"]:active,
+
+            /* 8. Phone field */
+            input[type="tel"]:focus,
+            input[type="tel"]:focus-visible,
+            input[type="tel"]:active,
+            input[name*="phone" i]:focus,
+            input[name*="mobile" i]:focus,
+
+            /* 9. Dropdown / Select */
+            select:focus,
+            select:active,
+            select:focus-visible,
+            select.crm-select:focus,
+            select.crm-select:active,
+            select.crm-select:focus-visible,
+            .crm-select:focus,
+            .crm-select:active,
+            .crm-select:focus-visible,
+
+            /* 10. Searchable dropdown & 21. Dropdown trigger */
+            .crm-combobox-trigger:focus,
+            .crm-combobox-trigger:focus-visible,
+            .crm-combobox-trigger:active,
+            .crm-combobox-trigger[aria-expanded="true"],
+            .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            [data-combobox].is-open .crm-combobox-trigger,
+            .crm-combobox-wrapper:focus-within .crm-combobox-trigger,
+
+            /* 13. Date picker */
+            input[type="date"]:focus,
+            input[type="date"]:focus-visible,
+            input[type="date"]:active,
+            input[type="datetime-local"]:focus,
+            input[type="datetime-local"]:focus-visible,
+            .crm-datepicker:focus,
+            .crm-datepicker:active,
+
+            /* 14. Time picker */
+            input[type="time"]:focus,
+            input[type="time"]:focus-visible,
+            input[type="time"]:active {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: -1px !important;
+                box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                --tw-ring-color: transparent !important;
+                --tw-ring-shadow: 0 0 #0000 !important;
+                --tw-ring-offset-shadow: 0 0 #0000 !important;
+                --tw-shadow: 0 0 #0000 !important;
+            }
+
+            /* 11. Checkbox */
+            input[type="checkbox"]:focus,
+            input[type="checkbox"]:focus-visible,
+            .crm-checkbox:focus {
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 1px !important;
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+            input[type="checkbox"]:checked,
+            .crm-checkbox:checked {
+                accent-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+
+            /* 12. Radio button */
+            input[type="radio"]:focus,
+            input[type="radio"]:focus-visible,
+            .crm-radio:focus {
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 1px !important;
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+            input[type="radio"]:checked,
+            .crm-radio:checked {
+                accent-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+
+            /* 15. File upload */
+            input[type="file"]:focus,
+            input[type="file"]:focus-visible,
+            .crm-file-upload:focus-within,
+            .crm-file-dropzone:focus-within,
+            .crm-file-dropzone.dragover {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: -1px !important;
+            }
+            input[type="file"]::file-selector-button {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                transition: all 0.15s ease;
+            }
+            input[type="file"]::file-selector-button:hover {
+                outline: 1px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+
+            /* 16. Slider / Range input */
+            input[type="range"]:focus,
+            input[type="range"]:focus-visible,
+            .crm-range:focus {
+                accent-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 2px !important;
+            }
+
+            /* 17. Button */
+            button:focus-visible:not(.btn-no-outline),
+            .crm-btn:focus-visible,
+            .btn:focus-visible,
+            button.crm-btn-secondary:focus-visible {
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 1px !important;
+            }
+
+            /* 18. Submit button */
+            button[type="submit"]:focus-visible,
+            input[type="submit"]:focus-visible,
+            .crm-btn-primary:focus-visible {
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 1px !important;
+            }
+
+            /* 19. Reset button */
+            button[type="reset"]:focus-visible,
+            input[type="reset"]:focus-visible {
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: 1px !important;
+            }
+
+            /* 20. Placeholder text */
+            input::placeholder,
+            textarea::placeholder,
+            .crm-combobox-search-input::placeholder {
+                opacity: 0.75;
+            }
+
+            /* 22. Dropdown panel */
+            .crm-combobox-dropdown,
+            .crm-combobox-menu,
+            [data-combobox-dropdown],
+            .crm-combobox-panel {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+
+            /* 23. Option / List item */
+            .crm-combobox-item:hover,
+            .crm-combobox-item.is-highlighted,
+            .crm-combobox-option:hover,
+            [role="option"]:hover {
+                background-color: rgba(var(--crm-form-border-rgb, 43, 160, 0), 0.08) !important;
+            }
+            html.dark .crm-combobox-item:hover,
+            html.dark .crm-combobox-item.is-highlighted,
+            html.dark .crm-combobox-option:hover,
+            html.dark [role="option"]:hover {
+                background-color: rgba(var(--crm-form-border-rgb, 43, 160, 0), 0.16) !important;
+            }
+
+            /* 24. Results count */
+            .crm-combobox-count,
+            .crm-combobox-results-count,
+            .crm-results-count {
+                color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                border-color: rgba(var(--crm-form-border-rgb, 43, 160, 0), 0.3) !important;
+            }
+
+            /* 25. Selected-state indicator */
+            .crm-combobox-item.is-selected svg,
+            .is-selected-indicator,
+            [aria-selected="true"] .crm-combobox-check {
+                color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                stroke: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            }
+
+            /* 26. Secondary text / Description */
+            .crm-combobox-item-desc,
+            .form-text,
+            .form-description,
+            .crm-secondary-text {
+                opacity: 0.85;
+            }
+
+            .crm-combobox-trigger,
+            .crm-combobox-trigger:hover,
+            .crm-combobox-trigger:focus,
+            .crm-combobox-trigger:focus-visible,
+            .crm-combobox-trigger:active,
+            .crm-combobox-trigger[aria-expanded="true"],
+            .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            select:active,
+            select.crm-select:active,
+            .crm-select:active {
+                background-color: var(--card-bg, #ffffff) !important;
+                background: var(--card-bg, #ffffff) !important;
+                background-image: none !important;
+                transform: none !important;
+            }
+            html.dark .crm-combobox-trigger,
+            html.dark .crm-combobox-trigger:hover,
+            html.dark .crm-combobox-trigger:focus,
+            html.dark .crm-combobox-trigger:focus-visible,
+            html.dark .crm-combobox-trigger:active,
+            html.dark .crm-combobox-trigger[aria-expanded="true"],
+            html.dark .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            html.dark select:active,
+            html.dark select.crm-select:active,
+            html.dark .crm-select:active {
+                background-color: #0f172a !important;
+                background: #0f172a !important;
+                background-image: none !important;
+                transform: none !important;
             }
 
             /* 12. TEXT ACCENTS, LABELS & ALL MODULE CONTENT LINKS */

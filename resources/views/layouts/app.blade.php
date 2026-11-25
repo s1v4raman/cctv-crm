@@ -106,6 +106,46 @@
         <!-- Scripts & Styles via Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        <script>
+            // Cleanup candidates: thin wrappers delegating to the Alpine hardwareScannerModalComponent
+            window.switchHardwareScannerTab = function(tab) {
+                if (window.__hardwareScannerInstance && typeof window.__hardwareScannerInstance.switchTab === 'function') {
+                    window.__hardwareScannerInstance.switchTab(tab || 'mobile');
+                }
+            };
+
+            window.openHardwareScannerModal = function(tabOrContext, extraContext) {
+                var tab = 'auto';
+                var context = {};
+                if (tabOrContext && typeof tabOrContext === 'object') {
+                    context = tabOrContext;
+                    tab = context.tab || 'auto';
+                } else {
+                    tab = tabOrContext || 'auto';
+                    if (extraContext && typeof extraContext === 'object') {
+                        context = extraContext;
+                    }
+                }
+                if (window.__hardwareScannerInstance && typeof window.__hardwareScannerInstance.openModal === 'function') {
+                    window.__hardwareScannerInstance.openModal(tab, context);
+                } else {
+                    window.dispatchEvent(new CustomEvent('open-hardware-scanner', { detail: Object.assign({ tab: tab }, context) }));
+                }
+            };
+
+            window.closeHardwareScannerModal = function() {
+                if (window.__hardwareScannerInstance && typeof window.__hardwareScannerInstance.closeModal === 'function') {
+                    window.__hardwareScannerInstance.closeModal();
+                }
+            };
+
+            window.startMobileCamera = function(isUserGesture) {
+                if (window.__hardwareScannerInstance && typeof window.__hardwareScannerInstance.startMobileCamera === 'function') {
+                    window.__hardwareScannerInstance.startMobileCamera(isUserGesture !== false);
+                }
+            };
+        </script>
+
         {{-- Technicians can switch their pages to Tamil, and fill text boxes by voice or the Tamil keyboard --}}
         @if(auth()->user()->canChooseLanguage())
             <x-tamil-font />
@@ -291,34 +331,149 @@
                 line-height: 1.5 !important;
             }
 
-            /* Distinct Focus Ring */
-            input:focus:not([class*="border-0"]),
-            select:focus:not([class*="border-0"]),
-            textarea:focus:not([class*="border-0"]),
-            .crm-input:focus,
-            .crm-select:focus,
+            /* Dedicated Crisp Solid Outline on Search Bars, Combobox Triggers, Selects & Searchable Inputs (Zero Glow / Zero Blur) */
+            .crm-combobox-trigger:focus,
+            .crm-combobox-trigger:focus-visible,
+            .crm-combobox-trigger:active,
+            .crm-combobox-trigger[aria-expanded="true"],
+            .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            .crm-combobox-search-input:focus,
+            .crm-combobox-search-input:focus-visible,
+            input[type="search"]:focus,
+            input[type="search"]:focus-visible,
+            input[placeholder*="Search" i]:focus,
+            input[placeholder*="Search" i]:focus-visible,
+            input[placeholder*="search" i]:focus,
+            input[placeholder*="search" i]:focus-visible,
+            input[name*="search" i]:focus,
+            input[id*="search" i]:focus,
             .crm-search-input:focus,
-            .crm-cal-input:focus,
+            .crm-search-input:focus-visible,
             .crm-cal-select:focus,
+            .crm-cal-select:active,
+            select:focus,
+            select:active,
+            select.crm-select:focus,
+            select.crm-select:active,
+            .crm-select:focus,
+            .crm-select:active {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: -1px !important;
+                box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                --tw-ring-color: transparent !important;
+                --tw-ring-shadow: 0 0 #0000 !important;
+                --tw-ring-offset-shadow: 0 0 #0000 !important;
+                --tw-shadow: 0 0 #0000 !important;
+            }
+            .crm-combobox-trigger,
+            .crm-combobox-trigger:hover,
+            .crm-combobox-trigger:focus,
+            .crm-combobox-trigger:focus-visible,
+            .crm-combobox-trigger:active,
+            .crm-combobox-trigger[aria-expanded="true"],
+            .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            select:active,
+            select.crm-select:active,
+            .crm-select:active {
+                background-color: var(--card-bg, #ffffff) !important;
+                background: var(--card-bg, #ffffff) !important;
+                background-image: none !important;
+                transform: none !important;
+            }
+            html.dark .crm-combobox-trigger,
+            html.dark .crm-combobox-trigger:hover,
+            html.dark .crm-combobox-trigger:focus,
+            html.dark .crm-combobox-trigger:focus-visible,
+            html.dark .crm-combobox-trigger:active,
+            html.dark .crm-combobox-trigger[aria-expanded="true"],
+            html.dark .crm-searchable-combobox.is-open .crm-combobox-trigger,
+            html.dark select:active,
+            html.dark select.crm-select:active,
+            html.dark .crm-select:active {
+                background-color: #0f172a !important;
+                background: #0f172a !important;
+                background-image: none !important;
+                transform: none !important;
+            }
+
+            /* Standard Form Inputs Focus */
+            input:focus:not([class*="border-0"]):not([type="search"]):not([placeholder*="Search"]):not([placeholder*="search"]):not([name*="search"]):not([id*="search"]),
+            textarea:focus:not([class*="border-0"]),
+            .crm-input:focus:not(.crm-search-input),
+            .crm-cal-input:focus,
             .ts-control.focus,
             .ts-control:focus-within {
                 border-color: var(--crm-accent, #2563eb) !important;
                 box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
                 outline: none !important;
             }
-            html.dark input:focus:not([class*="border-0"]),
-            html.dark select:focus:not([class*="border-0"]),
+            html.dark input:focus:not([class*="border-0"]):not([type="search"]):not([placeholder*="Search"]):not([placeholder*="search"]):not([name*="search"]):not([id*="search"]),
             html.dark textarea:focus:not([class*="border-0"]),
-            html.dark .crm-input:focus,
-            html.dark .crm-select:focus,
-            html.dark .crm-search-input:focus,
+            html.dark .crm-input:focus:not(.crm-search-input),
             html.dark .crm-cal-input:focus,
-            html.dark .crm-cal-select:focus,
             html.dark .ts-control.focus,
             html.dark .ts-control:focus-within {
                 border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
                 box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
                 outline: none !important;
+            }
+
+            /* Dark Mode Universal Action & Detail Icons: Clean Luminous White & Light Slate (Strictly Never Black in Dark Mode) */
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]),
+            html.dark a[href^="tel:"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Map"] svg,
+            html.dark svg.text-black,
+            html.dark svg[class*="text-black"],
+            html.dark svg[stroke="#000000"],
+            html.dark svg[stroke="#000"],
+            html.dark svg[stroke="black"],
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]),
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) {
+                stroke: #e2e8f0 !important;
+                color: #e2e8f0 !important;
+                fill: none !important;
+            }
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]) *,
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Map"] svg *,
+            html.dark svg.text-black *,
+            html.dark svg[class*="text-black"] *,
+            html.dark svg[stroke="#000000"] *,
+            html.dark svg[stroke="#000"] *,
+            html.dark svg[stroke="black"] *,
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) *,
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) * {
+                stroke: #e2e8f0 !important;
+                fill: none !important;
+            }
+
+            /* Absolute Dark Mode Call & Action SVG Visibility (Always luminous currentColor, never dark/black) */
+            html.dark a[href^="tel:"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Call Technician"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Map"] svg {
+                stroke: currentColor !important;
+                color: inherit !important;
+                fill: none !important;
+            }
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Call Technician"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Map"] svg * {
+                stroke: currentColor !important;
+                fill: none !important;
             }
 
             /* Universal Data Tables: Crisp Single 1px Border System (Fixes Overlapping / Double Borders) */
@@ -621,6 +776,62 @@
                 outline: none !important;
             }
 
+            /* Dark Mode Universal Action & Detail Icons: Clean Luminous White & Light Slate (Strictly Never Black in Dark Mode) */
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg),
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]),
+            html.dark a[href^="tel:"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Map"] svg,
+            html.dark svg.text-black,
+            html.dark svg[class*="text-black"],
+            html.dark svg[stroke="#000000"],
+            html.dark svg[stroke="#000"],
+            html.dark svg[stroke="black"],
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]),
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) {
+                stroke: #e2e8f0 !important;
+                color: #e2e8f0 !important;
+                fill: none !important;
+            }
+            html.dark a svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark button svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]):not(.crm-brand-logo svg):not(.theme-toggle svg) *,
+            html.dark .inline-flex svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-blue"]):not([class*="text-indigo"]) *,
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Map"] svg *,
+            html.dark svg.text-black *,
+            html.dark svg[class*="text-black"] *,
+            html.dark svg[stroke="#000000"] *,
+            html.dark svg[stroke="#000"] *,
+            html.dark svg[stroke="black"] *,
+            html.dark table td svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) *,
+            html.dark .detail-table svg:not(.icon-solid):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]) * {
+                stroke: #e2e8f0 !important;
+                fill: none !important;
+            }
+
+            /* Absolute Dark Mode Call & Action SVG Visibility (Always luminous currentColor, never dark/black) */
+            html.dark a[href^="tel:"] svg,
+            html.dark a[title*="Call"] svg,
+            html.dark a[title*="Call Technician"] svg,
+            html.dark a[href*="maps"] svg,
+            html.dark a[title*="Map"] svg {
+                stroke: currentColor !important;
+                color: inherit !important;
+                fill: none !important;
+            }
+            html.dark a[href^="tel:"] svg *,
+            html.dark a[title*="Call"] svg *,
+            html.dark a[title*="Call Technician"] svg *,
+            html.dark a[href*="maps"] svg *,
+            html.dark a[title*="Map"] svg * {
+                stroke: currentColor !important;
+                fill: none !important;
+            }
+
             .crm-topbar #header-theme-toggle-btn {
                 background-color: var(--card-bg) !important;
                 border: 1px solid var(--card-border) !important;
@@ -664,7 +875,7 @@
             }
 
             /* Active button feedback */
-            button:active:not(:disabled),
+            button:active:not(:disabled):not(.crm-combobox-trigger):not(.crm-select):not(.crm-input),
             .btn-primary:active,
             .btn-blue:active {
                 transform: scale(0.98);
@@ -982,10 +1193,14 @@
             }
 
             select:focus,
-            .crm-select:focus {
-                border-color: var(--crm-accent, #2563eb) !important;
-                outline: none !important;
-                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
+            select:active,
+            .crm-select:focus,
+            .crm-select:active {
+                border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+                outline-offset: -1px !important;
+                box-shadow: none !important;
+                -webkit-box-shadow: none !important;
             }
 
             /* Clean Single-Border Dropdown Select Styling (Matches Reference Design) */
@@ -1250,6 +1465,20 @@
                     e.stopPropagation();
                     window.crmSidebar.toggle();
                     return;
+                }
+
+                // 2. Navigation: Ctrl+Z (Go back) & Ctrl+X (Go forward) when not typing in form inputs
+                if (!isInput && (e.ctrlKey || e.metaKey)) {
+                    if (e.key === 'z' || e.key === 'Z') {
+                        e.preventDefault();
+                        window.history.back();
+                        return;
+                    }
+                    if (e.key === 'x' || e.key === 'X') {
+                        e.preventDefault();
+                        window.history.forward();
+                        return;
+                    }
                 }
 
                 // Ctrl+K / Cmd+K (search) is handled once, by the header component (globalHeader)
@@ -2150,6 +2379,8 @@
                         $crmShortcuts = [
                             [['Ctrl', 'K'], 'Search leads, jobs, quotes, equipment'],
                             [['Ctrl', 'B'], 'Collapse or expand the sidebar'],
+                            [['Ctrl', 'Z'], 'Go back to previous page / module'],
+                            [['Ctrl', 'X'], 'Go forward to next page / module'],
                             [['Alt', 'T'], 'Switch between day and night mode'],
                             [['Alt', 'D'], 'Go to dashboard'],
                             [['Alt', 'A'], 'Go to attendance'],
@@ -2218,8 +2449,8 @@
             <x-quick-add-product-modal />
         @endif
 
-        {{-- Global Hardware & Product Barcode Scanner Modal with Mobile Cam Pairing --}}
-        @if(auth()->check())
+        {{-- Global Hardware & Product Barcode Scanner Modal with Mobile Cam Pairing (Admin, Staff, Technician only) --}}
+        @if(auth()->check() && auth()->user()->isInternal())
             <x-hardware-scanner-modal modalId="hardwareScannerModal" />
         @endif
 
@@ -2228,6 +2459,11 @@
 
         {{-- Universal Contact Saver Engine (Mobile Android Intent / iOS / Desktop Google Contacts & .vcf) --}}
         <x-contact-saver />
+
+        {{-- Universal Voice Dictation & Speech Recognition Engine (Available for Technicians & Field App) --}}
+        @if(auth()->check() && (auth()->user()->isTechnician() || auth()->user()->isWorker()))
+            <x-tech-voice-engine />
+        @endif
 
     </body>
 </html>

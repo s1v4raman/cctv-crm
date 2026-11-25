@@ -156,7 +156,7 @@ class GstComplianceService
             if ($quotationItems->count() > 0) {
                 foreach ($quotationItems as $item) {
                     $product = $item->product;
-                    $hsn = $product?->hsn_code ?: ($item->item_name && str_contains(strtolower($item->item_name), 'service') ? '9987' : '8525');
+                    $hsn = $item->hsn_code_full ?: ($item->hsn_code ?: ($product?->hsn_code ?: '8525'));
                     $desc = $product?->name ?: ($item->item_name ?: 'CCTV Equipment / Service');
                     $qty = (float) ($item->quantity ?: 1.0);
                     $uqc = strtoupper($product?->unit ?: ($item->unit ?: 'NOS'));

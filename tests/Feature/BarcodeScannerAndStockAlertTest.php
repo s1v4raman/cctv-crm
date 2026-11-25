@@ -106,14 +106,15 @@ class BarcodeScannerAndStockAlertTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'found'          => true,
-            'type'           => 'installed_equipment',
-            'serial_number'  => 'HIK-9988776655',
-            'mac_address'    => 'AA:BB:CC:11:22:33',
-            'equipment_name' => 'Main Entrance Dome',
-            'customer_name'  => 'Metro Cyber Park',
-            'is_under_warranty' => true,
+            'found'                => true,
+            'type'                 => 'installed_equipment',
+            'serial_number'        => 'HIK-9988776655',
+            'mac_address'          => 'AA:BB:CC:11:22:33',
+            'equipment_name'       => 'Main Entrance Dome',
+            'registered_elsewhere' => true,
+            'is_under_warranty'    => true,
         ]);
+        $response->assertJsonMissing(['customer_phone', 'customer_address']);
     }
 
     public function test_serial_lookup_api_finds_catalog_product_by_sku(): void
@@ -135,12 +136,12 @@ class BarcodeScannerAndStockAlertTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'found'          => true,
-            'type'           => 'catalog_product',
-            'product_name'   => 'BNC Connectors High Quality (Pack of 10)',
-            'sku'            => 'BNC-CONN-GOLD',
-            'stock_quantity' => 50,
+            'found'        => true,
+            'type'         => 'catalog_product',
+            'product_name' => 'BNC Connectors High Quality (Pack of 10)',
+            'sku'          => 'BNC-CONN-GOLD',
         ]);
+        $response->assertJsonMissing(['stock_quantity', 'unit_price']);
     }
 
     public function test_serial_lookup_api_returns_not_found_for_unknown_code(): void

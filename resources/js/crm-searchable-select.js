@@ -152,7 +152,7 @@ class CrmSearchableSelect {
         // Trigger button
         this.trigger = document.createElement('button');
         this.trigger.type = 'button';
-        this.trigger.className = 'crm-combobox-trigger w-full h-[44px] min-h-[44px] px-3.5 flex items-center justify-between text-left text-sm rounded-lg bg-[var(--card-bg,#fff)] dark:bg-slate-900 border border-[var(--input-border,#cbd5e1)] dark:border-slate-700 text-[var(--text-main,#0f172a)] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--crm-accent,#2563eb)] focus:border-transparent transition-all cursor-pointer shadow-xs';
+        this.trigger.className = 'crm-combobox-trigger w-full h-[44px] min-h-[44px] px-3.5 flex items-center justify-between text-left text-sm rounded-lg bg-[var(--card-bg,#fff)] dark:bg-slate-900 border border-[var(--input-border,#cbd5e1)] dark:border-slate-700 text-[var(--text-main,#0f172a)] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 focus:outline-none focus:border-[var(--crm-form-border-color, var(--crm-accent, #2563eb))] focus:shadow-none active:bg-white dark:active:bg-slate-900 transition-all cursor-pointer shadow-xs';
         this.trigger.setAttribute('aria-haspopup', 'listbox');
         this.trigger.setAttribute('aria-expanded', 'false');
 
@@ -205,7 +205,7 @@ class CrmSearchableSelect {
 
         this.searchInput = document.createElement('input');
         this.searchInput.type = 'text';
-        this.searchInput.className = 'crm-combobox-search-input w-full h-[38px] pl-9 pr-8 text-xs sm:text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--crm-accent,#2563eb)] focus:border-transparent font-medium';
+        this.searchInput.className = 'crm-combobox-search-input w-full h-[38px] pl-9 pr-8 text-xs sm:text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[var(--crm-form-border-color, var(--crm-accent, #2563eb))] focus:shadow-none font-medium';
         this.searchInput.placeholder = this.searchPlaceholder;
         this.searchInput.autocomplete = 'off';
         this.searchInput.spellcheck = false;
@@ -292,14 +292,14 @@ class CrmSearchableSelect {
             }
 
             const itemEl = document.createElement('div');
-            itemEl.className = 'crm-combobox-item px-3.5 py-2.5 cursor-pointer flex items-center justify-between gap-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors select-none';
+            itemEl.className = 'crm-combobox-item px-3.5 py-2.5 cursor-pointer flex items-center justify-between gap-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors select-none';
             itemEl.dataset.filteredIndex = fIndex;
             itemEl.dataset.value = item.value;
             itemEl.setAttribute('role', 'option');
 
             const isSelected = String(this.select.value) === String(item.value);
             if (isSelected) {
-                itemEl.classList.add('bg-blue-50/70', 'dark:bg-blue-950/40', 'font-semibold');
+                itemEl.classList.add('is-selected', 'bg-slate-50', 'dark:bg-slate-800/80', 'font-semibold');
             }
 
             // Left text block (Title & Subtitle)
@@ -338,7 +338,7 @@ class CrmSearchableSelect {
             if (isSelected) {
                 const check = document.createElement('span');
                 check.className = 'shrink-0';
-                check.style.color = 'var(--crm-accent, #2563eb)';
+                check.style.color = 'var(--crm-form-border-color, var(--crm-accent, #2563eb))';
                 check.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
                 rightWrap.appendChild(check);
             }
@@ -578,6 +578,99 @@ class CrmSearchableSelect {
         this.renderList();
     }
 }
+
+// Injection of combobox outline styles
+function ensureComboboxStyles() {
+    if (typeof document === 'undefined' || document.getElementById('crm-combobox-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'crm-combobox-styles';
+    style.textContent = `
+        /* Strictly ONLY outline color on searchable dropdown trigger - NEVER background fill */
+        .crm-combobox-trigger,
+        .crm-combobox-trigger:hover,
+        .crm-combobox-trigger:focus,
+        .crm-combobox-trigger:focus-visible,
+        .crm-combobox-trigger:active,
+        .crm-combobox-trigger[aria-expanded="true"],
+        .crm-searchable-combobox.is-open .crm-combobox-trigger {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            background-image: none !important;
+            transform: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+        }
+        html.dark .crm-combobox-trigger,
+        html.dark .crm-combobox-trigger:hover,
+        html.dark .crm-combobox-trigger:focus,
+        html.dark .crm-combobox-trigger:focus-visible,
+        html.dark .crm-combobox-trigger:active,
+        html.dark .crm-combobox-trigger[aria-expanded="true"],
+        html.dark .crm-searchable-combobox.is-open .crm-combobox-trigger {
+            background: #0f172a !important;
+            background-color: #0f172a !important;
+            background-image: none !important;
+            transform: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+        }
+        .crm-combobox-trigger:focus,
+        .crm-combobox-trigger:focus-visible,
+        .crm-combobox-trigger:active,
+        .crm-combobox-trigger[aria-expanded="true"],
+        .crm-searchable-combobox.is-open .crm-combobox-trigger {
+            border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            outline-offset: -1px !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            --tw-ring-color: transparent !important;
+            --tw-ring-shadow: 0 0 #0000 !important;
+            --tw-ring-offset-shadow: 0 0 #0000 !important;
+            --tw-shadow: 0 0 #0000 !important;
+        }
+        /* Search bar inside dropdown */
+        .crm-combobox-search-input,
+        .crm-combobox-search-input:focus,
+        .crm-combobox-search-input:focus-visible {
+            border-color: var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            outline: 2px solid var(--crm-form-border-color, var(--crm-accent, #2563eb)) !important;
+            outline-offset: -1px !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            --tw-ring-color: transparent !important;
+            --tw-ring-shadow: 0 0 #0000 !important;
+            --tw-ring-offset-shadow: 0 0 #0000 !important;
+            --tw-shadow: 0 0 #0000 !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+        }
+        html.dark .crm-combobox-search-input,
+        html.dark .crm-combobox-search-input:focus,
+        html.dark .crm-combobox-search-input:focus-visible {
+            background: #0f172a !important;
+            background-color: #0f172a !important;
+        }
+        /* Dropdown options list styling */
+        .crm-combobox-item {
+            background-color: transparent !important;
+        }
+        .crm-combobox-item:hover {
+            background-color: #f1f5f9 !important;
+        }
+        html.dark .crm-combobox-item:hover {
+            background-color: #1e293b !important;
+        }
+        .crm-combobox-item.is-selected {
+            background-color: #f8fafc !important;
+        }
+        html.dark .crm-combobox-item.is-selected {
+            background-color: #1e293b !important;
+        }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+}
+ensureComboboxStyles();
 
 // Global initialization function
 window.initCrmSearchableSelect = function(element, options = {}) {

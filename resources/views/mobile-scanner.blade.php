@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Mobile Barcode & Asset Scanner | Precision CCTV CRM</title>
@@ -65,6 +66,14 @@
     <!-- Main Scanner Interface -->
     <main class="flex-grow flex flex-col p-3 max-w-md mx-auto w-full">
 
+        @if(!empty($pairingError))
+            <div class="my-6 p-5 rounded-2xl bg-rose-950/70 border border-rose-700 text-rose-100 text-center space-y-3">
+                <div class="text-2xl">🔒</div>
+                <h2 class="text-sm font-bold text-white">Pairing Session Unavailable</h2>
+                <p class="text-xs text-rose-200">{{ $pairingError }}</p>
+            </div>
+        @else
+
         <!-- Target Field Notification -->
         <div class="mb-3 px-3 py-2 rounded-xl bg-blue-950/40 border border-blue-800/40 flex items-center justify-between">
             <div class="flex items-center space-x-2 text-xs">
@@ -75,28 +84,30 @@
         </div>
 
         <!-- Camera Viewport Card -->
-        <div id="scannerViewportCard" onclick="triggerMobileCameraSnap()" 
+        <div id="scannerViewportCard" onclick="startLiveCameraScanner()" 
              class="relative w-full aspect-[4/3] rounded-2xl bg-black overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center cursor-pointer select-none">
             
-            <!-- Direct Hardware Camera Input -->
-            <input type="file" id="mobileCameraInput" accept="image/*" capture="environment" onchange="handleMobileImageUpload(event)" class="hidden">
+            <!-- Live HTML5 Video Feed (Continuous Real-time Viewfinder) -->
+            <video id="scannerVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
 
-            <!-- Live HTML5 Video Feed (Used when HTTPS or getUserMedia is available) -->
-            <video id="scannerVideo" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+            <!-- Image Preview when photo is captured (Camera Fallback for Insecure HTTP) -->
+            <img id="scannerImagePreview" class="hidden w-full h-full object-cover" alt="Captured Barcode">
 
-            <!-- Snapped / Uploaded Image View (Shows real image instead of blank black screen!) -->
-            <img id="scannerImagePreview" class="w-full h-full object-contain hidden bg-slate-950" alt="Scanned Barcode Preview">
+            <!-- Native Mobile Camera Input for HTTP / Insecure Contexts -->
+            <input type="file" id="mobileCameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleMobileImageUpload(event)">
+
+            <!-- Canvas for Frame Decoding -->
             <canvas id="scannerCanvas" class="hidden"></canvas>
 
-            <!-- Tap to Open Camera Prompt (Shown when live stream is unavailable over HTTP) -->
+            <!-- Tap to Open Camera Prompt (Initial Viewport Overlay) -->
             <div id="tapToScanPrompt" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 bg-gradient-to-b from-slate-900/90 to-slate-950/95">
                 <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 flex items-center justify-center text-3xl mb-3 shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
                     📷
                 </div>
-                <div class="text-sm font-bold text-white mb-1">Tap to Open Phone Camera</div>
-                <div class="text-xs text-slate-300 max-w-[220px]">Point camera at CCTV barcode, S/N or MAC sticker to scan & sync</div>
+                <div class="text-sm font-bold text-white mb-1">Tap to Scan CCTV Barcode</div>
+                <div class="text-xs text-slate-300 max-w-[220px]">Point camera directly at CCTV barcode, S/N or MAC sticker</div>
                 <div class="mt-3 px-4 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs shadow-lg inline-flex items-center gap-1.5">
-                    <span>Scan Product Barcode</span>
+                    <span>⚡ Scan Barcode with Camera</span>
                 </div>
             </div>
 
@@ -155,20 +166,45 @@
             </button>
         </div>
 
+        <!-- In-App Manual Entry & Scanner Assistant Card (Replaces ugly browser prompt) -->
+        <div id="manualAssistantCard" class="hidden my-3 p-3.5 rounded-2xl bg-slate-900 border border-amber-500/40 text-left space-y-2.5 shadow-xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-amber-400 text-sm">⚠️</span>
+                    <span class="text-xs font-bold text-white">Barcode not detected automatically</span>
+                </div>
+                <button type="button" onclick="triggerMobileCameraSnap()" class="text-[11px] text-cyan-400 font-bold hover:underline">
+                    📸 Re-take Photo
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-300">
+                You can re-take closer to the barcode sticker, or enter the printed S/N or MAC below to transmit instantly:
+            </p>
+            <div class="flex items-center gap-1.5">
+                <input type="text" id="manualSnInput" placeholder="Enter S/N, MAC, or EAN"
+                       onkeydown="if(event.key === 'Enter') submitManualCodeFromCard()"
+                       class="flex-1 text-xs rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-white focus:outline-none focus:border-blue-500 uppercase">
+                <button type="button" onclick="submitManualCodeFromCard()"
+                        class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer transition shrink-0">
+                    Send to Laptop
+                </button>
+            </div>
+        </div>
+
         <!-- Camera Control Bar -->
         <div class="space-y-2 mt-3">
             <!-- Primary Live Hardware Camera Trigger -->
-            <button type="button" onclick="triggerMobileCameraSnap()"
+            <button type="button" onclick="startLiveCameraScanner()"
                     class="w-full flex items-center justify-center space-x-2 min-h-[46px] py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-900/40 cursor-pointer active:scale-98 transition-all">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Scan Hardware with Camera</span>
+                <span>Live Barcode Scanner (Point Camera)</span>
             </button>
 
             <div class="grid grid-cols-2 gap-2">
-                <!-- Retake / Flash Scan -->
-                <button type="button" onclick="triggerMobileCameraSnap()"
+                <!-- Re-scan Live -->
+                <button type="button" onclick="startLiveCameraScanner()"
                         class="flex items-center justify-center space-x-1.5 min-h-[40px] py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl text-xs font-semibold border border-slate-800 cursor-pointer shadow-xs active:scale-98 transition-all">
-                    <span>📷 Re-scan Tag</span>
+                    <span>⚡ Re-scan Barcode</span>
                 </button>
 
                 <!-- Manual Entry / Type S/N Button -->
@@ -213,6 +249,8 @@
             </div>
         </div>
 
+        @endif
+
     </main>
 
     <!-- Bottom Instructions Footer -->
@@ -234,61 +272,113 @@
         let isLiveCameraSupported = false;
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkAndInitCamera();
+            // Attempt auto-starting camera stream immediately (pass false so file dialog is not popped without user gesture)
+            startLiveCameraScanner(false);
             sendHeartbeat();
             setInterval(sendHeartbeat, 15000);
         });
 
-        function triggerMobileCameraSnap() {
-            const fileInput = document.getElementById('mobileCameraInput');
-            if (fileInput) fileInput.click();
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1760, ctx.currentTime); // 1760Hz crisp high pitch
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+            } catch (e) {}
         }
 
-        async function checkAndInitCamera() {
+        function triggerMobileCameraSnap() {
+            const input = document.getElementById('mobileCameraInput');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        async function startLiveCameraScanner(isUserGesture = true) {
             const video = document.getElementById('scannerVideo');
             const tapPrompt = document.getElementById('tapToScanPrompt');
             const torchBtn = document.getElementById('torchBtn');
             const flipBtn = document.getElementById('mobileFlipBtn');
             const status = document.getElementById('scannerStatusPill');
 
-            // On mobile phones over HTTP (insecure context), getUserMedia is blocked by browser policy.
-            // Detect this gracefully and enable the high-performance Camera Snap interface.
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+            if (!hasGetUserMedia) {
                 isLiveCameraSupported = false;
                 if (tapPrompt) tapPrompt.classList.remove('hidden');
-                if (video) video.classList.add('hidden');
-                if (status) status.innerText = 'Tap viewfinder above to scan barcode with camera';
+                if (isUserGesture) {
+                    if (status) status.innerText = 'Opening mobile camera...';
+                    triggerMobileCameraSnap();
+                } else {
+                    if (status) status.innerText = 'Camera Ready — Tap button to scan barcode';
+                }
                 return;
             }
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: { ideal: currentFacingMode },
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    }
-                });
+                if (currentStream) {
+                    currentStream.getTracks().forEach(t => t.stop());
+                    currentStream = null;
+                }
+
+                if (status) status.innerText = 'Connecting camera...';
+
+                let stream = null;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: { ideal: currentFacingMode },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        },
+                        audio: false
+                    });
+                } catch (e1) {
+                    // Fallback to simpler constraints
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: currentFacingMode },
+                        audio: false
+                    });
+                }
 
                 isLiveCameraSupported = true;
                 currentStream = stream;
                 videoTrack = stream.getVideoTracks()[0];
                 video.srcObject = stream;
                 video.classList.remove('hidden');
+                const previewImg = document.getElementById('scannerImagePreview');
+                if (previewImg) previewImg.classList.add('hidden');
                 if (tapPrompt) tapPrompt.classList.add('hidden');
                 if (torchBtn) torchBtn.classList.remove('hidden');
                 if (flipBtn) flipBtn.classList.remove('hidden');
 
                 await video.play();
-                if (status) status.innerText = 'Point camera at CCTV barcode or S/N...';
+                isScanningActive = true;
+                if (status) status.innerText = 'Point camera directly at CCTV barcode or S/N...';
                 startLiveScanLoop();
             } catch (err) {
-                console.warn('Live camera stream not permitted, switching to Camera Viewfinder:', err);
+                console.warn('Live camera stream not permitted or failed, falling back to camera snap:', err);
                 isLiveCameraSupported = false;
-                if (tapPrompt) tapPrompt.classList.remove('hidden');
-                if (video) video.classList.add('hidden');
-                if (status) status.innerText = 'Tap viewfinder above to scan barcode with camera';
+                if (isUserGesture) {
+                    if (status) status.innerText = 'Opening camera...';
+                    triggerMobileCameraSnap();
+                } else {
+                    if (tapPrompt) tapPrompt.classList.remove('hidden');
+                    if (status) status.innerText = 'Camera Ready — Tap button to scan barcode';
+                }
             }
+        }
+
+        async function checkAndInitCamera() {
+            return startLiveCameraScanner(true);
         }
 
         function startLiveScanLoop() {
@@ -313,7 +403,52 @@
             }
         }
 
-        // Multi-engine Barcode Decoder: BarcodeDetector + ZXing JS with high-res auto-scaling & contrast enhancement
+        function getZXingReader() {
+            if (!window.ZXing || !window.ZXing.BrowserMultiFormatReader) return null;
+            try {
+                const hints = new Map();
+                if (window.ZXing.DecodeHintType) {
+                    hints.set(window.ZXing.DecodeHintType.TRY_HARDER, true);
+                    if (window.ZXing.BarcodeFormat) {
+                        hints.set(window.ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+                            window.ZXing.BarcodeFormat.CODE_128,
+                            window.ZXing.BarcodeFormat.CODE_39,
+                            window.ZXing.BarcodeFormat.CODE_93,
+                            window.ZXing.BarcodeFormat.EAN_13,
+                            window.ZXing.BarcodeFormat.EAN_8,
+                            window.ZXing.BarcodeFormat.UPC_A,
+                            window.ZXing.BarcodeFormat.UPC_E,
+                            window.ZXing.BarcodeFormat.QR_CODE,
+                            window.ZXing.BarcodeFormat.DATA_MATRIX,
+                            window.ZXing.BarcodeFormat.ITF
+                        ]);
+                    }
+                }
+                return new window.ZXing.BrowserMultiFormatReader(hints);
+            } catch (e) {
+                return new window.ZXing.BrowserMultiFormatReader();
+            }
+        }
+
+        function createRotatedCanvas(sourceCanvas, angle) {
+            const w = sourceCanvas.width;
+            const h = sourceCanvas.height;
+            const rot = document.createElement('canvas');
+            if (angle === 90 || angle === 270) {
+                rot.width = h;
+                rot.height = w;
+            } else {
+                rot.width = w;
+                rot.height = h;
+            }
+            const ctx = rot.getContext('2d');
+            ctx.translate(rot.width / 2, rot.height / 2);
+            ctx.rotate((angle * Math.PI) / 180);
+            ctx.drawImage(sourceCanvas, -w / 2, -h / 2);
+            return rot;
+        }
+
+        // Multi-engine Barcode Decoder: BarcodeDetector + Multi-scale / Multi-angle ZXing JS + Server-side OpenCV fallback
         async function decodeBarcodeFromSource(sourceElement) {
             // 1. Native BarcodeDetector (Chrome Android where available)
             if ('BarcodeDetector' in window) {
@@ -328,69 +463,125 @@
                 } catch (e) {}
             }
 
-            // 2. ZXing BrowserMultiFormatReader (Universal fallback)
-            let reader = null;
-            if (window.ZXing && window.ZXing.BrowserMultiFormatReader) {
-                try {
-                    reader = new ZXing.BrowserMultiFormatReader();
-                    let result = null;
-                    if (sourceElement instanceof HTMLImageElement) {
-                        result = await reader.decodeFromImageElement(sourceElement);
-                    } else if (sourceElement instanceof HTMLVideoElement) {
-                        result = await reader.decodeFromVideoElement(sourceElement);
-                    }
-                    if (result && result.getText()) {
-                        return result.getText();
-                    }
-                } catch (e) {}
-            }
+            const reader = getZXingReader();
+            if (!reader) return null;
 
-            // 3. High-res Photo Pre-processing (downscale 12MP+ camera photos to 1280px & contrast-boost for CCTV serial tags)
-            if (reader && sourceElement instanceof HTMLImageElement) {
-                try {
-                    const canvas = document.createElement('canvas');
-                    const maxDim = 1280;
-                    let w = sourceElement.naturalWidth || sourceElement.width || 800;
-                    let h = sourceElement.naturalHeight || sourceElement.height || 600;
-                    if (w > maxDim || h > maxDim) {
-                        if (w > h) {
-                            h = Math.round((h * maxDim) / w);
-                            w = maxDim;
+            // Direct attempt
+            try {
+                let result = null;
+                if (sourceElement instanceof HTMLImageElement) {
+                    result = await reader.decodeFromImageElement(sourceElement);
+                } else if (sourceElement instanceof HTMLVideoElement) {
+                    result = await reader.decodeFromVideoElement(sourceElement);
+                }
+                if (result && result.getText()) {
+                    return result.getText();
+                }
+            } catch (e) {}
+
+            if (!(sourceElement instanceof HTMLImageElement)) return null;
+
+            // 2. High-precision Multi-scale and Multi-rotation decoding
+            try {
+                const nw = sourceElement.naturalWidth || sourceElement.width || 800;
+                const nh = sourceElement.naturalHeight || sourceElement.height || 600;
+
+                // Test crops: [sx, sy, sw, sh, targetMaxDim]
+                const cropConfigs = [
+                    // Center 65% crop (where phone cameras usually frame the barcode)
+                    [Math.round(nw * 0.175), Math.round(nh * 0.175), Math.round(nw * 0.65), Math.round(nh * 0.65), 1200],
+                    // Full image scaled to 1400px
+                    [0, 0, nw, nh, 1400],
+                    // Top half (sometimes sticker is in top half)
+                    [0, 0, nw, Math.round(nh * 0.6), 1200],
+                    // Bottom half
+                    [0, Math.round(nh * 0.4), nw, Math.round(nh * 0.6), 1200]
+                ];
+
+                const angles = [0, 90, 270, 180];
+
+                for (const [sx, sy, sw, sh, maxDim] of cropConfigs) {
+                    let tw = sw;
+                    let th = sh;
+                    if (tw > maxDim || th > maxDim) {
+                        if (tw > th) {
+                            th = Math.round((th * maxDim) / tw);
+                            tw = maxDim;
                         } else {
-                            w = Math.round((w * maxDim) / h);
-                            h = maxDim;
+                            tw = Math.round((tw * maxDim) / th);
+                            th = maxDim;
                         }
                     }
-                    canvas.width = w;
-                    canvas.height = h;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tw;
+                    canvas.height = th;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(sourceElement, 0, 0, w, h);
+                    ctx.drawImage(sourceElement, sx, sy, sw, sh, 0, 0, tw, th);
 
-                    try {
-                        const res = await reader.decodeFromCanvas(canvas);
-                        if (res && res.getText()) return res.getText();
-                    } catch (e) {}
+                    for (const angle of angles) {
+                        const testCanvas = (angle === 0) ? canvas : createRotatedCanvas(canvas, angle);
+                        try {
+                            const res = await reader.decodeFromCanvas(testCanvas);
+                            if (res && res.getText()) return res.getText();
+                        } catch (e) {}
+                    }
 
-                    // High-contrast B&W pass
-                    const imgData = ctx.getImageData(0, 0, w, h);
+                    // Contrast auto-stretch pass
+                    const imgData = ctx.getImageData(0, 0, tw, th);
                     const d = imgData.data;
+                    let min = 255, max = 0;
                     for (let i = 0; i < d.length; i += 4) {
-                        const gray = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114);
-                        const contrast = gray > 120 ? 255 : 0;
-                        d[i] = contrast;
-                        d[i + 1] = contrast;
-                        d[i + 2] = contrast;
+                        const g = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+                        if (g < min) min = g;
+                        if (g > max) max = g;
+                    }
+                    const range = (max - min) || 1;
+                    for (let i = 0; i < d.length; i += 4) {
+                        const g = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+                        const norm = Math.round(((g - min) / range) * 255);
+                        d[i] = norm;
+                        d[i+1] = norm;
+                        d[i+2] = norm;
                     }
                     ctx.putImageData(imgData, 0, 0);
 
-                    try {
-                        const res = await reader.decodeFromCanvas(canvas);
-                        if (res && res.getText()) return res.getText();
-                    } catch (e) {}
-                } catch (e) {}
+                    for (const angle of angles) {
+                        const testCanvas = (angle === 0) ? canvas : createRotatedCanvas(canvas, angle);
+                        try {
+                            const res = await reader.decodeFromCanvas(testCanvas);
+                            if (res && res.getText()) return res.getText();
+                        } catch (e) {}
+                    }
+                }
+            } catch (e) {
+                console.warn('Multi-scale client decode error:', e);
             }
 
             return null;
+        }
+
+        function showManualAssistantCard() {
+            const card = document.getElementById('manualAssistantCard');
+            if (card) {
+                card.classList.remove('hidden');
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                const input = document.getElementById('manualSnInput');
+                if (input) input.focus();
+            }
+        }
+
+        function hideManualAssistantCard() {
+            const card = document.getElementById('manualAssistantCard');
+            if (card) card.classList.add('hidden');
+        }
+
+        function submitManualCodeFromCard() {
+            const input = document.getElementById('manualSnInput');
+            if (!input || !input.value.trim()) return;
+            const code = input.value.trim();
+            hideManualAssistantCard();
+            onBarcodeScanned(code);
         }
 
         // Handle camera photo snap from mobile
@@ -418,16 +609,40 @@
             const img = new Image();
             img.src = objectUrl;
             img.onload = async () => {
-                const detectedCode = await decodeBarcodeFromSource(img);
+                // 1. Try enhanced client-side decode
+                let detectedCode = await decodeBarcodeFromSource(img);
+
+                // 2. If client-side misses, try server-side Python OpenCV decode
+                if (!detectedCode) {
+                    if (status) status.innerText = 'Enhancing image with server engine...';
+                    try {
+                        const formData = new FormData();
+                        formData.append('token', SESSION_TOKEN);
+                        formData.append('image', file);
+                        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        const serverRes = await fetch('/api/mobile-scanner/analyze-image', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrf
+                            },
+                            body: formData
+                        });
+                        const serverData = await serverRes.json();
+                        if (serverData && serverData.success && serverData.code) {
+                            detectedCode = serverData.code;
+                        }
+                    } catch (err) {
+                        console.warn('Server barcode decode error:', err);
+                    }
+                }
+
                 if (detectedCode) {
+                    hideManualAssistantCard();
                     onBarcodeScanned(detectedCode);
                 } else {
-                    if (status) status.innerText = 'Could not detect barcode clearly. Tap to re-take.';
-                    // If automatic recognition failed, give user manual option with prefill
-                    const manual = prompt('Could not auto-detect barcode. Enter S/N from photo manually (or Cancel to re-take):');
-                    if (manual && manual.trim()) {
-                        onBarcodeScanned(manual.trim());
-                    }
+                    if (status) status.innerText = 'Could not detect barcode clearly. Check assistant below.';
+                    showManualAssistantCard();
                 }
             };
         }
@@ -445,6 +660,7 @@
             if (navigator.vibrate) {
                 navigator.vibrate([120, 60, 120]);
             }
+            playBeep();
 
             // Show UI confirmation
             const display = document.getElementById('scannedCodeDisplay');
@@ -464,11 +680,13 @@
 
         async function pushCodeToLaptop(code) {
             try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const response = await fetch('/api/mobile-scanner/push', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf
                     },
                     body: JSON.stringify({
                         token: SESSION_TOKEN,
@@ -501,6 +719,9 @@
             isScanningActive = true;
             if (isLiveCameraSupported) {
                 startLiveScanLoop();
+            } else {
+                // User clicked "Scan Next", immediately open camera for next device!
+                triggerMobileCameraSnap();
             }
         }
 
@@ -564,9 +785,10 @@
 
         async function sendHeartbeat() {
             try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 await fetch(`/api/mobile-scanner/heartbeat/${SESSION_TOKEN}`, {
                     method: 'POST',
-                    headers: { 'Accept': 'application/json' }
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf }
                 });
             } catch (e) {}
         }

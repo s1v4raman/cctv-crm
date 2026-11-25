@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreInstalledEquipmentRequest;
 use App\Models\InstalledEquipment;
 use App\Models\InstallationJob;
 use App\Models\Lead;
 use App\Models\Product;
+use App\Models\ProductAlias;
 use App\Models\StockMovement;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -126,16 +129,17 @@ class InstalledEquipmentController extends Controller
         return view('equipment.create', compact('leads', 'jobs', 'products', 'selectedLeadId', 'selectedJobId'));
     }
 
-    public function store(Request $request, \App\Services\StockAlertService $stockAlertService): RedirectResponse
+    public function store(StoreInstalledEquipmentRequest $request, \App\Services\StockAlertService $stockAlertService): RedirectResponse|JsonResponse
     {
         $this->authorizeInternalOrTechnician();
 
-        $validated = $this->validateEquipment($request);
+        $validated = $this->applyWarrantyDefaults($request->validated());
 
         $deductStock = $request->boolean('deduct_stock');
         $deductedProduct = null;
+        $equipment = null;
 
-        DB::transaction(function () use ($validated, $deductStock, &$deductedProduct) {
+        DB::transaction(function () use ($validated, $deductStock, &$deductedProduct, &$equipment) {
             $equipment = InstalledEquipment::create($validated);
 
             if ($deductStock && !empty($validated['product_id'])) {
@@ -150,10 +154,33 @@ class InstalledEquipmentController extends Controller
                     $deductedProduct = $product;
                 }
             }
+
+            // Learn pending scan_learned alias when user picks a product for an unknown EAN or model token
+            if (!empty($validated['product_id'])) {
+                $learnToken = trim((string) ($validated['learn_alias_token'] ?? ''));
+                $learnType = (string) ($validated['learn_alias_type'] ?? 'model_code');
+
+                if ($learnToken !== '') {
+                    $this->savePendingAlias((int) $validated['product_id'], $learnType, $learnToken);
+                } elseif (!empty($validated['ean'])) {
+                    $product = Product::find($validated['product_id']);
+                    if ($product && strtoupper((string) $product->ean) !== strtoupper((string) $validated['ean'])) {
+                        $this->savePendingAlias((int) $validated['product_id'], 'ean', (string) $validated['ean']);
+                    }
+                }
+            }
         });
 
         if ($deductedProduct) {
             $stockAlertService->checkAndTriggerAlert($deductedProduct);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'   => true,
+                'message'   => 'Installed equipment registered successfully.',
+                'equipment' => $equipment,
+            ], 201);
         }
 
         if ($request->filled('redirect_to')) {
@@ -161,6 +188,29 @@ class InstalledEquipmentController extends Controller
         }
 
         return redirect()->route('equipment.index')->with('status', 'Installed equipment registered successfully.');
+    }
+
+    private function savePendingAlias(int $productId, string $aliasType, string $value): void
+    {
+        $normalized = ProductAlias::normalizeValue($aliasType, $value);
+        if ($normalized === '') {
+            return;
+        }
+
+        $exists = ProductAlias::where('alias_type', $aliasType)
+            ->where('normalized_value', $normalized)
+            ->exists();
+
+        if (!$exists) {
+            ProductAlias::create([
+                'product_id'       => $productId,
+                'alias_type'       => $aliasType,
+                'value'            => $value,
+                'normalized_value' => $normalized,
+                'source'           => 'scan_learned',
+                'status'           => 'pending',
+            ]);
+        }
     }
 
     public function show(InstalledEquipment $equipment): View
@@ -235,6 +285,11 @@ class InstalledEquipmentController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        return $this->applyWarrantyDefaults($validated);
+    }
+
+    private function applyWarrantyDefaults(array $validated): array
+    {
         // Auto-calculate warranty dates if installation_date is provided and warranties are blank
         if (!empty($validated['installation_date'])) {
             $installDate = Carbon::parse($validated['installation_date']);

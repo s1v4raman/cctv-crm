@@ -181,23 +181,53 @@
             const feedback = document.getElementById('rma-scan-feedback');
             if (feedback) {
                 feedback.style.display = 'block';
-                feedback.innerHTML = `<span class="text-blue-600 font-semibold">Looking up serial ${code}...</span>`;
+                feedback.innerHTML = `<span class="text-blue-600 font-semibold">Looking up hardware ${code}...</span>`;
             }
 
+            const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(code) : null;
+            const targetSerial = (parsed && parsed.serial) ? parsed.serial : code;
+            const targetMac = (parsed && parsed.mac) ? parsed.mac : '';
+            const targetModel = (parsed && parsed.model) ? parsed.model : '';
+
+            const sInput = document.getElementById('rma_serial_input');
+            const mInput = document.getElementById('rma_mac_input');
+            if (sInput && targetSerial) sInput.value = targetSerial;
+            if (mInput && targetMac && !mInput.value) mInput.value = targetMac;
+
             try {
-                const response = await fetch(`{{ route('equipment.lookup') }}?serial=${encodeURIComponent(code)}`);
+                const q = new URLSearchParams();
+                if (targetSerial) q.set('serial', targetSerial);
+                if (targetMac) q.set('mac', targetMac);
+                if (targetModel) q.set('model', targetModel);
+
+                const response = await fetch(`{{ route('equipment.lookup') }}?${q.toString()}`);
                 const data = await response.json();
 
                 if (data.found && data.type === 'installed_equipment') {
                     if (feedback) {
                         feedback.innerHTML = `<span class="text-[#16a34a] font-bold">Matched: ${data.equipment_name} (${data.customer_name})</span>`;
                     }
-                    const macInput = document.getElementById('rma_mac_input');
-                    if (macInput && data.mac_address && !macInput.value) {
-                        macInput.value = data.mac_address;
+                    if (mInput && (data.mac_address || data.mac) && !mInput.value) {
+                        mInput.value = data.mac_address || data.mac;
+                    }
+                    if (data.product_id) {
+                        const pSelect = document.querySelector('select[name="product_id"]');
+                        if (pSelect && !pSelect.value) pSelect.value = data.product_id;
+                    }
+                    if (data.lead_id) {
+                        const lSelect = document.querySelector('select[name="lead_id"]');
+                        if (lSelect && !lSelect.value) lSelect.value = data.lead_id;
+                    }
+                } else if (data.found && data.type === 'catalog_product') {
+                    if (feedback) {
+                        feedback.innerHTML = `<span class="text-blue-600 font-bold">Catalog Product: ${data.product_name}</span>`;
+                    }
+                    if (data.id) {
+                        const pSelect = document.querySelector('select[name="product_id"]');
+                        if (pSelect && !pSelect.value) pSelect.value = data.id;
                     }
                 } else if (feedback) {
-                    feedback.innerHTML = `<span class="text-gray-500 font-medium">Scanned S/N: ${code} (Unlinked hardware)</span>`;
+                    feedback.innerHTML = `<span class="text-gray-500 font-medium">Scanned: ${targetSerial}${targetModel ? ' · Model: ' + targetModel : ''}${targetMac ? ' · MAC: ' + targetMac : ''}</span>`;
                 }
             } catch (e) {
                 if (feedback) feedback.style.display = 'none';

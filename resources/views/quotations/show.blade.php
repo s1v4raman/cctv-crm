@@ -71,16 +71,9 @@
                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" 
                            style="background-color: #2563eb !important; color: #ffffff !important;" 
                            title="Convert this quotation directly into a Project and begin execution">
-                            <span style="color: #ffffff !important; font-weight: 700;">+ Add Project</span>
+                            <span style="color: #ffffff !important; font-weight: 700;">Add Project</span>
                         </a>
                     @endif
-
-                    <a href="{{ route('quotations.download-pdf', [$quotation, $quotation->pdf_format ?? '1']) }}" 
-                       class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold" 
-                       title="{{ __('Download Active Format PDF') }}">
-                        <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        <span>{{ __('Download PDF') }}</span>
-                    </a>
 
                     {{-- Action Modals & Links --}}
                     <button type="button" onclick="openWhatsAppModal()" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-95" style="background-color: #059669 !important; color: #ffffff !important;" title="Send Quotation via WhatsApp">
@@ -112,7 +105,7 @@
 
                 @if(in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']) && (auth()->user()->isOffice() || auth()->id() === $quotation->created_by))
                     <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold">
-                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         <span>Edit Scope</span>
                     </a>
                     @if(auth()->user()->isAdmin() && in_array($quotation->status, ['draft', 'pending_approval']))
@@ -120,7 +113,7 @@
                           data-confirm="Delete {{ $quotation->quotation_no }}?" class="inline">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition" title="Delete Quotation">
-                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             <span>Delete</span>
                         </button>
                     </form>
@@ -136,7 +129,7 @@
                         </button>
                     </form>
                     <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition">
-                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <span>Mark Rejected</span>
                     </button>
                 @endif
@@ -151,7 +144,7 @@
 
                     @if($quotation->installationJob)
                         <a href="{{ route('jobs.show', $quotation->installationJob) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                             <span>View Job</span>
                         </a>
                     @else
@@ -159,7 +152,7 @@
                         <form method="POST" action="{{ route('jobs.store', $quotation) }}" class="inline">
                             @csrf
                             <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                                <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                 <span>Create Job</span>
                             </button>
                         </form>
@@ -308,33 +301,105 @@
                 </div>
             @endif
 
-            {{-- Clean Quotation Preview Action Strip (Card design moved to dedicated Preview Page) --}}
-            <div class="crm-section flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-800 border-blue-200/60 dark:border-slate-700">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Quotation Document') }}</span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                Format {{ $quotation->pdf_format ?? '1' }}: {{ $quotation->pdf_format_name }}
+            {{-- Method Button Strip for Selecting Layout Design & Document Type (Matching User Screenshot Spec) --}}
+            @php
+                $activeFmt = $quotation->pdf_format ?? '1';
+                $activePricing = $quotation->pricing_mode ?? 'itemized';
+                $activeDocType = $quotation->doc_type ?? 'quotation';
+                $activeOptionKey = $activeDocType === 'invoice' ? 'tax_invoice' : ($activePricing === 'total_only' ? 'total_only' : 'itemized');
+            @endphp
+            <div class="crm-section p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-xs space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-3">
+                        {{-- 1. Layout Company Selector --}}
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>{{ __('Layout:') }}</span>
                             </span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $quotation->isTotalCostOnly() ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' }}">
-                                {{ $quotation->pricing_mode_name }}
-                            </span>
+                            <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl border border-slate-200 dark:border-slate-600 text-xs font-semibold shadow-inner gap-1">
+                                <button type="button" 
+                                        onclick="setShowLayoutFormat('1')" 
+                                        id="show-tab-fmt-1"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeFmt == '1' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="Format 1: Precision IT Systems (Executive Modern)">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeFmt == '1' ? '' : 'hidden' }}"></span>
+                                    <span>Format 1 (Precision)</span>
+                                </button>
+                                <button type="button" 
+                                        onclick="setShowLayoutFormat('2')" 
+                                        id="show-tab-fmt-2"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeFmt == '2' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="Format 2: NP Solutions (Technical Detailed)">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeFmt == '2' ? '' : 'hidden' }}"></span>
+                                    <span>Format 2 (NP Solutions)</span>
+                                </button>
+                                <button type="button" 
+                                        onclick="setShowLayoutFormat('3')" 
+                                        id="show-tab-fmt-3"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeFmt == '3' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="Format 3: Linepix GST Invoice">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeFmt == '3' ? '' : 'hidden' }}"></span>
+                                    <span>Format 3 (Linepix)</span>
+                                </button>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {{ __('Click Preview to view full quotation, switch presentation format, and select pricing breakdown mode.') }}
-                        </p>
+
+                        <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-600 hidden md:block"></div>
+
+                        {{-- 2. Document Type / Pricing Mode Selector --}}
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>{{ __('Pricing Mode:') }}</span>
+                            </span>
+                            <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl border border-slate-200 dark:border-slate-600 text-xs font-semibold shadow-inner gap-1">
+                                <button type="button" 
+                                        onclick="setShowDocOption('quotation', 'itemized')" 
+                                        id="show-tab-mode-itemized"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeOptionKey === 'itemized' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="{{ __('PR Quotation with itemized product costs & totals') }}">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeOptionKey === 'itemized' ? '' : 'hidden' }}"></span>
+                                    <span>With Product Cost & Total</span>
+                                </button>
+                                <button type="button" 
+                                        onclick="setShowDocOption('quotation', 'total_only')" 
+                                        id="show-tab-mode-total_only"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeOptionKey === 'total_only' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="{{ __('PR Quotation with individual prices hidden; turnkey grand total only') }}">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeOptionKey === 'total_only' ? '' : 'hidden' }}"></span>
+                                    <span>Total Cost Only</span>
+                                </button>
+                                <button type="button" 
+                                        onclick="setShowDocOption('invoice', 'itemized')" 
+                                        id="show-tab-mode-tax_invoice"
+                                        class="px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer {{ $activeOptionKey === 'tax_invoice' ? 'bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60' }}"
+                                        title="{{ __('Official Tax Invoice matching sample layout with HSN, GST breakdown & bank details') }}">
+                                    <span class="tab-indicator w-2 h-2 rounded-full bg-black dark:bg-white shrink-0 {{ $activeOptionKey === 'tax_invoice' ? '' : 'hidden' }}"></span>
+                                    <span>Tax Invoice</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <a href="{{ route('quotations.preview', [$quotation, $quotation->pdf_format ?? '1']) }}" 
-                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span>{{ __('Preview Quotation') }}</span>
-                    </a>
+
+                    {{-- Action Preview & Download Buttons --}}
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a id="show-preview-btn" 
+                           href="{{ route('quotations.preview', [$quotation, $activeFmt, 'pricing_mode' => $activePricing, 'doc_type' => $activeDocType]) }}" 
+                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer"
+                           title="Open live preview in selected layout">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span id="show-preview-btn-text">{{ $activeDocType === 'invoice' ? __('Preview Tax Invoice') : __('Preview Quotation') }}</span>
+                        </a>
+
+                        <a id="show-download-btn" 
+                           href="{{ route('quotations.download-pdf', [$quotation, $activeFmt, 'pricing_mode' => $activePricing, 'doc_type' => $activeDocType]) }}" 
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-2xs transition"
+                           title="Download PDF directly in active format">
+                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>{{ __('Download PDF') }}</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -427,6 +492,7 @@
                                         <th>#</th>
                                         <th>Item / Product</th>
                                         <th>Description</th>
+                                        <th>HSN/SAC</th>
                                         <th class="text-right">Qty</th>
                                         <th>Unit</th>
                                         <th class="text-right">Unit Price (₹)</th>
@@ -436,13 +502,51 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($quotation->items as $i => $item)
-                                        <tr class="{{ (float)$item->unit_price == 0 ? 'bg-amber-50/50 dark:bg-amber-950/20' : '' }}">
+                                        @php
+                                            $resolvedHsn = $item->hsn_code ?: ($item->product?->hsn_code ?: $item->resolveHsnCode(true));
+                                            $rawHsn = $item->hsn_code ?: ($item->product?->hsn_code ?? '');
+                                        @endphp
+                                        <tr class="{{ (float)$item->unit_price == 0 ? 'bg-amber-50/50 dark:bg-amber-950/20' : '' }}" id="quotation-item-row-{{ $item->id }}">
                                             <td>{{ $i + 1 }}</td>
                                             <td class="font-bold text-slate-900 dark:text-white">
                                                 <input type="hidden" name="items[{{ $i }}][id]" value="{{ $item->id }}">
                                                 {{ $item->item_name }}
                                             </td>
                                             <td class="text-xs text-slate-600 dark:text-slate-300">{{ $item->description ?? '—' }}</td>
+                                            <td style="white-space: nowrap;">
+                                                @if(auth()->user()->isAdmin())
+                                                    <div class="inline-flex items-center gap-1.5">
+                                                        <input type="text"
+                                                               name="items[{{ $i }}][hsn_code]"
+                                                               value="{{ $rawHsn }}"
+                                                               maxlength="8"
+                                                               pattern="[0-9]{2,8}"
+                                                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)"
+                                                               placeholder="{{ $resolvedHsn }}"
+                                                               class="w-24 px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-semibold focus:border-blue-500 focus:outline-none"
+                                                               title="HSN/SAC Code (Max 8 digits)">
+                                                        <button type="button"
+                                                                onclick="openHsnEditModal({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ $rawHsn }}', {{ $item->product_id ? 'true' : 'false' }})"
+                                                                class="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded transition cursor-pointer"
+                                                                title="Manage HSN/SAC Code">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                                                        </button>
+                                                        @if(!empty($rawHsn))
+                                                            <button type="button"
+                                                                    onclick="confirmDeleteHsn({{ $item->id }}, '{{ addslashes($item->item_name) }}')"
+                                                                    class="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/40 rounded transition cursor-pointer"
+                                                                    title="Delete HSN/SAC Code">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    {{-- Employee & Technician: Read-only badge --}}
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                        {{ $resolvedHsn ?: '—' }}
+                                                    </span>
+                                                @endif
+                                            </td>
                                             <td class="text-right">
                                                 <input type="number" step="0.01" min="0.01" name="items[{{ $i }}][quantity]" value="{{ $item->quantity }}" class="w-20 text-right px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:border-blue-500 focus:outline-none">
                                             </td>
@@ -463,7 +567,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
+                                            <td colspan="9" class="text-center py-6 text-slate-500 text-sm">
                                                 No items on this quotation yet.
                                             </td>
                                         </tr>
@@ -529,6 +633,7 @@
                                     <th>#</th>
                                     <th>Item / Product</th>
                                     <th>Description</th>
+                                    <th>HSN/SAC</th>
                                     <th class="text-right">Qty</th>
                                     <th>Unit</th>
                                     @if($showPricesToViewer)
@@ -542,10 +647,18 @@
                             </thead>
                             <tbody>
                                 @forelse ($quotation->items as $i => $item)
+                                    @php
+                                        $resolvedHsn = $item->hsn_code ?: ($item->product?->hsn_code ?: $item->resolveHsnCode(true));
+                                    @endphp
                                     <tr>
                                         <td>{{ $i + 1 }}</td>
                                         <td class="font-bold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
                                         <td>{{ $item->description ?? '—' }}</td>
+                                        <td>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                {{ $resolvedHsn ?: '—' }}
+                                            </span>
+                                        </td>
                                         <td class="text-right font-medium">{{ $item->quantity }}</td>
                                         <td>{{ $item->unit ?? '—' }}</td>
                                         @if($showPricesToViewer)
@@ -564,7 +677,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $showPricesToViewer ? 8 : 6 }}" class="text-center py-6 text-slate-500 text-sm">
+                                        <td colspan="{{ $showPricesToViewer ? 9 : 7 }}" class="text-center py-6 text-slate-500 text-sm">
                                             No items on this quotation yet.
                                         </td>
                                     </tr>
@@ -2216,6 +2329,249 @@
         setTimeout(() => openEmailModal(), 150);
     });
     @endif
+
+    // Interactive Layout & Document Type Method Buttons Handler
+    let showCurrentFormat = '{{ $quotation->pdf_format ?? '1' }}';
+    let showCurrentPricingMode = '{{ $quotation->pricing_mode ?? 'itemized' }}';
+    let showCurrentDocType = '{{ $quotation->doc_type ?? 'quotation' }}';
+    const showQuotationId = '{{ $quotation->id }}';
+
+    function setShowLayoutFormat(fmt) {
+        showCurrentFormat = fmt;
+        ['1', '2', '3'].forEach(f => {
+            const tab = document.getElementById(`show-tab-fmt-${f}`);
+            if (!tab) return;
+            const dot = tab.querySelector('.tab-indicator');
+            if (f === fmt) {
+                tab.className = 'px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs';
+                if (dot) dot.classList.remove('hidden');
+            } else {
+                tab.className = 'px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60';
+                if (dot) dot.classList.add('hidden');
+            }
+        });
+        updateShowActionLinks();
+        persistShowFormat();
+    }
+
+    function setShowDocOption(docType, mode) {
+        showCurrentDocType = docType;
+        showCurrentPricingMode = mode;
+        const activeKey = docType === 'invoice' ? 'tax_invoice' : (mode === 'total_only' ? 'total_only' : 'itemized');
+        ['itemized', 'total_only', 'tax_invoice'].forEach(k => {
+            const tab = document.getElementById(`show-tab-mode-${k}`);
+            if (!tab) return;
+            const dot = tab.querySelector('.tab-indicator');
+            if (k === activeKey) {
+                tab.className = 'px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer bg-[#ca8a04] hover:bg-[#b45309] text-white font-bold shadow-xs';
+                if (dot) dot.classList.remove('hidden');
+            } else {
+                tab.className = 'px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-600/60';
+                if (dot) dot.classList.add('hidden');
+            }
+        });
+        updateShowActionLinks();
+        persistShowFormat();
+    }
+
+    function updateShowActionLinks() {
+        const queryParams = `pricing_mode=${encodeURIComponent(showCurrentPricingMode)}&doc_type=${encodeURIComponent(showCurrentDocType)}`;
+        const previewUrl = `/quotations/${showQuotationId}/preview/${showCurrentFormat}?${queryParams}`;
+        const downloadUrl = `/quotations/${showQuotationId}/download-pdf/${showCurrentFormat}?${queryParams}`;
+
+        const previewBtn = document.getElementById('show-preview-btn');
+        const previewText = document.getElementById('show-preview-btn-text');
+        const downloadBtn = document.getElementById('show-download-btn');
+        const headerDownloadBtn = document.getElementById('header-download-pdf-btn');
+
+        if (previewBtn) previewBtn.href = previewUrl;
+        if (downloadBtn) downloadBtn.href = downloadUrl;
+        if (headerDownloadBtn) headerDownloadBtn.href = downloadUrl;
+        if (previewText) {
+            previewText.innerText = showCurrentDocType === 'invoice' ? 'Preview Tax Invoice' : 'Preview Quotation';
+        }
+
+        // Also sync modal format dropdowns
+        const waFormat = document.getElementById('wa-modal-format');
+        if (waFormat) waFormat.value = showCurrentFormat;
+        const emailFormat = document.getElementById('email-modal-format');
+        if (emailFormat) emailFormat.value = showCurrentFormat;
+    }
+
+    function persistShowFormat() {
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('pdf_format', showCurrentFormat);
+        formData.append('pricing_mode', showCurrentPricingMode);
+        formData.append('doc_type', showCurrentDocType);
+        fetch(`/quotations/${showQuotationId}/set-format`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).catch(err => console.log('Sync error:', err));
+    }
     </script>
+
+    @if(auth()->user()->isAdmin())
+    {{-- Admin HSN/SAC Code Quick Manager Modal --}}
+    <div id="hsn-manager-modal" style="display:none;" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-4">
+        <div class="relative bg-white dark:bg-slate-900 rounded-[4px] border border-slate-200 dark:border-slate-800 shadow-xl max-w-md w-full p-5 space-y-4 text-slate-900 dark:text-slate-100">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Manage HSN / SAC Code') }}</h3>
+                <button type="button" onclick="closeHsnEditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div>
+                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-0.5">{{ __('Item / Product:') }}</span>
+                <span id="hsn-modal-item-name" class="font-bold text-sm text-slate-900 dark:text-white block"></span>
+            </div>
+
+            <form id="hsn-modal-form" method="POST" onsubmit="submitHsnForm(event)" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="hsn-modal-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {{ __('HSN / SAC Code (2 to 8 digits only):') }}
+                    </label>
+                    <input type="text"
+                           id="hsn-modal-input"
+                           name="hsn_code"
+                           maxlength="8"
+                           pattern="[0-9]{2,8}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)"
+                           placeholder="e.g. 85258900"
+                           class="w-full font-mono font-bold text-sm px-3 h-[38px] rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                        {{ __('Numbers only. Maximum 8 digits allowed (no 9+ digits).') }}
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="hsn-modal-update-product" name="update_product" value="1" checked
+                           class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <label for="hsn-modal-update-product" class="text-xs text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                        {{ __('Update master product catalog (apply to all products project-wide)') }}
+                    </label>
+                </div>
+
+                <div id="hsn-modal-error" class="hidden text-xs font-semibold text-rose-600 dark:text-rose-400"></div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" id="hsn-modal-delete-btn" onclick="executeHsnDelete()"
+                            class="text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:underline cursor-pointer">
+                        {{ __('Delete HSN Code') }}
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeHsnEditModal()"
+                                class="h-[38px] px-3 rounded-[4px] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer">
+                            {{ __('Cancel') }}
+                        </button>
+                        <button type="submit"
+                                class="btn-primary h-[38px] px-4 rounded-[4px] text-xs font-bold cursor-pointer">
+                            {{ __('Save HSN Code') }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentHsnItemId = null;
+        function openHsnEditModal(itemId, itemName, currentHsn, hasProduct) {
+            currentHsnItemId = itemId;
+            document.getElementById('hsn-modal-item-name').innerText = itemName;
+            const input = document.getElementById('hsn-modal-input');
+            input.value = currentHsn || '';
+            document.getElementById('hsn-modal-error').classList.add('hidden');
+            document.getElementById('hsn-modal-error').innerText = '';
+
+            const delBtn = document.getElementById('hsn-modal-delete-btn');
+            if (currentHsn) {
+                delBtn.classList.remove('hidden');
+            } else {
+                delBtn.classList.add('hidden');
+            }
+
+            document.getElementById('hsn-manager-modal').style.display = 'flex';
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closeHsnEditModal() {
+            document.getElementById('hsn-manager-modal').style.display = 'none';
+            currentHsnItemId = null;
+        }
+
+        async function submitHsnForm(e) {
+            e.preventDefault();
+            if (!currentHsnItemId) return;
+
+            const inputVal = document.getElementById('hsn-modal-input').value.trim();
+            const updateProduct = document.getElementById('hsn-modal-update-product').checked;
+            const errBox = document.getElementById('hsn-modal-error');
+
+            if (inputVal && (!/^[0-9]{2,8}$/.test(inputVal))) {
+                errBox.innerText = 'The HSN/SAC code must be numeric and between 2 to 8 digits maximum (no 9+ digits).';
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                const res = await fetch(`/quotation-items/${currentHsnItemId}/hsn`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                    },
+                    body: JSON.stringify({
+                        hsn_code: inputVal,
+                        update_product: updateProduct ? 1 : 0
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    errBox.innerText = data.message || (data.errors && data.errors.hsn_code ? data.errors.hsn_code[0] : 'Error updating HSN code.');
+                    errBox.classList.remove('hidden');
+                    return;
+                }
+
+                closeHsnEditModal();
+                window.location.reload();
+            } catch (err) {
+                errBox.innerText = 'Request failed. Please check network connection.';
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        async function confirmDeleteHsn(itemId, itemName) {
+            if (!confirm(`Are you sure you want to delete / clear the HSN/SAC code for "${itemName}"?`)) return;
+            try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                const res = await fetch(`/quotation-items/${itemId}/hsn`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                    }
+                });
+                window.location.reload();
+            } catch (e) {
+                alert('Failed to delete HSN code.');
+            }
+        }
+
+        function executeHsnDelete() {
+            if (!currentHsnItemId) return;
+            const itemName = document.getElementById('hsn-modal-item-name').innerText;
+            confirmDeleteHsn(currentHsnItemId, itemName);
+        }
+    </script>
+    @endif
 
 </x-app-layout>

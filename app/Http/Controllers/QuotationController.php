@@ -12,6 +12,7 @@ use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\Supplier;
 use App\Services\DocumentSequenceService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
@@ -112,6 +113,14 @@ class QuotationController extends Controller
 
             foreach ($processedItems as $entry) {
                 $item = $entry['item'];
+                $itemHsn = null;
+                if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $item)) {
+                    $itemHsn = !empty($item['hsn_code']) ? trim($item['hsn_code']) : null;
+                    if (!empty($item['product_id'])) {
+                        \App\Models\Product::where('id', $item['product_id'])->update(['hsn_code' => $itemHsn]);
+                    }
+                }
+
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
@@ -120,6 +129,7 @@ class QuotationController extends Controller
                     'unit' => $item['unit'],
                     'unit_price' => (float) $item['unit_price'],
                     'total' => $entry['line_total'],
+                    'hsn_code' => $itemHsn,
                 ]);
             }
 
@@ -185,7 +195,15 @@ class QuotationController extends Controller
             $pricingMode = 'itemized';
         }
 
-        return view('quotations.preview', compact('quotation', 'format', 'pricingMode'));
+        $docType = $request->query('doc_type', $quotation->doc_type ?? 'quotation');
+        if (!in_array($docType, ['quotation', 'invoice'])) {
+            $docType = 'quotation';
+        }
+
+        $quotation->pricing_mode = $pricingMode;
+        $quotation->doc_type = $docType;
+
+        return view('quotations.preview', compact('quotation', 'format', 'pricingMode', 'docType'));
     }
 
     public function downloadPdf(Request $request, Quotation $quotation, ?string $format = null)
@@ -207,10 +225,19 @@ class QuotationController extends Controller
             $quotation->pricing_mode = $pricingMode;
         }
 
-        $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
+        $docType = $request->query('doc_type', $quotation->doc_type ?? 'quotation');
+        if (!in_array($docType, ['quotation', 'invoice'])) {
+            $docType = 'quotation';
+        }
+        $quotation->doc_type = $docType;
+
+        $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation', 'docType'));
 
         $safeCustomer = \Illuminate\Support\Str::slug($quotation->lead?->customer_name ?? 'customer', '_');
-        $filename = 'Quotation_' . $quotation->quotation_no . ($safeCustomer ? '_' . $safeCustomer : '') . '.pdf';
+        $prefix = ($docType === 'invoice') ? 'Tax_Invoice_' : 'Quotation_';
+        $refNum = ($docType === 'invoice') ? $quotation->getFormattedInvoiceNo($format) : $quotation->quotation_no;
+        $cleanRef = preg_replace('/[^A-Za-z0-9_\-]/', '_', $refNum);
+        $filename = $prefix . $cleanRef . ($safeCustomer ? '_' . $safeCustomer : '') . '.pdf';
 
         return $pdf->download($filename);
     }
@@ -378,10 +405,19 @@ class QuotationController extends Controller
             $quotation->pricing_mode = $pricingMode;
         }
 
-        $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
+        $docType = $request->query('doc_type', $quotation->doc_type ?? 'quotation');
+        if (!in_array($docType, ['quotation', 'invoice'])) {
+            $docType = 'quotation';
+        }
+        $quotation->doc_type = $docType;
+
+        $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation', 'docType'));
 
         $safeCustomer = \Illuminate\Support\Str::slug($quotation->lead?->customer_name ?? 'customer', '_');
-        $filename = 'Quotation_' . $quotation->quotation_no . ($safeCustomer ? '_' . $safeCustomer : '') . '_format' . $format . '.pdf';
+        $prefix = ($docType === 'invoice') ? 'Tax_Invoice_' : 'Quotation_';
+        $refNum = ($docType === 'invoice') ? $quotation->getFormattedInvoiceNo($format) : $quotation->quotation_no;
+        $cleanRef = preg_replace('/[^A-Za-z0-9_\-]/', '_', $refNum);
+        $filename = $prefix . $cleanRef . ($safeCustomer ? '_' . $safeCustomer : '') . '_format' . $format . '.pdf';
 
         return $pdf->stream($filename);
     }
@@ -403,11 +439,17 @@ class QuotationController extends Controller
             $pricingMode = 'itemized';
         }
 
-        if ($quotation->pdf_format !== $format || $quotation->pricing_mode !== $pricingMode) {
-            $quotation->update([
-                'pdf_format'   => $format,
-                'pricing_mode' => $pricingMode,
-            ]);
+        $docType = $request->input('doc_type', $quotation->doc_type ?? 'quotation');
+        if (!in_array($docType, ['quotation', 'invoice'])) {
+            $docType = 'quotation';
+        }
+
+        $fmtUpdates = [];
+        if ($quotation->pdf_format !== $format) $fmtUpdates['pdf_format'] = $format;
+        if ($quotation->pricing_mode !== $pricingMode) $fmtUpdates['pricing_mode'] = $pricingMode;
+        if ($quotation->doc_type !== $docType) $fmtUpdates['doc_type'] = $docType;
+        if (!empty($fmtUpdates)) {
+            $quotation->update($fmtUpdates);
         }
 
         $customPhone = $request->input('phone');
@@ -444,7 +486,7 @@ class QuotationController extends Controller
 
         $customMsg = $request->input('custom_message');
         $phone = $quotation->getWhatsAppPhone($customPhone);
-        $message = $customMsg ?: $quotation->getWhatsAppFormattedMessage($format, $pricingMode);
+        $message = $customMsg ?: $quotation->getWhatsAppFormattedMessage($format, $pricingMode, $docType);
 
         if (in_array($quotation->status, ['draft', 'approved'])) {
             $prevStatus = $quotation->status;
@@ -1253,6 +1295,14 @@ class QuotationController extends Controller
                 }
                 $lineTotal = (float) $item['quantity'] * $price;
 
+                $itemHsn = null;
+                if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $item)) {
+                    $itemHsn = !empty($item['hsn_code']) ? trim($item['hsn_code']) : null;
+                    if ($catalogProduct) {
+                        $catalogProduct->update(['hsn_code' => $itemHsn]);
+                    }
+                }
+
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
@@ -1261,6 +1311,7 @@ class QuotationController extends Controller
                     'unit' => $item['unit'],
                     'unit_price' => $price,
                     'total' => $lineTotal,
+                    'hsn_code' => $itemHsn,
                 ]);
             }
 
@@ -1298,7 +1349,7 @@ class QuotationController extends Controller
             return back()->with('error', 'Cannot update pricing on this quotation in its current status.');
         }
 
-        $request->validate([
+        $validationRules = [
             'items' => ['required', 'array'],
             'items.*.id' => ['nullable', 'integer', 'exists:quotation_items,id'],
             'items.*.item_name' => ['nullable', 'string', 'max:255'],
@@ -1309,6 +1360,14 @@ class QuotationController extends Controller
             'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'pdf_format' => ['nullable', 'string', 'in:1,2,3,4'],
+        ];
+
+        if (Auth::user()->isAdmin()) {
+            $validationRules['items.*.hsn_code'] = ['nullable', 'string', 'regex:/^[0-9]{2,8}$/'];
+        }
+
+        $request->validate($validationRules, [
+            'items.*.hsn_code.regex' => 'The HSN/SAC code must be numeric and between 2 to 8 digits maximum (no 9+ numbers allowed).',
         ]);
 
         DB::transaction(function () use ($request, $quotation) {
@@ -1316,17 +1375,26 @@ class QuotationController extends Controller
                 $qty = (float) $itemData['quantity'];
                 $price = (float) $itemData['unit_price'];
 
+                $itemUpdate = [
+                    'quantity' => $qty,
+                    'unit_price' => $price,
+                    'total' => $qty * $price,
+                ];
+
+                if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $itemData)) {
+                    $itemUpdate['hsn_code'] = !empty($itemData['hsn_code']) ? trim($itemData['hsn_code']) : null;
+                }
+
                 if (!empty($itemData['id'])) {
                     $qItem = $quotation->items()->find($itemData['id']);
                     if ($qItem) {
-                        $qItem->update([
-                            'quantity' => $qty,
-                            'unit_price' => $price,
-                            'total' => $qty * $price,
-                        ]);
+                        $qItem->update($itemUpdate);
+                        if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $itemData) && $qItem->product_id) {
+                            \App\Models\Product::where('id', $qItem->product_id)->update(['hsn_code' => $itemUpdate['hsn_code']]);
+                        }
                     }
                 } elseif (!empty($itemData['item_name'])) {
-                    $quotation->items()->create([
+                    $createData = [
                         'product_id' => $itemData['product_id'] ?? null,
                         'item_name' => trim($itemData['item_name']),
                         'description' => $itemData['description'] ?? null,
@@ -1334,7 +1402,14 @@ class QuotationController extends Controller
                         'unit' => $itemData['unit'] ?? 'Nos',
                         'unit_price' => $price,
                         'total' => $qty * $price,
-                    ]);
+                    ];
+                    if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $itemData)) {
+                        $createData['hsn_code'] = !empty($itemData['hsn_code']) ? trim($itemData['hsn_code']) : null;
+                    }
+                    $newItem = $quotation->items()->create($createData);
+                    if (Auth::user()->isAdmin() && !empty($createData['hsn_code']) && !empty($createData['product_id'])) {
+                        \App\Models\Product::where('id', $createData['product_id'])->update(['hsn_code' => $createData['hsn_code']]);
+                    }
                 }
             }
 
@@ -1378,30 +1453,34 @@ class QuotationController extends Controller
         $validated = $request->validate([
             'pdf_format'   => ['nullable', 'string', 'in:1,2,3,4'],
             'pricing_mode' => ['nullable', 'string', 'in:itemized,total_only'],
+            'doc_type'     => ['nullable', 'string', 'in:quotation,invoice'],
         ]);
 
         $newFormat = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
         $newPricingMode = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
+        $newDocType = $validated['doc_type'] ?? $quotation->doc_type ?? 'quotation';
 
         $quotation->update([
             'pdf_format'   => $newFormat,
             'pricing_mode' => $newPricingMode,
+            'doc_type'     => $newDocType,
         ]);
 
         $formatName = Quotation::FORMATS[$newFormat] ?? 'Format ' . $newFormat;
         $modeName = Quotation::PRICING_MODES[$newPricingMode] ?? 'With Product Cost & Total';
+        $docTypeName = Quotation::DOC_TYPES[$newDocType] ?? 'PR Quotation';
         $user = Auth::user();
 
         $quotation->statusHistories()->create([
             'changed_by' => $user->id,
             'from_status' => $quotation->status,
             'to_status' => $quotation->status,
-            'notes' => "{$user->name} set quotation format to '{$formatName}' ({$modeName}).",
+            'notes' => "{$user->name} set format to '{$formatName}', mode to '{$modeName}', type to '{$docTypeName}'.",
         ]);
 
         $message = $user->isTechnician()
-            ? "Quotation layout set to '{$formatName}' with '{$modeName}'. Forwarded to Admin for review & approval."
-            : "Quotation format updated to '{$formatName}' with '{$modeName}'.";
+            ? "Layout set to '{$formatName}' with '{$docTypeName}' ({$modeName}). Forwarded to Admin for review & approval."
+            : "Layout format updated to '{$formatName}' with '{$docTypeName}' ({$modeName}).";
 
         return back()->with('status', $message);
     }
@@ -1449,6 +1528,73 @@ class QuotationController extends Controller
         ]);
 
         return back()->with('status', "Item '{$itemName}' removed successfully.");
+    }
+
+    /**
+     * Admin-only endpoint to update HSN/SAC code for a quotation item and master product.
+     */
+    public function updateHsnCode(Request $request, QuotationItem $item): JsonResponse|RedirectResponse
+    {
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized. Only administrators can update HSN/SAC codes.');
+        }
+
+        $validated = $request->validate([
+            'hsn_code' => ['nullable', 'string', 'regex:/^[0-9]{2,8}$/'],
+            'update_product' => ['nullable', 'boolean'],
+        ], [
+            'hsn_code.regex' => 'The HSN/SAC code must be numeric and between 2 to 8 digits maximum (no 9+ numbers allowed).',
+        ]);
+
+        $hsnCode = !empty($validated['hsn_code']) ? trim($validated['hsn_code']) : null;
+        $item->update(['hsn_code' => $hsnCode]);
+
+        $productUpdated = false;
+        if ($item->product_id && $request->boolean('update_product', true)) {
+            \App\Models\Product::where('id', $item->product_id)->update(['hsn_code' => $hsnCode]);
+            $productUpdated = true;
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $hsnCode ? "HSN/SAC code updated to {$hsnCode}." : 'HSN/SAC code removed.',
+                'hsn_code' => $hsnCode,
+                'item_id' => $item->id,
+                'product_updated' => $productUpdated,
+            ]);
+        }
+
+        return back()->with('status', $hsnCode ? "HSN/SAC code updated to {$hsnCode}." : 'HSN/SAC code removed.');
+    }
+
+    /**
+     * Admin-only endpoint to delete / clear HSN/SAC code.
+     */
+    public function deleteHsnCode(Request $request, QuotationItem $item): JsonResponse|RedirectResponse
+    {
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized. Only administrators can delete HSN/SAC codes.');
+        }
+
+        $item->update(['hsn_code' => null]);
+        $productUpdated = false;
+        if ($item->product_id && $request->boolean('delete_from_product', true)) {
+            \App\Models\Product::where('id', $item->product_id)->update(['hsn_code' => null]);
+            $productUpdated = true;
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'HSN/SAC code deleted successfully.',
+                'hsn_code' => null,
+                'item_id' => $item->id,
+                'product_updated' => $productUpdated,
+            ]);
+        }
+
+        return back()->with('status', 'HSN/SAC code deleted successfully.');
     }
 
     /** Saved views shown in the view menu. */

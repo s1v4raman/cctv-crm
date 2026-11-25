@@ -1,12 +1,17 @@
 import Alpine from 'alpinejs';
+import QRCode from 'qrcode';
 import './a11y';
 import './responsive-tables';
 import './filters';
 import formSteps from './form-steps';
+import hardwareScannerModalComponent, { parseDeviceBarcode } from './hardware-scanner';
 import './crm-searchable-select';
 
 window.Alpine = Alpine;
+window.QRCode = QRCode;
+window.parseDeviceBarcode = parseDeviceBarcode;
 Alpine.data('formSteps', formSteps);
+Alpine.data('hardwareScannerModalComponent', hardwareScannerModalComponent);
 
 if (!window.AlpineStarted) {
     window.AlpineStarted = true;

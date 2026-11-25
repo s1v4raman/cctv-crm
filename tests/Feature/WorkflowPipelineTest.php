@@ -48,13 +48,13 @@ class WorkflowPipelineTest extends TestCase
         $response->assertDontSee('title="Preview Quotation in Live Page"', false);
 
         // Add Project button must be present in its place
-        $response->assertSee('+ Add Project', false);
+        $response->assertSee('Add Project', false);
+        $response->assertDontSee('+ Add Project', false);
         $response->assertSee('projects/create?quotation_id=' . $quotation->id, false);
         $response->assertSee('lead_id=' . $lead->id, false);
 
-        // Workflow pipeline banner must be present
-        $response->assertSee('Stage 2 of 5:', false);
-        $response->assertSee('Quotation', false);
+        // Workflow pipeline banner card is removed from user view as requested
+        $response->assertDontSee('Stage 2 of 5:', false);
     }
 
     public function test_quotation_header_shows_view_project_when_project_exists()
@@ -105,9 +105,10 @@ class WorkflowPipelineTest extends TestCase
         $response = $this->actingAs($staff)->get(route('leads.show', $lead));
         $response->assertStatus(200);
 
-        $response->assertSee('+ Add Project', false);
+        $response->assertSee('Add Project', false);
+        $response->assertDontSee('+ Add Project', false);
         $response->assertSee(route('projects.create', ['lead_id' => $lead->id]), false);
-        $response->assertSee('Stage 1 of 5:', false);
+        $response->assertDontSee('Stage 1 of 5:', false);
     }
 
     public function test_project_wizard_prepopulates_from_quotation()

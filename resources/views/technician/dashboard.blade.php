@@ -6,6 +6,13 @@
         $currentUser = auth()->user();
         $myAttendance = $myAttendanceToday ?? \App\Models\EmployeeAttendance::where('user_id', $currentUser->id)->whereDate('date', now()->toDateString())->first();
         $primaryPrj = $primaryProject ?? null;
+        $firstJob = isset($activeJobs) ? $activeJobs->first() : null;
+        $scannerJobContext = [
+            'work_order_id' => $firstJob?->id,
+            'project_id'    => $primaryPrj?->id ?? ($selectedProject?->id ?? null),
+            'lead_id'       => $firstJob?->quotation?->lead_id ?? ($primaryPrj?->lead_id ?? ($selectedProject?->lead_id ?? null)),
+            'site_label'    => $firstJob?->quotation?->lead?->customer_name ?? ($primaryPrj?->site_name ?? ($selectedProject?->title ?? '')),
+        ];
     @endphp
 
     <div x-data="{
@@ -122,7 +129,7 @@
                         {{-- Add Site Location (Quick Modal) --}}
                         <button type="button" onclick="openQuickAddSiteModal()"
                                 class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
-                            <span>{{ __('+ Add Site Location') }}</span>
+                            <span>{{ __('Add Site Location') }}</span>
                         </button>
 
                         {{-- Log Worker Attendance (Method 1) --}}
@@ -163,7 +170,7 @@
                      :class="currentTab === 'projects' ? 'ring-2 ring-blue-500 border-blue-500' : ''">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Projects') }}</span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                        <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $assignedProjects->count() }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -178,7 +185,7 @@
                      :class="currentTab === 'jobs' ? 'ring-2 ring-indigo-500 border-indigo-500' : ''">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Installation Jobs') }}</span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-xs"></span>
+                        <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">{{ $activeJobs->count() }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -193,7 +200,7 @@
                      :class="currentTab === 'surveys' ? 'ring-2 ring-amber-500 border-amber-500' : ''">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Site Surveys') }}</span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-xs"></span>
+                        <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">{{ $activeSurveys->count() }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -208,7 +215,7 @@
                      :class="currentTab === 'workers' ? 'ring-2 ring-emerald-500 border-emerald-500' : ''">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Field Crew') }}</span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs"></span>
+                        <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">{{ $activeWorkers->count() }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -223,7 +230,7 @@
                      :class="currentTab === 'quotations' ? 'ring-2 ring-blue-500 border-blue-500' : ''">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Quotations') }}</span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                        <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ isset($quotations) ? $quotations->count() : 0 }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -367,7 +374,7 @@
                             <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-7 shadow-sm space-y-5">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                                        <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
                                         <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Primary Active Project') }}</span>
                                     </div>
                                     <button type="button" @click="switchTab('projects')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
@@ -471,7 +478,7 @@
                             <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-xs"></span>
+                                        <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
                                         <span>{{ __('Active Installation Jobs') }}</span>
                                     </h3>
                                     <button type="button" @click="switchTab('jobs')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
@@ -503,7 +510,7 @@
                             <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-xs"></span>
+                                        <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                                         <span>{{ __('Pending Site Surveys') }}</span>
                                     </h3>
                                     <button type="button" @click="switchTab('surveys')" class="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
@@ -651,7 +658,7 @@
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="openQuickAddSiteModal()" 
                                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
-                            <span>{{ __('+ Add Site Location') }}</span>
+                            <span>{{ __('Add Site Location') }}</span>
                         </button>
                         <a href="{{ route('projects.create') }}" 
                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition"
@@ -762,7 +769,7 @@
                                     @if($prj->contact_phone)
                                         <a href="tel:{{ $prj->contact_phone }}" 
                                            class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <svg class="w-4 h-4 shrink-0 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="stroke: currentColor !important;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                             <span>{{ __('Call') }}</span>
                                         </a>
                                     @endif
@@ -994,7 +1001,7 @@
                                 class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
                                 style="color: #ffffff !important;">
                             <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            <span class="!text-white" style="color: #ffffff !important;">{{ __('+ Add Worker') }}</span>
+                            <span class="!text-white" style="color: #ffffff !important;">{{ __('Add Worker') }}</span>
                         </button>
                         <button type="button" onclick="openAttendanceModal()"
                                 class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
@@ -1122,11 +1129,13 @@
                     {{-- Left 7 Cols: Scanner Station --}}
                     <div class="lg:col-span-7 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-sm space-y-4">
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <button type="button" onclick="openHardwareScannerModal()"
+                            <button type="button" onclick="openHardwareScannerModal('auto', {{ Js::from($scannerJobContext) }})"
+                                    title="{{ __('Open Camera Scanner') }}"
                                     class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
                                     style="color: #ffffff !important;">
                                 <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Launch Hardware Scanner') }}</span>
+                                <span class="sr-only">{{ __('Open Camera Scanner') }}</span>
                             </button>
 
                             <div class="w-full sm:max-w-xs flex items-center gap-1.5">
@@ -1364,7 +1373,7 @@
                     <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                                <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Travel Allowances & On-Site Claims') }}</span>
                             </div>
                             <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -2055,8 +2064,7 @@
                         <button type="button" 
                                 @click="showNewSiteForm = !showNewSiteForm"
                                 class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 text-[11px] font-bold border border-blue-200 dark:border-blue-800/80 transition cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                            <span x-text="showNewSiteForm ? '{{ __('Hide New Site Form') }}' : '{{ __('+ Add New Installation Site') }}'"></span>
+                            <span x-text="showNewSiteForm ? '{{ __('Hide New Site Form') }}' : '{{ __('Add New Installation Site') }}'"></span>
                         </button>
                     </div>
 
@@ -2293,6 +2301,11 @@
                         </div>
                     `;
                 } else if (data.found && data.type === 'catalog_product') {
+                    const targetSerial = data.serial || code;
+                    const targetMac = data.mac || '';
+                    const targetModel = data.model || data.product_name || '';
+                    const targetPid = data.product_id || data.id || '';
+
                     container.innerHTML = `
                         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80">
                             <div class="flex items-start gap-3.5">
@@ -2303,16 +2316,28 @@
                                     <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide block">${techScanText.catalogItem}</span>
                                     <h4 class="text-sm font-black text-slate-900 dark:text-white mt-0.5">${data.product_name}</h4>
                                     <div class="text-xs text-slate-600 dark:text-slate-300 mt-1">SKU: <strong class="font-mono text-slate-800 dark:text-slate-200">${data.sku}</strong> &middot; ${techScanText.model}: ${data.model_no || techScanText.na} &middot; ${techScanText.stock}: <strong class="text-emerald-600 dark:text-emerald-400 font-bold">${techScanText.available.replace(':count', data.stock_quantity)}</strong></div>
+                                    ${targetMac ? `<div class="text-xs text-blue-600 dark:text-blue-400 font-mono mt-0.5">MAC: ${targetMac}</div>` : ''}
                                 </div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" 
+                            <a href="{{ route('equipment.create') }}?product_id=${targetPid}&serial=${encodeURIComponent(targetSerial)}&mac=${encodeURIComponent(targetMac)}&model=${encodeURIComponent(targetModel)}" 
                                class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
-                               style="color: #ffffff !important;">
+                                style="color: #ffffff !important;">
                                 <span style="color: #ffffff !important;">${techScanText.installAtSite} →</span>
                             </a>
                         </div>
                     `;
                 } else {
+                    const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(code) : null;
+                    const isStrictMac = (str) => {
+                        if (!str) return false;
+                        const s = String(str).replace(/^MAC[:\s=-]*/i, '').trim();
+                        return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s) ||
+                               (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s));
+                    };
+                    const nfMac = (parsed && parsed.mac && isStrictMac(parsed.mac)) ? parsed.mac : (isStrictMac(code) ? code : (data.mac || ''));
+                    const nfSerial = (parsed && parsed.serial && !isStrictMac(parsed.serial)) ? parsed.serial : (!isStrictMac(code) ? (data.serial || code) : '');
+                    const nfModel = (parsed && parsed.model) ? parsed.model : (data.model || '');
+
                     container.innerHTML = `
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80">
                             <div class="flex items-start gap-3">
@@ -2324,9 +2349,10 @@
                                         ${techScanText.notFound.replace(':code', '<span class="font-mono bg-amber-200/60 dark:bg-amber-900/80 px-2 py-0.5 rounded text-amber-950 dark:text-amber-100 font-black">' + code + '</span>')}
                                     </h4>
                                     <p class="text-xs text-amber-800/80 dark:text-amber-300/80 mt-0.5">${techScanText.notRegistered}</p>
+                                    ${(nfModel || nfMac) ? `<div class="text-xs text-slate-600 dark:text-slate-300 mt-1 font-mono">${nfModel ? 'Model: ' + nfModel + ' ' : ''}${nfMac ? 'MAC: ' + nfMac : ''}</div>` : ''}
                                 </div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" 
+                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(nfSerial)}&mac=${encodeURIComponent(nfMac)}&model=${encodeURIComponent(nfModel)}" 
                                class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
                                style="color: #ffffff !important;">
                                 <span style="color: #ffffff !important;">${techScanText.registerNew} →</span>
@@ -2480,6 +2506,5 @@
         });
     </script>
 
-    {{-- Universal Voice Dictation & Speech Recognition Engine --}}
-    <x-tech-voice-engine />
+    {{-- Universal Voice Dictation & Speech Recognition Engine provided globally via app layout --}}
 </x-app-layout>

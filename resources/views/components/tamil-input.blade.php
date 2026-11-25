@@ -5,13 +5,15 @@
         {{ $slot }}
         <div class="tamil-input-tools">
             <span x-show="voiceMessage" x-cloak x-text="voiceMessage" class="tamil-input-message" aria-live="polite"></span>
-            {{-- Voice: only where the browser can turn speech into text (not Firefox, some iPhones) --}}
-            <button type="button" x-show="speechSupported" x-cloak @click="toggleVoice()"
+            {{-- Voice: speech-to-text dictation via microphone --}}
+            <button type="button" @click="toggleVoice()"
                     class="name-tool-btn" :class="listening ? 'is-listening' : ''"
                     :aria-pressed="listening.toString()"
                     :title="listening ? {{ Js::from(__('Stop listening')) }} : {{ Js::from(__('Speak')) }}"
                     :aria-label="listening ? {{ Js::from(__('Stop listening')) }} : {{ Js::from(__('Speak')) }}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="display: block !important; stroke: currentColor !important;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
+                </svg>
             </button>
             <button type="button" @click="toggleKeyboard()"
                     class="name-tool-btn" :class="keyboardOpen ? 'is-on' : ''"

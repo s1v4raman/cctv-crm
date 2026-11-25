@@ -22,6 +22,9 @@ class InstalledEquipment extends Model
         'equipment_name',
         'serial_number',
         'mac_address',
+        'ean',
+        'scan_source',
+        'raw_scan',
         'location_tag',
         'installation_date',
         'manufacturer_warranty_expiry',
@@ -36,6 +39,7 @@ class InstalledEquipment extends Model
             'installation_date' => 'date',
             'manufacturer_warranty_expiry' => 'date',
             'service_warranty_expiry' => 'date',
+            'raw_scan' => 'array',
         ];
     }
 

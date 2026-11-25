@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Tax Invoice {{ $quotation->quotation_no ?? 'LP/26-27/02' }}</title>
+    <title>{{ ($docType ?? ($quotation->doc_type ?? 'quotation')) === 'invoice' ? ('Tax Invoice ' . (method_exists($quotation, 'getFormattedInvoiceNo') ? $quotation->getFormattedInvoiceNo('3') : 'LP/26-27/02')) : ('Quotation ' . (method_exists($quotation, 'getFormattedReferenceNo') ? $quotation->getFormattedReferenceNo('3') : ($quotation->quotation_no ?? 'LP/26-27/02'))) }}</title>
     <style>
         @page {
             size: A4 portrait;
@@ -275,6 +275,12 @@
     $logoPath = public_path('images/linepix-logo-clean.png');
     $logoBase64 = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : '';
 
+    $docType = $docType ?? $quotation->doc_type ?? 'quotation';
+    $isInvoice = ($docType === 'invoice');
+    $invoiceNo = method_exists($quotation, 'getFormattedInvoiceNo')
+        ? $quotation->getFormattedInvoiceNo('3')
+        : 'LP/26-27/02';
+
     $quoteNo = method_exists($quotation, 'getFormattedReferenceNo')
         ? $quotation->getFormattedReferenceNo('3')
         : ($quotation->quotation_no ?? 'LP/26-27/02');
@@ -348,7 +354,7 @@
     <hr class="header-divider">
 
     {{-- Document Title --}}
-    <div class="doc-title">Tax Invoice</div>
+    <div class="doc-title">{{ $isInvoice ? 'Tax Invoice' : 'Quotation' }}</div>
 
     {{-- Two Column Meta Table --}}
     <table class="meta-table">
@@ -363,8 +369,8 @@
                 <div>State: 33-Tamil Nadu</div>
             </td>
             <td class="meta-right">
-                <div class="meta-heading">Invoice Details</div>
-                <div>Invoice No. : {{ $quoteNo }}</div>
+                <div class="meta-heading">{{ $isInvoice ? 'Invoice Details' : 'Quotation Details' }}</div>
+                <div>{{ $isInvoice ? 'Invoice No. :' : 'Quote No. :' }} {{ $isInvoice ? $invoiceNo : $quoteNo }}</div>
                 <div>Date : {{ $formattedDate }}</div>
                 <div>Place of supply: 33-Tamil Nadu</div>
             </td>
@@ -414,7 +420,7 @@
                         $taxable = (float)($item->total ?? ($unitPrice * $qty));
                         $itemGst = round($taxable * ($taxPercent / 100), 2);
                         $lineTotal = round($taxable + $itemGst, 2);
-                        $hsn = $item->hsn_code ?? '';
+                        $hsn = $item->hsn_code;
                         $unit = $item->unit ?? 'Nos';
                     @endphp
                     <tr>

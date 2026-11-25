@@ -19,11 +19,11 @@ class EquipmentBarcodeMultiScanTest extends TestCase
         $response = $this->actingAs($admin)->get(route('equipment.create'));
         $response->assertOk();
 
-        // 4 Scanner Buttons on S/N and MAC
+        // Single Hardware Scan bar with Mobile Scan & Barcode Machine buttons
         $response->assertSee('serial_number_input');
         $response->assertSee('mac_address_input');
         $response->assertSee("openBarcodeScanner('equipment-barcode-modal', 'serial_number_input'", false);
-        $response->assertSee("openBarcodeScanner('equipment-barcode-modal', 'mac_address_input'", false);
+        $response->assertSee('Single Hardware Scan');
         $response->assertSee('Barcode Machine');
         $response->assertSee('Mobile Scan');
 
@@ -78,7 +78,7 @@ class EquipmentBarcodeMultiScanTest extends TestCase
         $product = Product::create([
             'name' => 'CP PLUS 4MP IP Dome',
             'model_no' => 'CP-UNC-DA41L3',
-            'sku' => '8909999888877',
+            'sku' => '8909999888878',
             'unit' => 'Nos',
             'cost_price' => 2800,
             'unit_price' => 3900,
@@ -86,14 +86,46 @@ class EquipmentBarcodeMultiScanTest extends TestCase
             'default_warranty_months' => 24,
         ]);
 
-        // Scanning composite barcode with S/N, MAC and EAN in single string
-        $compositeBarcode = 'SN:HK20261122001,MAC:BC:A8:A6:11:22:33,EAN:8909999888877';
+        // Scanning composite barcode with S/N, MAC and valid EAN-13 in single string
+        $compositeBarcode = 'SN:HK20261122001,MAC:BC:A8:A6:11:22:33,EAN:8909999888878';
         $response = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode($compositeBarcode));
         $response->assertOk();
         $response->assertJson([
             'found' => true,
             'type' => 'catalog_product',
             'product_id' => $product->id,
+        ]);
+    }
+
+    public function test_equipment_lookup_unregistered_serial_does_not_guess_model_and_preserves_mac(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        // User scans CP Plus serial e.g. O2T6VS3PH8FFTANS with MAC BC:A8:A6:11:22:33
+        $composite = 'S/N: O2T6VS3PH8FFTANS | MAC: BC:A8:A6:11:22:33';
+        $response = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode($composite));
+        $response->assertOk();
+        $response->assertJson([
+            'found' => false,
+            'model_not_found' => true,
+            'serial' => 'O2T6VS3PH8FFTANS',
+            'mac' => 'BC:A8:A6:11:22:33',
+            'model' => '',
+            'equipment_name' => '',
+            'product_id' => null,
+        ]);
+    }
+
+    public function test_equipment_lookup_standalone_mac_does_not_pollute_serial(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?mac=F8:20:97:E3:33:91');
+        $response->assertOk();
+        $response->assertJson([
+            'found' => false,
+            'serial' => '',
+            'mac' => 'F8:20:97:E3:33:91',
         ]);
     }
 }

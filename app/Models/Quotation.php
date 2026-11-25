@@ -29,6 +29,7 @@ class Quotation extends Model
         'notes',
         'pdf_format',
         'pricing_mode',
+        'doc_type',
     ];
 
     public const FORMATS = [
@@ -42,6 +43,11 @@ class Quotation extends Model
         'total_only' => 'Total Cost Only (Lump Sum)',
     ];
 
+    public const DOC_TYPES = [
+        'quotation' => 'PR Quotation',
+        'invoice'   => 'Tax Invoice',
+    ];
+
     public function getPdfFormatNameAttribute(): string
     {
         return self::FORMATS[$this->pdf_format ?? '1'] ?? 'Executive Modern';
@@ -52,9 +58,55 @@ class Quotation extends Model
         return self::PRICING_MODES[$this->pricing_mode ?? 'itemized'] ?? 'With Product Cost & Total';
     }
 
+    public function getDocTypeNameAttribute(): string
+    {
+        return self::DOC_TYPES[$this->doc_type ?? 'quotation'] ?? 'PR Quotation';
+    }
+
+    public function isTaxInvoice(): bool
+    {
+        return ($this->doc_type ?? 'quotation') === 'invoice';
+    }
+
     public function isTotalCostOnly(): bool
     {
         return ($this->pricing_mode ?? 'itemized') === 'total_only';
+    }
+
+    /**
+     * Get dynamic, financial-year based Tax Invoice number according to template format.
+     * Examples matching actual invoices:
+     * - Format 1: 2026-27/122 (Precision IT Systems)
+     * - Format 2: NP/26-27/0017 (NP Solutions)
+     * - Format 3: LP/26-27/02 (Linepix)
+     */
+    public function getFormattedInvoiceNo(?string $format = '1'): string
+    {
+        $quoteDate = $this->quotation_date ?? $this->created_at ?? now();
+        $carbon = $quoteDate instanceof \Carbon\Carbon ? $quoteDate : \Carbon\Carbon::parse($quoteDate);
+
+        $year = (int)$carbon->format('Y');
+        $month = (int)$carbon->format('n');
+        $fyStartFull = $month >= 4 ? $year : ($year - 1);
+        $fyEndFull   = $month >= 4 ? ($year + 1) : $year;
+        $fyStartShort = substr((string)$fyStartFull, -2);
+        $fyEndShort   = substr((string)$fyEndFull, -2);
+        $fyLong = "{$fyStartFull}-{$fyEndShort}";   // e.g. "2026-27"
+        $fyShort = "{$fyStartShort}-{$fyEndShort}"; // e.g. "26-27"
+
+        $raw = (string)($this->quotation_no ?? '');
+        $seq = 1;
+        if (preg_match('/(\d+)$/', $raw, $matches)) {
+            $seq = (int)$matches[1];
+        } elseif ($this->id) {
+            $seq = (int)$this->id;
+        }
+
+        return match ($format) {
+            '2' => "NP/{$fyShort}/" . str_pad((string)$seq, 4, '0', STR_PAD_LEFT),
+            '3', '4' => "LP/{$fyShort}/" . str_pad((string)$seq, 2, '0', STR_PAD_LEFT),
+            default => "{$fyLong}/" . str_pad((string)$seq, 3, '0', STR_PAD_LEFT),
+        };
     }
 
     /**
@@ -359,17 +411,21 @@ class Quotation extends Model
     /**
      * Generate structured WhatsApp message for a given PDF format.
      */
-    public function getWhatsAppFormattedMessage(string $format = '1', ?string $pricingMode = null): string
+    public function getWhatsAppFormattedMessage(string $format = '1', ?string $pricingMode = null, ?string $docType = null): string
     {
         $leadName = $this->lead?->customer_name ?? 'Valued Customer';
         $companyName = config('app.name', 'Precision IT Systems');
         $validUntil = $this->valid_until ? $this->valid_until->format('d M Y') : '15 days from issue';
         $quoteDate = ($this->quotation_date ?? $this->created_at ?? now())->format('d M Y');
+        $docType = $docType ?? $this->doc_type ?? 'quotation';
+
+        $docTitle = $docType === 'invoice' ? 'Tax Invoice' : 'Quotation Proposal';
+        $docRef = $docType === 'invoice' ? $this->getFormattedInvoiceNo($format) : $this->getFormattedReferenceNo($format);
 
         $formatName = match($format) {
-            '2' => 'Technical Detailed Quotation',
-            '3', '4' => 'Linepix GST Invoice',
-            default => 'Executive Modern Quotation',
+            '2' => ($docType === 'invoice' ? 'NP Solutions Tax Invoice' : 'Technical Detailed Quotation'),
+            '3', '4' => ($docType === 'invoice' ? 'Linepix Tax Invoice' : 'Linepix Quotation'),
+            default => ($docType === 'invoice' ? 'Precision IT Systems Tax Invoice' : 'Executive Modern Quotation'),
         };
 
         $isTotalOnly = $pricingMode !== null ? ($pricingMode === 'total_only') : $this->isTotalCostOnly();
@@ -386,13 +442,18 @@ class Quotation extends Model
             }
         }
 
-        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => $format]);
+        $pdfUrl = URL::signedRoute('quotations.public-pdf', [
+            'quotation'    => $this,
+            'format'       => $format,
+            'pricing_mode' => $isTotalOnly ? 'total_only' : 'itemized',
+            'doc_type'     => $docType,
+        ]);
 
-        $msg ="📹 CCTV INSTALLATION & SECURITY PROPOSAL\n"
+        $msg ="📹 CCTV INSTALLATION & SECURITY " . strtoupper($docTitle) . "\n"
              . "----------------------------------------------\n"
              . "Dear *{$leadName}*,\n\n"
              . "Thank you for contacting {$companyName}. Please find your official *{$formatName}* details below:\n\n"
-             . "📋 *Quotation No:* #{$this->quotation_no}\n"
+             . "📋 *" . ($docType === 'invoice' ? 'Invoice No:' : 'Quotation No:') . "* #{$docRef}\n"
              . "📅 *Date:* {$quoteDate}\n"
              . "⏳ *Valid Until:* {$validUntil}\n\n";
 

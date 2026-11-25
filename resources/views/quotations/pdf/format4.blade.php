@@ -394,7 +394,7 @@
                                 <div class="item-desc">{!! nl2br(e($item->description)) !!}</div>
                             @endif
                         </td>
-                        <td class="center">{{ $item->product?->hsn_code ?? '-' }}</td>
+                        <td class="center">{{ $item->hsn_code ?? '-' }}</td>
                         <td class="center">{{ $qty == (int)$qty ? (int)$qty : $qty }}</td>
                         <td class="center">{{ $item->unit ?: 'Nos' }}</td>
                         <td class="right">₹ {{ number_format($item->unit_price, 2) }}</td>

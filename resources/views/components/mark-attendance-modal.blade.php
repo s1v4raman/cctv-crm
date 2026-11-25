@@ -175,8 +175,7 @@
                         <div class="flex items-center justify-between mb-1">
                             <label for="att-project-id" class="crm-label text-xs mb-0">{{ __('Project Site') }} <span class="required-marker">*</span></label>
                             <button type="button" onclick="openQuickAddSiteModal()" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center gap-1 cursor-pointer hover:underline">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                <span>{{ __('+ Add New Site Location') }}</span>
+                                <span>{{ __('Add New Site Location') }}</span>
                             </button>
                         </div>
                         <select id="att-project-id" name="project_id" required class="crm-select text-xs w-full">
@@ -209,8 +208,7 @@
                     <div class="flex items-center justify-between mb-1">
                         <label for="att-project-id-bulk" class="crm-label text-xs mb-0">{{ __('Project Site') }} <span class="required-marker">*</span></label>
                         <button type="button" onclick="openQuickAddSiteModal()" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center gap-1 cursor-pointer hover:underline">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                            <span>{{ __('+ Add New Site Location') }}</span>
+                            <span>{{ __('Add New Site Location') }}</span>
                         </button>
                     </div>
                     <select onchange="syncProjectSelect(this.value)" id="att-project-id-bulk" class="crm-select text-xs w-full">
@@ -387,8 +385,7 @@
                     <div class="flex items-center justify-between mb-1">
                         <label for="output-project-id" class="crm-label text-xs mb-0">{{ __('Project Site') }} <span class="required-marker">*</span></label>
                         <button type="button" onclick="openQuickAddSiteModal()" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center gap-1 cursor-pointer hover:underline">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                            <span>{{ __('+ Add New Site Location') }}</span>
+                            <span>{{ __('Add New Site Location') }}</span>
                         </button>
                     </div>
                     <select id="output-project-id" name="project_id" onchange="fetchCurrentWorkOutput()" required class="crm-select text-xs w-full">

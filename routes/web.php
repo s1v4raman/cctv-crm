@@ -56,12 +56,17 @@ use App\Http\Controllers\WageController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectTaskController;
 
-// Mobile Phone Remote Barcode Scanner Companion & Live Sync
-Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
-Route::post('/api/mobile-scanner/push', [MobileScannerSyncController::class, 'push'])->name('api.mobile-scanner.push');
-Route::get('/api/mobile-scanner/poll/{token}', [MobileScannerSyncController::class, 'poll'])->name('api.mobile-scanner.poll');
-Route::post('/api/mobile-scanner/heartbeat/{token}', [MobileScannerSyncController::class, 'heartbeat'])->name('api.mobile-scanner.heartbeat');
-Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 'getLanInfo'])->name('api.mobile-scanner.lan-info');
+// Mobile Phone Remote Barcode Scanner Companion & Live Sync (Admin, Staff, Technician only)
+Route::middleware(['auth', 'internal'])->group(function () {
+    Route::post('/scanner/pairings', [MobileScannerSyncController::class, 'createPairing'])->name('scanner.pairings.store');
+    Route::get('/scanner/targets', [MobileScannerSyncController::class, 'searchTargets'])->name('scanner.targets');
+    Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
+    Route::post('/api/mobile-scanner/push', [MobileScannerSyncController::class, 'push'])->middleware('throttle:60,1')->name('api.mobile-scanner.push');
+    Route::post('/api/mobile-scanner/analyze-image', [MobileScannerSyncController::class, 'analyzeImage'])->middleware('throttle:60,1')->name('api.mobile-scanner.analyze-image');
+    Route::get('/api/mobile-scanner/poll/{token}', [MobileScannerSyncController::class, 'poll'])->middleware('throttle:60,1')->name('api.mobile-scanner.poll');
+    Route::post('/api/mobile-scanner/heartbeat/{token}', [MobileScannerSyncController::class, 'heartbeat'])->middleware('throttle:60,1')->name('api.mobile-scanner.heartbeat');
+    Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 'getLanInfo'])->name('api.mobile-scanner.lan-info');
+});
 
 // Universal Global Omnisearch API: returns customer names, phones and addresses, so internal users only
 Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->middleware(['auth', 'internal'])->name('api.global-search');
@@ -509,6 +514,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/quotations/{quotation}/sent', [QuotationController::class, 'markSent'])->name('quotations.markSent');
         Route::post('/quotations/{quotation}/send-email', [QuotationController::class, 'sendEmail'])->name('quotations.send-email');
         Route::delete('/quotation-items/{item}', [QuotationController::class, 'destroyItem'])->name('quotation-items.destroy');
+        Route::match(['post', 'patch'], '/quotation-items/{item}/hsn', [QuotationController::class, 'updateHsnCode'])->name('quotation-items.update-hsn');
+        Route::delete('/quotation-items/{item}/hsn', [QuotationController::class, 'deleteHsnCode'])->name('quotation-items.delete-hsn');
 
         // Quotations Read-Only
         Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
@@ -576,13 +583,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
+        // Admin Product Aliases Approval & Merge
+        Route::middleware('admin')->prefix('admin/product-aliases')->name('admin.product-aliases.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProductAliasController::class, 'index'])->name('index');
+            Route::post('/{alias}/approve', [\App\Http\Controllers\ProductAliasController::class, 'approve'])->name('approve');
+            Route::post('/{alias}/merge', [\App\Http\Controllers\ProductAliasController::class, 'merge'])->name('merge');
+            Route::delete('/{alias}', [\App\Http\Controllers\ProductAliasController::class, 'destroy'])->name('destroy');
+        });
+
         // Inventory Management Read-Only (Stock Overview & Audit Log)
         Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
         Route::get('/inventory/movements', [InventoryController::class, 'movements'])->name('inventory.movements');
         Route::get('/inventory/ledger', [StockLedgerController::class, 'index'])->name('inventory.ledger');
 
         // Installed Equipment & Warranty API
-        Route::get('/api/equipment/lookup-serial', [EquipmentLookupController::class, 'lookup'])->name('equipment.lookup');
+        Route::get('/api/equipment/lookup-serial', [EquipmentLookupController::class, 'lookup'])->middleware('internal')->name('equipment.lookup');
+        Route::post('/api/equipment/lookup-serial', [EquipmentLookupController::class, 'lookup'])->middleware('internal')->name('equipment.lookup.post');
 
         // RMA & Warranty Claims Read-Only
         Route::get('/rma', [RmaClaimController::class, 'index'])->name('rma.index');

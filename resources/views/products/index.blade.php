@@ -32,6 +32,11 @@
             empty-text="No products yet." filtered-text="No products match these filters.">
 
             <x-slot name="actions">
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.product-aliases.index') }}" class="ld-outline plain-link font-semibold">
+                        <span>Scan Aliases</span>
+                    </a>
+                @endif
                 <button type="button" onclick="openHardwareScannerModal()" class="ld-outline plain-link font-semibold cursor-pointer" title="Scan product barcode via Camera or Mobile QR Sync">
                     <span>Scan Product</span>
                 </button>

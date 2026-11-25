@@ -17,7 +17,6 @@
                 <div class="mt-4">
                     @if(auth()->user()->isInternal())
                     <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" class="btn-primary">
-                        <x-icon.plus />
                         <span>Add New Customer</span>
                     </a>
                     @endif
@@ -33,7 +32,6 @@
                             <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" 
                                class="btn-subtle gap-1.5 text-white font-semibold"
                                style="color: #ffffff !important;">
-                                <x-icon.plus />
                                 <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                             </a>
                             @endif

@@ -25,7 +25,6 @@
                                     id="btn-add-new-customer"
                                     class="btn-subtle text-white font-semibold inline-flex items-center gap-1"
                                     style="color: #ffffff !important;">
-                                <svg class="w-3 h-3 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                 <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                             </button>
                         </div>
@@ -60,7 +59,6 @@
                                         id="btn-add-new-technician"
                                         class="btn-subtle text-white font-semibold inline-flex items-center gap-1"
                                         style="color: #ffffff !important;">
-                                    <svg class="w-3 h-3 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </button>
                             </div>

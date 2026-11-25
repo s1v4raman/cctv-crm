@@ -69,6 +69,7 @@ class StoreQuotationRequest extends FormRequest
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'items.*.unit' => ['required', 'string', 'max:30'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'items.*.hsn_code' => ['nullable', 'string', 'regex:/^[0-9]{2,8}$/'],
         ];
     }
 
@@ -146,6 +147,7 @@ class StoreQuotationRequest extends FormRequest
             'items.*.unit_price.required' => 'Unit price is required for each item.',
             'items.*.unit_price.min' => 'Unit price cannot be negative.',
             'items.*.product_id.exists' => 'The selected product is invalid.',
+            'items.*.hsn_code.regex' => 'The HSN/SAC code must be numeric and between 2 to 8 digits maximum (no 9+ numbers allowed).',
         ];
     }
 }

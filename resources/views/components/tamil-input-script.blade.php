@@ -6,11 +6,18 @@
     .name-tool-btn {
         width: 2rem; height: 2rem; border-radius: 0.5rem;
         display: inline-flex; align-items: center; justify-content: center;
-        border: 1px solid #cbd5e1; background: #ffffff; color: #334155; cursor: pointer;
+        border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a !important; cursor: pointer;
     }
-    .name-tool-btn:hover { border-color: #2563eb; color: #2563eb; }
-    .name-tool-btn.is-on { background: #2563eb; border-color: #2563eb; color: #ffffff; }
-    .name-tool-btn.is-listening { background: #e11d48; border-color: #e11d48; color: #ffffff; animation: micPulse 1.2s ease-in-out infinite; }
+    .name-tool-btn svg {
+        display: block !important;
+        width: 1.125rem !important;
+        height: 1.125rem !important;
+        stroke: currentColor !important;
+        color: inherit !important;
+    }
+    .name-tool-btn:hover { border-color: var(--crm-accent, #2563eb); color: var(--crm-accent, #2563eb) !important; }
+    .name-tool-btn.is-on { background: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #2563eb); color: #ffffff !important; }
+    .name-tool-btn.is-listening { background: #e11d48; border-color: #e11d48; color: #ffffff !important; animation: micPulse 1.2s ease-in-out infinite; }
     @keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
     .tamil-input-tools { display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem; margin-top: 0.375rem; }
@@ -25,15 +32,16 @@
         color: #0f172a; font-size: 1.05rem; font-weight: 600; cursor: pointer; touch-action: manipulation;
         font-family: "Noto Sans Tamil", var(--font-sans);
     }
-    .tamil-key:active { background: #dbeafe; border-color: #2563eb; }
+    .tamil-key:active { background: #dbeafe; border-color: var(--crm-accent, #2563eb); }
     .tamil-key:disabled { opacity: 0.35; cursor: default; }
     .tamil-key-action { font-size: 0.75rem; background: #e2e8f0; }
     .tamil-kbd-actions { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 0.3rem; margin-top: 0.4rem; }
 
-    html.dark .name-tool-btn { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-    html.dark .name-tool-btn:hover { border-color: #60a5fa; color: #93c5fd; }
-    html.dark .name-tool-btn.is-on { background: #2563eb; border-color: #3b82f6; color: #ffffff; }
-    html.dark .name-tool-btn.is-listening { background: #e11d48; border-color: #fb7185; color: #ffffff; }
+    html.dark .name-tool-btn { background: #1e293b; border-color: #334155; color: #f8fafc !important; }
+    html.dark .name-tool-btn:hover { border-color: var(--crm-accent, #60a5fa); color: #f8fafc !important; }
+    html.dark .name-tool-btn.is-on { background: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #3b82f6); color: #ffffff !important; }
+    html.dark .name-tool-btn.is-listening { background: #e11d48; border-color: #fb7185; color: #ffffff !important; }
+    html.dark .name-tool-btn svg { color: inherit !important; stroke: currentColor !important; }
     html.dark .tamil-input-message { color: #94a3b8; }
     html.dark .tamil-kbd { background: #0b1329; border-color: #1e293b; }
     html.dark .tamil-kbd-label { color: #94a3b8; }
@@ -173,7 +181,10 @@
                 }
 
                 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!Recognition) return;
+                if (!Recognition) {
+                    alert('Voice speech recognition is not supported in this browser. Please use Google Chrome, Edge, or Safari on iOS 14.5+.');
+                    return;
+                }
 
                 const [start, end] = this.caretRange();
                 recognition = new Recognition();
