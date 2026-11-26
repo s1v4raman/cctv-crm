@@ -4,13 +4,22 @@ import re
 import cv2
 import numpy as np
 
+def clean_barcode(raw):
+    if not raw:
+        return ""
+    val = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', str(raw)).strip()
+    val = re.sub(r'^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*', '', val, flags=re.IGNORECASE).strip()
+    val = re.sub(r'^\(21\)[:\s=_-]*', '', val, flags=re.IGNORECASE).strip()
+    return val
+
 def parse_device_info(raw_codes):
     serial = ""
     mac = ""
     model = ""
     ean = ""
 
-    combined = "\n".join(raw_codes)
+    cleaned_codes = [clean_barcode(c) for c in raw_codes if clean_barcode(c)]
+    combined = "\n".join(cleaned_codes)
 
     # 1. MAC address detection
     mac_regex = re.compile(r'(?:MAC(?:\s*[:=-]|\s+)?)?((?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2})\b', re.IGNORECASE)

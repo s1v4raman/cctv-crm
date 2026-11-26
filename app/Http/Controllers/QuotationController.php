@@ -121,6 +121,15 @@ class QuotationController extends Controller
                     }
                 }
 
+                $enteredPrice = (float) ($item['unit_price'] ?? 0);
+                if (!empty($item['product_id']) && $enteredPrice > 0) {
+                    \App\Models\Product::where('id', $item['product_id'])
+                        ->where(function ($q) {
+                            $q->whereNull('unit_price')->orWhere('unit_price', '<=', 0);
+                        })
+                        ->update(['unit_price' => $enteredPrice]);
+                }
+
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
@@ -1303,6 +1312,15 @@ class QuotationController extends Controller
                     }
                 }
 
+                $enteredPrice = (float) $price;
+                if (!empty($item['product_id']) && $enteredPrice > 0) {
+                    \App\Models\Product::where('id', $item['product_id'])
+                        ->where(function ($q) {
+                            $q->whereNull('unit_price')->orWhere('unit_price', '<=', 0);
+                        })
+                        ->update(['unit_price' => $enteredPrice]);
+                }
+
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
@@ -1392,6 +1410,13 @@ class QuotationController extends Controller
                         if (Auth::user()->isAdmin() && array_key_exists('hsn_code', $itemData) && $qItem->product_id) {
                             \App\Models\Product::where('id', $qItem->product_id)->update(['hsn_code' => $itemUpdate['hsn_code']]);
                         }
+                        if ($qItem->product_id && $price > 0) {
+                            \App\Models\Product::where('id', $qItem->product_id)
+                                ->where(function ($q) {
+                                    $q->whereNull('unit_price')->orWhere('unit_price', '<=', 0);
+                                })
+                                ->update(['unit_price' => $price]);
+                        }
                     }
                 } elseif (!empty($itemData['item_name'])) {
                     $createData = [
@@ -1409,6 +1434,13 @@ class QuotationController extends Controller
                     $newItem = $quotation->items()->create($createData);
                     if (Auth::user()->isAdmin() && !empty($createData['hsn_code']) && !empty($createData['product_id'])) {
                         \App\Models\Product::where('id', $createData['product_id'])->update(['hsn_code' => $createData['hsn_code']]);
+                    }
+                    if (!empty($createData['product_id']) && $price > 0) {
+                        \App\Models\Product::where('id', $createData['product_id'])
+                            ->where(function ($q) {
+                                $q->whereNull('unit_price')->orWhere('unit_price', '<=', 0);
+                            })
+                            ->update(['unit_price' => $price]);
                     }
                 }
             }

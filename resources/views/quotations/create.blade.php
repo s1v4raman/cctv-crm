@@ -96,43 +96,8 @@
                         @endif
                     </div>
 
-                    {{-- Quotation PDF Format Selection --}}
-                    <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 p-4 sm:p-5">
-                        <div class="flex items-center justify-between mb-3">
-                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                                {{ __('Quotation PDF Format & Style') }}
-                            </label>
-                            <span class="text-[11px] text-slate-400">
-                                {{ $isTechnician ? __('Choose preferred layout for Admin review') : __('Select layout style') }}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 cursor-pointer text-xs transition">
-                                <input type="radio" name="pdf_format" value="1" @checked(old('pdf_format', '1') === '1') class="accent-blue-600 mt-0.5 shrink-0">
-                                <div>
-                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 &bull; Visual cards & sleek branding</div>
-                                </div>
-                            </label>
-
-                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
-                                <input type="radio" name="pdf_format" value="2" @checked(old('pdf_format') === '2') class="accent-blue-600 mt-0.5 shrink-0">
-                                <div>
-                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2 &bull; Hardware breakdown & specs</div>
-                                </div>
-                            </label>
-
-                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
-                                <input type="radio" name="pdf_format" value="3" @checked(old('pdf_format') === '3') class="accent-blue-600 mt-0.5 shrink-0">
-                                <div>
-                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Linepix GST Invoice</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3 &bull; Blue GST table & bank details</div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+                    {{-- Default Quotation PDF Format --}}
+                    <input type="hidden" name="pdf_format" value="{{ old('pdf_format', '1') }}">
 
                     <div class="mt-8">
                         <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">

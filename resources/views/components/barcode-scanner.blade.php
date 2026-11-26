@@ -278,7 +278,7 @@ window.barcodeScannerState = window.barcodeScannerState || {};
  */
 window.parseDeviceBarcode = function(rawCode) {
     if (!rawCode) return { serial: '', mac: '', model: '', ean: '', isMacOnly: false, isSerialOnly: false, isComposite: false, raw: '' };
-    const raw = String(rawCode).trim();
+    const raw = (window.cleanBarcode ? window.cleanBarcode(rawCode) : String(rawCode || '').trim());
     let serial = '';
     let mac = '';
     let model = '';
@@ -305,11 +305,21 @@ window.parseDeviceBarcode = function(rawCode) {
         return str.toUpperCase();
     }
 
+    function cleanBarcode(raw) {
+        if (!raw) return '';
+        let val = String(raw).trim();
+        val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+        val = val.replace(/^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*/i, '').trim();
+        val = val.replace(/^\(21\)[:\s=_-]*/i, '').trim();
+        return val.trim();
+    }
+    window.cleanBarcode = window.cleanBarcode || cleanBarcode;
+
     function normalizeSerial(str) {
         if (!str) return '';
-        return String(str).trim()
+        return cleanBarcode(String(str).trim()
             .replace(/^(?:S\/N|SN|SERIAL(?:\s*NO)?|NO)[:\s=_-]*/i, '')
-            .trim();
+            .trim());
     }
 
     // 1. JSON parsing for modern smart QR codes
@@ -1073,7 +1083,7 @@ function highlightScannerInput(input) {
 }
 
 async function handleBarcodeDetected(modalId, code) {
-    const cleanCode = (code || '').trim();
+    const cleanCode = (window.cleanBarcode ? window.cleanBarcode(code) : String(code || '').trim());
     if (!cleanCode) return;
     const state = window.barcodeScannerState[modalId];
     const targetId = state ? state.targetInputId : null;

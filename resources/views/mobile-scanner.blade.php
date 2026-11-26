@@ -561,6 +561,15 @@
             return null;
         }
 
+        function cleanBarcode(rawCode) {
+            if (!rawCode) return '';
+            let val = String(rawCode).trim();
+            val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+            val = val.replace(/^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*/i, '').trim();
+            val = val.replace(/^\(21\)[:\s=_-]*/i, '').trim();
+            return val.trim();
+        }
+
         function showManualAssistantCard() {
             const card = document.getElementById('manualAssistantCard');
             if (card) {
@@ -579,7 +588,7 @@
         function submitManualCodeFromCard() {
             const input = document.getElementById('manualSnInput');
             if (!input || !input.value.trim()) return;
-            const code = input.value.trim();
+            const code = cleanBarcode(input.value);
             hideManualAssistantCard();
             onBarcodeScanned(code);
         }
@@ -649,13 +658,14 @@
 
         async function onBarcodeScanned(rawCode) {
             if (!rawCode) return;
+            const cleanCode = cleanBarcode(rawCode);
+            if (!cleanCode) return;
+
             isScanningActive = false;
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
                 animationFrameId = null;
             }
-
-            const cleanCode = String(rawCode).trim();
 
             if (navigator.vibrate) {
                 navigator.vibrate([120, 60, 120]);

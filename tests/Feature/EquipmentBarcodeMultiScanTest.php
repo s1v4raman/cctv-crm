@@ -128,4 +128,64 @@ class EquipmentBarcodeMultiScanTest extends TestCase
             'mac' => 'F8:20:97:E3:33:91',
         ]);
     }
+
+    public function test_equipment_lookup_strips_aim_symbology_identifier_c1_from_serial(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        // Mobile camera scan of GS1-128 barcode yielding "]C1GK3192792"
+        $response = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode(']C1GK3192792'));
+        $response->assertOk();
+        $response->assertJson([
+            'serial' => 'GK3192792',
+            'serial_number' => 'GK3192792',
+        ]);
+
+        // Lowercase ]c1 prefix
+        $responseLower = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode(']c1GK3192792'));
+        $responseLower->assertOk();
+        $responseLower->assertJson([
+            'serial' => 'GK3192792',
+        ]);
+
+        // With S/N tag: "S/N: ]C1GK3192792"
+        $responseTag = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode('S/N: ]C1GK3192792'));
+        $responseTag->assertOk();
+        $responseTag->assertJson([
+            'serial' => 'GK3192792',
+        ]);
+
+        // Multi-code session scans array
+        $responseSession = $this->actingAs($user)->postJson('/api/equipment/lookup-serial', [
+            'scans' => [
+                ['raw' => ']C1GK3192792', 'format' => 'code_128'],
+            ],
+        ]);
+        $responseSession->assertOk();
+        $responseSession->assertJson([
+            'serial' => 'GK3192792',
+        ]);
+    }
+
+    public function test_installed_equipment_store_request_normalizes_c1_serial(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $lead = Lead::create(['customer_name' => 'Test Client', 'phone' => '9876543210']);
+
+        $response = $this->actingAs($admin)->post(route('equipment.store'), [
+            'lead_id'        => $lead->id,
+            'equipment_name' => 'Hikvision 4MP Turret Camera',
+            'serial_number'  => ']C1GK3192792',
+            'status'         => 'active',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('installed_equipment', [
+            'lead_id'       => $lead->id,
+            'serial_number' => 'GK3192792',
+        ]);
+        $this->assertDatabaseMissing('installed_equipment', [
+            'serial_number' => ']C1GK3192792',
+        ]);
+    }
 }

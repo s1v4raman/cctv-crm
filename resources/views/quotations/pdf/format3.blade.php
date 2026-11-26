@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 8mm 12mm 6mm 12mm;
+            margin: 12mm 10mm 6mm 10mm;
         }
         body {
             font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
@@ -17,6 +17,7 @@
             padding: 0;
         }
         .header-table {
+            margin-top: 4px;
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 2px;
@@ -551,7 +552,7 @@
                     </div>
                 </td>
                 <td class="sign-col" style="vertical-align: middle;">
-                    <div class="sign-box" style="height: 55px;"></div>
+                    <div class="sign-box" style="height: 32px;"></div>
                 </td>
             </tr>
 

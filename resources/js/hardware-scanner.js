@@ -7,10 +7,31 @@ if (typeof window !== 'undefined' && !window.BarcodeDetectorPolyfill) {
 const SCAN_FORMATS = ['ean_13', 'ean_8', 'code_128', 'code_39', 'qr_code', 'data_matrix'];
 
 /**
+ * Universal Barcode Sanitizer for Hardware Scanners & Mobile Cameras:
+ * Strips non-printable ASCII control characters, ISO/IEC 15424 AIM symbology identifiers
+ * (e.g. ]C1, ]c1, ]C0, ]e0, ]d1, ]Q3, etc.), GS1 AIs (like (21) for S/N), and common text prefixes.
+ */
+export function cleanBarcode(rawCode) {
+    if (!rawCode) return '';
+    let val = String(rawCode).trim();
+    // 1. Strip non-printable ASCII control characters (FNC1, GS, RS, etc.) while preserving newlines/tabs
+    val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+    // 2. Strip ISO/IEC 15424 AIM Symbology Identifier (e.g. ]C1, ]c1, ]C0, ]e0, ]d1, ]Q3, etc.)
+    val = val.replace(/^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*/i, '').trim();
+    // 3. Strip GS1 Application Identifier (21) for serial number if present
+    val = val.replace(/^\(21\)[:\s=_-]*/i, '').trim();
+    return val.trim();
+}
+
+if (typeof window !== 'undefined') {
+    window.cleanBarcode = cleanBarcode;
+}
+
+/**
  * Thin forwarding helper (JS no longer duplicates server regex parsing).
  */
 export function parseDeviceBarcode(rawCode) {
-    const raw = String(rawCode || '').trim();
+    const raw = cleanBarcode(rawCode);
     return { raw, format: null };
 }
 
@@ -94,10 +115,28 @@ export default function hardwareScannerModalComponent(config = {}) {
             this.checkDevice();
             window.__hardwareScannerInstance = this;
 
+            // Automatically clean AIM symbology identifiers (]C1, ]c1, etc.) on any input/paste
+            this.$watch('lookupInput', (val) => {
+                const c = cleanBarcode(val);
+                if (c !== val) this.lookupInput = c;
+            });
+            this.$watch('registerSerial', (val) => {
+                const c = cleanBarcode(val);
+                if (c !== val) this.registerSerial = c;
+            });
+            this.$watch('gunInput', (val) => {
+                const c = cleanBarcode(val);
+                if (c !== val) this.gunInput = c;
+            });
+
             window.addEventListener('open-hardware-scanner', (e) => {
                 const detail = e.detail || {};
                 this.openModal(detail.tab || 'auto', detail);
             });
+        },
+
+        cleanBarcode(str) {
+            return cleanBarcode(str);
         },
 
         checkDevice() {
@@ -307,7 +346,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         },
 
         recordSessionCode(rawValue, format = null, source = 'camera') {
-            const raw = String(rawValue || '').trim();
+            const raw = cleanBarcode(rawValue);
             if (!raw) return false;
 
             const key = `${format || 'unknown'}::${raw}`;
@@ -386,8 +425,8 @@ export default function hardwareScannerModalComponent(config = {}) {
             this.hasResult = true;
             if (!data) return;
 
-            this.serialCandidates = Array.isArray(data.serial_candidates) ? data.serial_candidates : [];
-            this.registerSerial = data.serial || data.serial_number || this.serialCandidates[0] || '';
+            this.serialCandidates = (Array.isArray(data.serial_candidates) ? data.serial_candidates : []).map(cleanBarcode).filter(Boolean);
+            this.registerSerial = cleanBarcode(data.serial || data.serial_number || this.serialCandidates[0] || '');
             this.registerMac = data.mac || data.mac_address || '';
             this.possibleMacs = Array.isArray(data.possible_mac) ? data.possible_mac : [];
             this.registerEan = data.ean || '';
@@ -411,7 +450,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         },
 
         selectSerialCandidate(sn) {
-            this.registerSerial = sn;
+            this.registerSerial = cleanBarcode(sn);
         },
 
         selectCandidate(cand) {
@@ -431,7 +470,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         },
 
         async processGunScan() {
-            const code = (this.gunInput || '').trim();
+            const code = cleanBarcode(this.gunInput);
             if (!code) {
                 if (this.$refs.gunInput) this.$refs.gunInput.focus();
                 return;
@@ -447,8 +486,9 @@ export default function hardwareScannerModalComponent(config = {}) {
         },
 
         async executeLookup() {
-            const code = (this.lookupInput || '').trim();
+            const code = cleanBarcode(this.lookupInput);
             if (!code) return;
+            this.lookupInput = code;
             this.lastQueriedCode = code;
             this.recordSessionCode(code, null, this.scanSource || 'manual');
             await this.resolveSessionCodes();
@@ -521,7 +561,7 @@ export default function hardwareScannerModalComponent(config = {}) {
 
                         this.mobileStatus = 'scanned';
                         for (const item of items) {
-                            const scannedCode = String(item.code || '').trim();
+                            const scannedCode = cleanBarcode(item.code);
                             if (scannedCode) {
                                 this.recordSessionCode(scannedCode, item.format || null, 'phone_pairing');
                             }

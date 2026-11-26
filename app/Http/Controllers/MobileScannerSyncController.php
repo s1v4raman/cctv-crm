@@ -118,7 +118,8 @@ class MobileScannerSyncController extends Controller
             ], 403);
         }
 
-        $code = trim($validated['code']);
+        $rawCode = trim($validated['code']);
+        $code = \App\Services\DeviceLookupService::cleanBarcode($rawCode);
         $label = trim((string) $request->input('label', ''));
 
         $queue = Cache::get("scanner_queue_{$token}", []);
@@ -199,7 +200,7 @@ class MobileScannerSyncController extends Controller
             $result = json_decode((string) $output, true);
 
             if ($result && !empty($result['success']) && !empty($result['composite_code'])) {
-                $code = $result['composite_code'];
+                $code = \App\Services\DeviceLookupService::cleanBarcode($result['composite_code']);
 
                 $queue = Cache::get("scanner_queue_{$token}", []);
                 if (!is_array($queue)) {

@@ -253,13 +253,14 @@
             }
 
             // 2. Strictly extract and assign Serial Number (NEVER assign pure MAC or EAN overwriting existing serial)
+            const clean = (val) => window.cleanBarcode ? window.cleanBarcode(val) : String(val || '').trim();
             let detectedSerial = '';
             if (parsed && parsed.serial && !isStrictMac(parsed.serial)) {
-                detectedSerial = parsed.serial;
+                detectedSerial = clean(parsed.serial);
             } else if (lookupData && (lookupData.serial || lookupData.serial_number) && !isStrictMac(lookupData.serial || lookupData.serial_number)) {
-                detectedSerial = lookupData.serial || lookupData.serial_number;
+                detectedSerial = clean(lookupData.serial || lookupData.serial_number);
             } else if (rawCode && !isStrictMac(rawCode)) {
-                const cleanRaw = String(rawCode).replace(/^(?:S\/N|SN|SERIAL)[:\s=-]*/i, '').trim();
+                const cleanRaw = clean(String(rawCode).replace(/^(?:S\/N|SN|SERIAL)[:\s=-]*/i, ''));
                 if (isStrictEan(cleanRaw)) {
                     if (!sInput || !sInput.value.trim()) {
                         detectedSerial = cleanRaw;

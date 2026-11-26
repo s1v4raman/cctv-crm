@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 7mm 10mm 6mm 10mm;
+            margin: 12mm 10mm 6mm 10mm;
         }
         body {
             font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
@@ -17,6 +17,7 @@
             padding: 0;
         }
         .company-header {
+            margin-top: 4px;
             font-size: 7.4pt;
             line-height: 1.25;
             margin-bottom: 6px;
@@ -213,14 +214,15 @@
             font-size: 8.5pt;
         }
         .sign-block {
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: right;
+            page-break-inside: avoid;
         }
         .sign-for {
             font-size: 7.5pt;
         }
         .sign-auth {
-            margin-top: 55px;
+            margin-top: 32px;
             font-weight: bold;
             font-size: 7.8pt;
         }

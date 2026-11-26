@@ -285,6 +285,10 @@ class InstalledEquipmentController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        if (!empty($validated['serial_number'])) {
+            $validated['serial_number'] = app(\App\Http\Controllers\Api\EquipmentLookupController::class)->normalizeSerial((string) $validated['serial_number']);
+        }
+
         return $this->applyWarrantyDefaults($validated);
     }
 

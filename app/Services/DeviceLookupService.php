@@ -161,8 +161,14 @@ class DeviceLookupService
         $unknownTokens = [];
 
         foreach ($scans as $scan) {
-            $raw = trim((string) ($scan['raw'] ?? ''));
+            $rawInput = trim((string) ($scan['raw'] ?? ''));
             $format = strtolower(trim((string) ($scan['format'] ?? '')));
+            if ($rawInput === '') {
+                continue;
+            }
+
+            // Clean barcode (strip AIM symbology identifiers like ]C1, ]c1, GS1 AIs, and control characters)
+            $raw = self::cleanBarcode($rawInput);
             if ($raw === '') {
                 continue;
             }
@@ -182,7 +188,7 @@ class DeviceLookupService
             $prevLabel = null;
 
             foreach ($chunks as $chunk) {
-                $token = trim($chunk);
+                $token = self::cleanBarcode(trim($chunk));
                 if ($token === '') {
                     continue;
                 }
@@ -324,9 +330,35 @@ class DeviceLookupService
         ];
     }
 
+    /**
+     * Clean raw barcode string by stripping non-printable characters,
+     * ISO/IEC 15424 AIM symbology identifiers (e.g. ]C1, ]c1, ]C0, ]e0, ]d1, etc.),
+     * and GS1 application identifiers like (21) for serial numbers.
+     */
+    public static function cleanBarcode(string $raw): string
+    {
+        $val = trim($raw);
+        if ($val === '') {
+            return '';
+        }
+
+        // Strip ASCII non-printable control characters (FNC1, GS, RS, etc.) while preserving newlines and tabs
+        $val = trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $val));
+
+        // Strip ISO/IEC 15424 AIM Symbology Identifier prefix (e.g. ]C1, ]c1, ]C0, ]e0, ]d1, ]Q3, etc.)
+        $val = trim((string) preg_replace('/^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*/i', '', $val));
+
+        // Strip GS1 AI (21) for serial number if present
+        $val = trim((string) preg_replace('/^\(21\)[:\s=_-]*/i', '', $val));
+
+        return $val;
+    }
+
     public function normalizeSerial(string $serial): string
     {
-        return strtoupper(trim($serial));
+        $clean = self::cleanBarcode($serial);
+
+        return strtoupper(trim($clean));
     }
 
     public function normalizeMac(string $mac): string

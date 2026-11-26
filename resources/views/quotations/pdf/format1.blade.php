@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 8mm 12mm 6mm 12mm;
+            margin: 12mm 10mm 6mm 10mm;
         }
         body {
             font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
@@ -96,7 +96,7 @@
             font-size: 7.6pt;
         }
         .items-table th {
-            background-color: #0b2861;
+            background-color: #002060;
             color: #ffffff;
             font-weight: bold;
             text-align: center;
@@ -141,11 +141,6 @@
             float: left;
             padding-left: 1px;
         }
-        .empty-row td {
-            height: 10px;
-            border: 1px solid #000000;
-            padding: 0;
-        }
         .summary-label {
             text-align: right;
             padding-right: 6px;
@@ -158,24 +153,24 @@
             border: 1px solid #000000;
         }
         .total-row {
-            background-color: #0b2861;
+            background-color: #002060;
             color: #ffffff;
             font-weight: bold;
         }
         .total-row td.summary-label {
-            background-color: #0b2861;
+            background-color: #002060;
             color: #ffffff;
             font-weight: bold;
         }
         .total-row td.summary-value {
-            background-color: #0b2861;
+            background-color: #002060;
             color: #ffffff;
             font-weight: bold;
         }
         .terms-section {
-            margin-top: 8px;
-            font-size: 7.6pt;
-            line-height: 1.4;
+            margin-top: 5px;
+            font-size: 7.4pt;
+            line-height: 1.3;
             page-break-inside: avoid;
         }
         .terms-title {
@@ -183,9 +178,9 @@
             margin-bottom: 2px;
         }
         .footer-section {
-            margin-top: 10px;
-            font-size: 7.6pt;
-            line-height: 1.3;
+            margin-top: 6px;
+            font-size: 7.5pt;
+            line-height: 1.25;
             page-break-inside: avoid;
         }
         .footer-company {
@@ -205,7 +200,7 @@
 
     $refNo = method_exists($quotation, 'getFormattedReferenceNo')
         ? $quotation->getFormattedReferenceNo('1')
-        : ($quotation->quotation_no ?? 'PITS/QUOT/26-27/58');
+        : ($quotation->quotation_no ?? 'PITS/QUOT/26-21/58');
 
     $quoteDate = $quotation->quotation_date ?? $quotation->created_at ?? now();
     $formattedDate = $quoteDate instanceof \Carbon\Carbon ? $quoteDate->format('j-M-y') : date('j-M-y', strtotime($quoteDate));
@@ -258,8 +253,10 @@
 @endphp
 
 @if($isInvoice)
-    {{-- Tax Invoice View Matching Exact Design Layout --}}
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+    {{-- ======================================================== --}}
+    {{-- PRECISION IT SYSTEMS TAX INVOICE FORMAT (PRESERVED)     --}}
+    {{-- ======================================================== --}}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 4px; margin-bottom: 6px;">
         <tr>
             <td style="width: 25%;"></td>
             <td style="width: 50%; text-align: center; vertical-align: middle;">
@@ -540,24 +537,29 @@
                     </tr>
                 </table>
 
-                <div style="padding: 8px 10px; text-align: right; margin-top: 15px; font-size: 7.4pt;">
+                <div style="padding: 4px 8px; text-align: right; margin-top: 8px; font-size: 7.4pt; page-break-inside: avoid;">
                     <div style="font-weight: bold; color: #111827;">For Precision IT Systems</div>
-                    <div style="height: 52px;"></div>
+                    <div style="height: 32px;"></div>
                     <div style="font-weight: bold; color: #111827;">Authorized Signatory</div>
                 </div>
             </td>
         </tr>
     </table>
+
 @else
-    {{-- Header --}}
+    {{-- ======================================================== --}}
+    {{-- PRECISION IT SYSTEMS QUOTATION FORMAT (RESTORED DESIGN)  --}}
+    {{-- ======================================================== --}}
+
+    {{-- Header: Logo left, Company details right --}}
     <table class="header-table">
         <tr>
             <td class="header-logo-cell">
                 @if($logoBase64)
-                    <img src="data:image/png;base64,{{ $logoBase64 }}" class="header-logo-img" alt="PRECISION IT SYSTEMS">
+                    <img src="data:image/png;base64,{{ $logoBase64 }}" class="header-logo-img" alt="Precision IT Systems">
                 @else
-                    <div style="font-size: 15pt; font-weight: bold; color: #0b2861;">
-                        PRECISION <span style="font-size: 10pt; color: #333; display: block;">IT SYSTEMS</span>
+                    <div style="font-size: 16pt; font-weight: bold; color: #002060;">
+                        PRECISION <span style="font-size: 11pt; color: #333;">IT SYSTEMS</span>
                     </div>
                 @endif
             </td>
@@ -567,23 +569,22 @@
                 <div>Avadi, Chennai-600054.</div>
                 <div>Contact No: 8939883299,</div>
                 <div>Email: precisionitsystem@gmail.com</div>
-                <div style="font-weight: bold;">GSTIN: 33AHLPI3531N1Z8</div>
+                <div>GSTIN: 33AHLPI3531N1Z8</div>
             </td>
         </tr>
     </table>
 
-    {{-- Quotation Title --}}
     <div class="quotation-title">Quotation</div>
 
-    {{-- Meta: Reference No & Date --}}
+    {{-- Meta: Ref No left, Date right --}}
     <table class="meta-table">
         <tr>
-            <td class="meta-ref">Reference No: &nbsp; {{ $refNo }}</td>
-            <td class="meta-date">Date: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ $formattedDate }}</td>
+            <td class="meta-ref">Reference No: {{ $refNo }}</td>
+            <td class="meta-date">Date: {{ $formattedDate }}</td>
         </tr>
     </table>
 
-    {{-- To Customer --}}
+    {{-- To Customer Section --}}
     <div class="to-section">
         <div class="to-label">To</div>
         <div class="to-customer">{{ $customerName }}</div>
@@ -615,98 +616,80 @@
         </thead>
         <tbody>
             @if($isTurnkey)
+                {{-- Single turnkey package row --}}
                 <tr>
                     <td class="col-no">1</td>
                     <td class="col-desc">
                         <strong>Complete Turnkey CCTV Surveillance System & Security Infrastructure Package</strong>
-                        <div style="font-size: 7pt; color: #444; margin-top: 1px;">
-                            Supply, Installation, System Integration, Cabling, Setup, Testing &amp; Commissioning as per Site Specifications.
-                            @if(!empty($quotation->notes))
-                                <br>{{ $quotation->notes }}
-                            @endif
-                        </div>
+                        <div style="font-size: 7.2pt; color: #333; margin-top: 1px;">Supply, Installation, System Integration, Cabling &amp; Setup (As per detailed specifications in Annexure)</div>
                     </td>
                     <td class="col-qty">1</td>
-                    <td class="col-quoted"><span class="currency-symbol">&#8377;</span> {{ number_format($subtotal, 2) }}</td>
-                    <td class="col-discount"><span class="currency-symbol">&#8377;</span> {{ number_format($subtotal, 2) }}</td>
-                    <td class="col-total">{{ number_format($subtotal, 2) }}</td>
+                    <td class="col-quoted"><span class="currency-symbol">&#8377;</span>{{ number_format($subtotal, 2) }}</td>
+                    <td class="col-discount"><span class="currency-symbol">&#8377;</span>{{ number_format($subtotal, 2) }}</td>
+                    <td class="col-total"><span class="currency-symbol">&#8377;</span>{{ number_format($subtotal, 2) }}</td>
                 </tr>
             @else
-                @php $index = 1; @endphp
-                @forelse($items as $item)
+                @php $itemIndex = 1; @endphp
+                @foreach($items as $item)
                     @php
                         $qty = $item->quantity ?? 1;
                         $rate = (float)($item->unit_price ?? 0);
-                        $discountRate = isset($item->discount_rate) && $item->discount_rate > 0 ? (float)$item->discount_rate : $rate;
-                        $lineTotal = (float)($item->total ?? ($rate * $qty));
+                        $itemTotal = (float)($item->total ?? ($rate * $qty));
                     @endphp
                     <tr>
-                        <td class="col-no">{{ $index++ }}</td>
+                        <td class="col-no">{{ $itemIndex++ }}</td>
                         <td class="col-desc">
-                            <div>{{ $item->item_name }}</div>
+                            {{ $item->item_name }}
                             @if(!empty($item->description))
-                                <div style="font-size: 7.2pt; color: #222; margin-top: 1px;">{!! nl2br(e($item->description)) !!}</div>
+                                <div style="font-size: 7pt; color: #444; margin-top: 1px;">{!! nl2br(e($item->description)) !!}</div>
                             @endif
                         </td>
                         <td class="col-qty">{{ $qty }}</td>
-                        <td class="col-quoted"><span class="currency-symbol">&#8377;</span> {{ number_format($rate, 2) }}</td>
-                        <td class="col-discount"><span class="currency-symbol">&#8377;</span> {{ number_format($discountRate, 2) }}</td>
-                        <td class="col-total">{{ number_format($lineTotal, 2) }}</td>
+                        <td class="col-quoted"><span class="currency-symbol">&#8377;</span>{{ number_format($rate, 2) }}</td>
+                        <td class="col-discount"><span class="currency-symbol">&#8377;</span>{{ number_format($rate, 2) }}</td>
+                        <td class="col-total"><span class="currency-symbol">&#8377;</span>{{ number_format($itemTotal, 2) }}</td>
                     </tr>
-                @empty
-                    <tr>
-                        <td class="col-no">1</td>
-                        <td class="col-desc">8 Port Network Switch</td>
-                        <td class="col-qty">1</td>
-                        <td class="col-quoted"><span class="currency-symbol">&#8377;</span> 1,300.00</td>
-                        <td class="col-discount"><span class="currency-symbol">&#8377;</span> 1,300.00</td>
-                        <td class="col-total">1,300.00</td>
-                    </tr>
-                @endforelse
+                @endforeach
             @endif
 
-            {{-- Empty spacing row maintaining vertical grid column lines --}}
-            <tr class="empty-row">
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            {{-- 1 empty row for spacing --}}
+            <tr style="height: 12px;">
+                <td style="border: 1px solid #000000;">&nbsp;</td>
+                <td style="border: 1px solid #000000;">&nbsp;</td>
+                <td style="border: 1px solid #000000;">&nbsp;</td>
+                <td style="border: 1px solid #000000;">&nbsp;</td>
+                <td style="border: 1px solid #000000;">&nbsp;</td>
+                <td style="border: 1px solid #000000;">&nbsp;</td>
             </tr>
 
-            {{-- Sub Total Row --}}
+            {{-- Sub Total --}}
             <tr>
-                <td colspan="4" style="border: 1px solid #000; border-right: none; background-color: #ffffff;"></td>
-                <td class="summary-label">Sub Total</td>
+                <td colspan="5" class="summary-label">Sub Total</td>
                 <td class="summary-value">{{ number_format($subtotal, 2) }}</td>
             </tr>
 
-            {{-- GST Tax Row --}}
+            {{-- GST Tax --}}
             <tr>
-                <td colspan="4" style="border: 1px solid #000; border-right: none; background-color: #ffffff;"></td>
-                <td class="summary-label">GST Tax {{ $taxPercent }} %</td>
+                <td colspan="5" class="summary-label">GST Tax {{ $taxPercent }} %</td>
                 <td class="summary-value">{{ number_format($taxAmount, 2) }}</td>
             </tr>
 
             @if($roundOff != 0)
             <tr>
-                <td colspan="4" style="border: 1px solid #000; border-right: none; background-color: #ffffff;"></td>
-                <td class="summary-label">Round off</td>
-                <td class="summary-value">{{ $roundOff > 0 ? '+ ' : '- ' }}{{ number_format(abs($roundOff), 2) }}</td>
+                <td colspan="5" class="summary-label">Round Off</td>
+                <td class="summary-value">{{ $roundOff > 0 ? '+' : '' }}{{ number_format($roundOff, 2) }}</td>
             </tr>
             @endif
 
-            {{-- Grand Total Row --}}
+            {{-- Total --}}
             <tr class="total-row">
-                <td colspan="4" style="border: 1px solid #000; border-right: none; background-color: #ffffff;"></td>
-                <td class="summary-label">Total</td>
-                <td class="summary-value">&#8377; {{ number_format($roundedTotal, 2) }}</td>
+                <td colspan="5" class="summary-label">Total</td>
+                <td class="summary-value">&#8377;{{ number_format($roundedTotal, 2) }}</td>
             </tr>
         </tbody>
     </table>
 
-    {{-- Terms & Condition --}}
+    {{-- Terms & Conditions --}}
     <div class="terms-section">
         <div class="terms-title">Terms &amp; Condition</div>
         <div><strong>Taxes:</strong> As mentioned above Our GSTIN: 33AHLPI3531N1Z8</div>
@@ -716,25 +699,24 @@
         <div><strong>warranty:</strong> One Year</div>
     </div>
 
-    {{-- Sign-off & Seal Block --}}
-    <div class="footer-section">
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="vertical-align: top; width: 55%;">
-                    <div>Thanking you.</div>
-                    <div class="footer-company">For Precision IT Systems</div>
-                    <div style="margin-top: 2px;">ph.: +91-9677257774</div>
-                    <div>email: precisionitsystem@gmail.com</div>
-                </td>
-                <td style="vertical-align: top; width: 45%; text-align: right;">
-                    <div style="font-weight: bold; font-size: 7.6pt; color: #1e293b;">For :Precision IT Systems</div>
-                    <div style="height: 55px;"></div>
-                    <div style="font-weight: bold; font-size: 7.8pt; color: #0f172a;">Authorized Signatory</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    {{-- Footer: Thanking you on left, Signatory removed on right --}}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid;">
+        <tr>
+            <td style="vertical-align: top; width: 55%; font-size: 7.5pt; line-height: 1.35;">
+                <div>Thanking you.</div>
+                <div style="font-weight: bold; margin-top: 2px;">For Precision IT Systems</div>
+                <div>ph.: +91-9677257774</div>
+                <div>email: precisionitsystem@gmail.com</div>
+            </td>
+            <td style="vertical-align: top; width: 45%; text-align: right;">
+                {{-- Authorized Signatory removed as instructed --}}
+            </td>
+        </tr>
+    </table>
 
+@endif
+
+    {{-- Annexure if more than 10 products --}}
     @if($isAboveTen)
         <div style="page-break-before: always; height: 10px;"></div>
 
@@ -769,7 +751,7 @@
                     </tr>
                 @endforeach
 
-                {{-- Summary rows matching Image 4 --}}
+                {{-- Summary rows matching Annexure --}}
                 <tr>
                     <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
                     <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Total Amount:</td>
@@ -800,7 +782,6 @@
             </tbody>
         </table>
     @endif
-@endif
 
 </body>
 </html>

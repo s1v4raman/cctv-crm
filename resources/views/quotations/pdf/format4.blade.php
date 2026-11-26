@@ -5,7 +5,8 @@
     <title>Tax Invoice / Quotation {{ $quotation->quotation_no }}</title>
     <style>
         @page {
-            margin: 14mm 15mm 14mm 15mm;
+            size: A4 portrait;
+            margin: 12mm 10mm 6mm 10mm;
         }
         body {
             font-family: 'DejaVu Sans', sans-serif;
@@ -18,6 +19,7 @@
         
         /* Top Header */
         .header-table {
+            margin-top: 4px;
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 6px;
@@ -175,6 +177,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 6px;
+            page-break-inside: avoid;
         }
         .bottom-table td {
             vertical-align: top;
@@ -217,7 +220,7 @@
         .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
         .summary-table td {
             padding: 3.5px 6px;
@@ -249,14 +252,15 @@
         /* Sign Area: NO seal, NO handwritten ink signatures */
         .sign-area {
             text-align: right;
-            margin-top: 15px;
+            margin-top: 8px;
             padding-right: 8px;
+            page-break-inside: avoid;
         }
         .for-company {
             font-size: 9px;
             font-weight: bold;
             color: #0f172a;
-            margin-bottom: 45px;
+            margin-bottom: 32px;
         }
         .sign-title {
             font-size: 9px;
@@ -270,7 +274,9 @@
     @php
         $taxRate = (float)($quotation->tax_percent ?? 18);
         $halfTaxRate = $taxRate / 2;
-        $isTurnkey = ($quotation->pricing_mode ?? 'itemized') === 'total_only';
+        $items = $quotation->items ?? collect();
+        $isAboveTen = count($items) > 10;
+        $isTurnkey = (($quotation->pricing_mode ?? 'itemized') === 'total_only') || $isAboveTen;
         
         $totalQty = 0;
         $totalTax = 0;
@@ -489,6 +495,58 @@
             </td>
         </tr>
     </table>
+
+    @if($isAboveTen)
+        <div style="page-break-before: always; height: 10px;"></div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt; font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif; border: 1px solid #000;">
+            <thead>
+                <tr style="background-color: #f1f5f9;">
+                    <th style="border: 1px solid #000; width: 6%; text-align: center; padding: 4px 2px;">#</th>
+                    <th style="border: 1px solid #000; width: 48%; text-align: left; padding: 4px 6px;">ITEM DESCRIPTION</th>
+                    <th style="border: 1px solid #000; width: 8%; text-align: center; padding: 4px 2px;">QTY</th>
+                    <th style="border: 1px solid #000; width: 18%; text-align: right; padding: 4px 6px;">Rate (&#8377;)</th>
+                    <th style="border: 1px solid #000; width: 20%; text-align: right; padding: 4px 6px;">Total Amount (&#8377;)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($items as $idx => $it)
+                    @php
+                        $qty = $it->quantity ?? 1;
+                        $rate = (float)($it->unit_price ?? 0);
+                        $lTotal = (float)($it->total ?? ($rate * $qty));
+                    @endphp
+                    <tr>
+                        <td style="border: 1px solid #000; text-align: center; padding: 3px 2px;">{{ $idx + 1 }}</td>
+                        <td style="border: 1px solid #000; text-align: left; padding: 3px 6px;">
+                            <strong>{{ $it->item_name }}</strong>
+                            @if(!empty($it->description))
+                                <div style="font-size: 7pt; color: #444; margin-top: 1px;">{!! nl2br(e($it->description)) !!}</div>
+                            @endif
+                        </td>
+                        <td style="border: 1px solid #000; text-align: center; padding: 3px 2px;">{{ $qty }}</td>
+                        <td style="border: 1px solid #000; text-align: right; padding: 3px 6px;">{{ number_format($rate, 2) }}</td>
+                        <td style="border: 1px solid #000; text-align: right; padding: 3px 6px;">{{ number_format($lTotal, 2) }}</td>
+                    </tr>
+                @endforeach
+                <tr>
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Total Amount:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($quotation->subtotal, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">GST &#64; {{ $taxRate }}%:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($quotation->tax_amount, 2) }}</td>
+                </tr>
+                <tr style="background-color: #fafafa;">
+                    <td colspan="3" style="border: 1px solid #000; border-right: none;"></td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">Net Amount:</td>
+                    <td style="border: 1px solid #000; text-align: right; font-weight: bold; padding: 4px 6px;">{{ number_format($quotation->total, 2) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 
 </body>
 </html>
