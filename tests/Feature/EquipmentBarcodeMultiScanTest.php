@@ -188,4 +188,47 @@ class EquipmentBarcodeMultiScanTest extends TestCase
             'serial_number' => ']C1GK3192792',
         ]);
     }
+
+    public function test_equipment_lookup_model_barcode_is_never_assigned_to_serial_number(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $product = Product::create([
+            'name' => 'Hikvision 2MP Eco Dome',
+            'model_no' => 'DS-2CD1023G0E-I',
+            'sku' => 'HKV-DS-2CD1023',
+            'unit' => 'Nos',
+            'cost_price' => 1900,
+            'unit_price' => 2800,
+            'stock_quantity' => 10,
+            'default_warranty_months' => 24,
+        ]);
+
+        // When user scans the Model 1D barcode on the box: "DS-2CD1023G0E-I"
+        $response = $this->actingAs($user)->getJson('/api/equipment/lookup-serial?serial=' . urlencode('DS-2CD1023G0E-I'));
+        $response->assertOk();
+        $response->assertJson([
+            'found' => true,
+            'model' => 'DS-2CD1023G0E-I',
+            'serial' => '', // MUST BE EMPTY, never populated with model number!
+            'serial_number' => '',
+        ]);
+
+        // When user scans both Model and Serial in multi-scan session
+        $responseMulti = $this->actingAs($user)->postJson('/api/equipment/lookup-serial', [
+            'scans' => [
+                ['raw' => 'DS-2CD1023G0E-I'],
+                ['raw' => 'BG90105359'],
+                ['raw' => 'MAC:F8:20:97:E3:33:91'],
+            ],
+        ]);
+        $responseMulti->assertOk();
+        $responseMulti->assertJson([
+            'found' => true,
+            'model' => 'DS-2CD1023G0E-I',
+            'serial' => 'BG90105359',
+            'serial_number' => 'BG90105359',
+            'mac' => 'F8:20:97:E3:33:91',
+        ]);
+    }
 }

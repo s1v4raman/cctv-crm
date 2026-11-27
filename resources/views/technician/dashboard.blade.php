@@ -118,8 +118,83 @@
                     </div>
                 </div>
 
-                {{-- Action Strip --}}
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2.5">
+                {{-- Mobile App Quick Actions Grid (< lg) --}}
+                <div class="lg:hidden pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {{-- New Project --}}
+                    <a href="{{ route('projects.create') }}" 
+                       class="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white shadow-xs transition">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold text-white truncate">{{ __('New Project') }}</span>
+                            <span class="block text-[10px] text-blue-100 truncate">{{ __('Create site order') }}</span>
+                        </div>
+                    </a>
+
+                    {{-- Add Site Location --}}
+                    <button type="button" onclick="openQuickAddSiteModal()"
+                            class="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 active:scale-[0.98] transition text-left cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-blue-200/60 dark:bg-blue-900/70 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">{{ __('Add Site') }}</span>
+                            <span class="block text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ __('Facility location') }}</span>
+                        </div>
+                    </button>
+
+                    {{-- Hardware Scanner --}}
+                    <button type="button" onclick="openHardwareScannerModal()"
+                            class="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 active:scale-[0.98] transition text-left cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-200/60 dark:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">{{ __('Scan Hardware') }}</span>
+                            <span class="block text-[10px] text-emerald-600 dark:text-emerald-400 truncate">{{ __('S/N & MAC reader') }}</span>
+                        </div>
+                    </button>
+
+                    {{-- Log Worker Attendance --}}
+                    <button type="button" onclick="openAttendanceModal()"
+                            class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 active:scale-[0.98] transition text-left cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">{{ __('Crew Attendance') }}</span>
+                            <span class="block text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ __('Daily wage logs') }}</span>
+                        </div>
+                    </button>
+
+                    {{-- Log Site Work Output --}}
+                    <button type="button" onclick="openWorkOutputModal()"
+                            class="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 active:scale-[0.98] transition text-left cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-amber-200/60 dark:bg-amber-900/70 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">{{ __('Work Output') }}</span>
+                            <span class="block text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ __('Cable & device units') }}</span>
+                        </div>
+                    </button>
+
+                    {{-- Fuel & Travel Claims --}}
+                    <a href="{{ route('finance.expenses.index') }}" 
+                       class="flex items-center gap-2.5 p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 active:scale-[0.98] transition text-left">
+                        <div class="w-8 h-8 rounded-lg bg-purple-200/60 dark:bg-purple-900/70 text-purple-700 dark:text-purple-300 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.25V3.75m0 3.75h-6m6 0H12"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">{{ __('Fuel & Claims') }}</span>
+                            <span class="block text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ __('KM travel expenses') }}</span>
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Desktop Action Strip (lg+) --}}
+                <div class="hidden lg:flex pt-3 border-t border-slate-100 dark:border-slate-800 items-center justify-between flex-wrap gap-2.5">
                     <div class="flex items-center gap-2 flex-wrap">
                         {{-- New Project (Standard Flow) --}}
                         <a href="{{ route('projects.create') }}" 
@@ -1666,6 +1741,14 @@
                         @endif
                     </div>
                     <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Projects') }}</span>
+                </button>
+
+                {{-- Center Action: Hardware Scanner --}}
+                <button type="button" onclick="openHardwareScannerModal()"
+                        aria-label="{{ __('Scan Hardware') }}"
+                        class="flex-1 -mt-4 h-12 w-12 max-w-[50px] rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white flex flex-col items-center justify-center shadow-lg shadow-emerald-600/30 ring-4 ring-white dark:ring-slate-900 transition cursor-pointer shrink-0">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                    <span class="text-[9px] font-black uppercase tracking-wider mt-0.5 leading-none">{{ __('Scan') }}</span>
                 </button>
 
                 {{-- Jobs Tab --}}

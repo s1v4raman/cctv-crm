@@ -31,8 +31,195 @@ if (typeof window !== 'undefined') {
  * Thin forwarding helper (JS no longer duplicates server regex parsing).
  */
 export function parseDeviceBarcode(rawCode) {
+    if (!rawCode) return { serial: '', mac: '', model: '', ean: '', isMacOnly: false, isSerialOnly: false, isComposite: false, raw: '' };
     const raw = cleanBarcode(rawCode);
-    return { raw, format: null };
+    let serial = '';
+    let mac = '';
+    let model = '';
+    let ean = '';
+
+    function isValidMac(str) {
+        if (!str) return false;
+        const s = String(str).replace(/^MAC[:\s=-]*/i, '').trim();
+        if (/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s)) return true;
+        if (/^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$/.test(s)) return true;
+        if (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s)) return true;
+        return false;
+    }
+
+    function normalizeMac(str) {
+        if (!str) return '';
+        const clean = String(str).replace(/^MAC[:\s=-]*/i, '').replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+        if (clean.length === 12) {
+            return clean.match(/.{1,2}/g).join(':');
+        }
+        return str.toUpperCase();
+    }
+
+    function isCctvModel(str) {
+        if (!str) return false;
+        const s = String(str).trim();
+        if (/^(?:MODEL|MDL|PROD|ITEM|PART|P\/N|PN)[:\s=-]+/i.test(s)) return true;
+        if (/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR)/i.test(s)) return true;
+        if (/^(?:2CD|2CE|7204|7208|7216|7604|7608|7616|UNC-|UVR-|HFW[0-9]|HDW[0-9]|HDBW[0-9])/i.test(s)) return true;
+        return false;
+    }
+
+    function cleanModel(str) {
+        if (!str) return '';
+        return String(str).trim().replace(/^(?:MODEL|MDL|PROD|ITEM|PART|P\/N|PN)[:\s=-]*/i, '').trim();
+    }
+
+    function normalizeSerial(str) {
+        if (!str) return '';
+        return cleanBarcode(String(str).trim().replace(/^(?:S\/N|SN|SERIAL(?:\s*NO)?|NO)[:\s=_-]*/i, '').trim());
+    }
+
+    // 1. JSON parsing for modern smart QR codes
+    if ((raw.startsWith('{') && raw.endsWith('}')) || (raw.startsWith('[') && raw.endsWith(']'))) {
+        try {
+            const data = JSON.parse(raw);
+            const item = Array.isArray(data) ? data[0] : data;
+            if (item && typeof item === 'object') {
+                serial = normalizeSerial(item.serial || item.sn || item.s_n || item.serialNumber || item.serial_number || item.no || '');
+                mac = normalizeMac(item.mac || item.macAddress || item.mac_address || '');
+                model = cleanModel(item.model || item.modelNo || item.model_no || item.prod || item.item || '');
+                ean = item.ean || item.upc || item.barcode || '';
+            }
+        } catch (e) {}
+    }
+
+    // 2. Query String / URL Parameter parsing
+    if (!serial && !mac && (raw.includes('?') || (raw.includes('=') && (raw.includes('&') || raw.includes(';'))))) {
+        try {
+            const qs = raw.replace(/^.*\?/, '');
+            const params = new URLSearchParams(qs.replace(/;/g, '&'));
+            if (params.has('sn')) serial = normalizeSerial(params.get('sn'));
+            else if (params.has('serial')) serial = normalizeSerial(params.get('serial'));
+            else if (params.has('s_n')) serial = normalizeSerial(params.get('s_n'));
+
+            if (params.has('mac')) mac = normalizeMac(params.get('mac'));
+            else if (params.has('mac_address')) mac = normalizeMac(params.get('mac_address'));
+
+            if (params.has('model')) model = cleanModel(params.get('model'));
+            else if (params.has('mdl')) model = cleanModel(params.get('mdl'));
+
+            if (params.has('ean')) ean = params.get('ean');
+            else if (params.has('upc')) ean = params.get('upc');
+            else if (params.has('barcode')) ean = params.get('barcode');
+        } catch (e) {}
+    }
+
+    // 3. Explicit Multi-Attribute Regex Detection across raw text
+    if (!mac) {
+        const explicitMacRegex = /(?:MAC[:\s=-]*)?((?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2})\b/i;
+        const macMatch = raw.match(explicitMacRegex);
+        if (macMatch && macMatch[1]) {
+            mac = normalizeMac(macMatch[1]);
+        } else {
+            const plainMacWithPrefix = /(?:MAC[:\s=-]+)([0-9A-Fa-f]{12})\b/i;
+            const plainMatch = raw.match(plainMacWithPrefix);
+            if (plainMatch && plainMatch[1]) {
+                mac = normalizeMac(plainMatch[1]);
+            }
+        }
+    }
+
+    if (!serial) {
+        const explicitSnRegex = /(?:S\/N|SN|SERIAL(?:\s*NO)?|NO)[:\s=-]+([A-Za-z0-9\-_]+)/i;
+        const snMatch = raw.match(explicitSnRegex);
+        if (snMatch && snMatch[1]) {
+            serial = normalizeSerial(snMatch[1]);
+        }
+    }
+
+    if (!ean) {
+        const explicitEanRegex = /(?:EAN|UPC|BARCODE)[:\s=-]+(\d{12,14})\b/i;
+        const eanMatch = raw.match(explicitEanRegex);
+        if (eanMatch && eanMatch[1]) {
+            ean = eanMatch[1].trim();
+        }
+    }
+
+    if (!model) {
+        const explicitModelRegex = /(?:MODEL|MDL|PROD|ITEM|PART)[:\s=-]+([A-Za-z0-9\-_\.\/]+)/i;
+        const modelMatch = raw.match(explicitModelRegex);
+        if (modelMatch && modelMatch[1]) {
+            model = cleanModel(modelMatch[1]);
+        }
+    }
+
+    // 4. Multiline or Delimited Chunking
+    const chunks = (raw.includes('\n') || raw.includes(';') || raw.includes(',') || raw.includes('|') || raw.includes('\t') || raw.includes(' '))
+        ? raw.split(/[\r\n,;|/\t\s]+/).map(c => c.trim()).filter(Boolean)
+        : [raw];
+
+    for (const chunk of chunks) {
+        if (!mac && isValidMac(chunk)) {
+            mac = normalizeMac(chunk);
+            continue;
+        }
+        if (!model && isCctvModel(chunk)) {
+            model = cleanModel(chunk);
+            continue;
+        }
+        if (!ean && /^\d{12,14}$/.test(chunk)) {
+            ean = chunk;
+            continue;
+        }
+        if (!serial && /^(?:S\/N|SN|SERIAL)[:\s=_-]*/i.test(chunk)) {
+            serial = normalizeSerial(chunk);
+            continue;
+        }
+        if (!serial && !isValidMac(chunk) && !isCctvModel(chunk) && !/^\d{12,14}$/.test(chunk) && /^[A-Za-z0-9\-_]{6,26}$/.test(chunk)) {
+            serial = normalizeSerial(chunk);
+            continue;
+        }
+    }
+
+    // 5. Standalone Identification Fallback
+    if (!serial && !mac && !model && !ean) {
+        if (isValidMac(raw)) {
+            mac = normalizeMac(raw);
+        } else if (isCctvModel(raw)) {
+            model = cleanModel(raw);
+        } else if (/^\d{12,14}$/.test(raw)) {
+            ean = raw;
+        } else {
+            serial = normalizeSerial(raw);
+        }
+    }
+
+    // Ensure model is never assigned to serial
+    if (serial && isCctvModel(serial)) {
+        if (!model) model = cleanModel(serial);
+        serial = '';
+    }
+
+    // Ensure MAC is never assigned to serial
+    if (serial && isValidMac(serial)) {
+        if (!mac) mac = normalizeMac(serial);
+        serial = '';
+    }
+
+    if (mac && !isValidMac(mac)) {
+        mac = '';
+    }
+
+    const isMacOnly = Boolean(mac && !serial && !model);
+    const isSerialOnly = Boolean(serial && !mac && !model);
+    const isComposite = Boolean((serial ? 1 : 0) + (mac ? 1 : 0) + (model ? 1 : 0) > 1);
+
+    return {
+        serial,
+        mac,
+        model,
+        ean,
+        isMacOnly,
+        isSerialOnly,
+        isComposite,
+        raw
+    };
 }
 
 export default function hardwareScannerModalComponent(config = {}) {
@@ -547,6 +734,14 @@ export default function hardwareScannerModalComponent(config = {}) {
                 this.registerName = `${brandPrefix}${data.product.name}${mdlSuffix}`.trim();
                 this.registerProductId = String(data.product.id);
                 this.learnAliasToken = '';
+
+                // Ensure product model or sku is never treated as hardware serial
+                const pMdl = (data.product.model_no || '').toUpperCase().trim();
+                const pSku = (data.product.sku || '').toUpperCase().trim();
+                const pName = (data.product.name || '').toUpperCase().trim();
+                if ([pMdl, pSku, pName].includes(this.registerSerial.toUpperCase().trim())) {
+                    this.registerSerial = '';
+                }
             } else {
                 this.registerName = data.equipment_name || '';
                 this.registerProductId = data.product_id ? String(data.product_id) : '';

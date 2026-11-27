@@ -68,6 +68,19 @@ class DeviceLookupService
         $product = $this->findExactProduct($ean, $modelTokens, $serialCandidates);
 
         if ($product) {
+            // Strip any product model / sku / name from serial candidates so model is NEVER treated as serial
+            $modelStrings = array_map('strtoupper', array_map('trim', array_filter([
+                $product->model_no,
+                $product->sku,
+                $product->name,
+            ])));
+
+            $cleanSerialCandidates = array_values(array_filter($serialCandidates, function ($sn) use ($modelStrings) {
+                return !in_array(strtoupper(trim($sn)), $modelStrings, true);
+            }));
+
+            $resolvedSerial = $cleanSerialCandidates[0] ?? '';
+
             $displayName = $product->name . ($product->model_no ? " ({$product->model_no})" : '');
             $productData = [
                 'id'              => $product->id,
@@ -96,9 +109,9 @@ class DeviceLookupService
                 'sku'               => $product->sku,
                 'model_no'          => $product->model_no,
                 'model'             => $product->model_no ?: $product->name,
-                'serial'            => $primarySerial,
-                'serial_number'     => $primarySerial,
-                'serial_candidates' => $serialCandidates,
+                'serial'            => $resolvedSerial,
+                'serial_number'     => $resolvedSerial,
+                'serial_candidates' => $cleanSerialCandidates,
                 'mac'               => $mac,
                 'mac_address'       => $mac,
                 'possible_mac'      => $possibleMac,
@@ -304,6 +317,17 @@ class DeviceLookupService
                 if ($this->isValidEan($token)) {
                     if ($ean === '') {
                         $ean = $token;
+                    }
+                    continue;
+                }
+
+                // CCTV Model prefix detection (Hikvision, CP PLUS, Dahua, Uniview, Ezviz, Imou, TP-Link, Tiandy)
+                if (preg_match('/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR)/i', $token)) {
+                    if (!in_array($token, $modelTokens, true)) {
+                        $modelTokens[] = $token;
+                    }
+                    if (!in_array($token, $unknownTokens, true)) {
+                        $unknownTokens[] = $token;
                     }
                     continue;
                 }

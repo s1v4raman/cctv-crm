@@ -433,21 +433,48 @@
 
     {{-- Sidebar Bottom: Comfortable User Profile & Quick Logout --}}
     <div class="crm-sidebar-footer shrink-0 p-3 border-t border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors">
-        {{-- Mobile Phone Only for Technician: Option B Logout button matching Image 3 --}}
+        {{-- Mobile Phone Only for Technician: User Card + High-Contrast Logout Button --}}
         @if(auth()->user()->isTechnician())
-            <div class="lg:hidden">
+            <div class="lg:hidden space-y-2.5">
+                <div class="flex items-center gap-2.5 px-2 py-1">
+                    @if(Auth::user()->avatar_url)
+                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                        <div class="w-9 h-9 rounded-full text-white items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb); display: none;">
+                            {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @else
+                        <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
+                            {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div class="min-w-0 flex-1 truncate">
+                        <span class="block text-xs font-bold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name }}</span>
+                        <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold truncate leading-tight">{{ __(Auth::user()->role_title) }}</span>
+                    </div>
+                    <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
+                            <circle cx="8" cy="6" r="2"/>
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
+                            <circle cx="16" cy="12" r="2"/>
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
+                            <circle cx="10" cy="18" r="2"/>
+                        </svg>
+                    </a>
+                </div>
+
                 <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 w-full">
                     @csrf
                     <button type="submit" 
                             id="tech-mobile-nav-logout-btn"
                             aria-label="{{ __('Log Out') }}"
-                            class="btn-icon sidebar-logout-btn w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-rose-500/10 active:scale-[0.99] transition cursor-pointer group text-left">
-                        <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/25 shrink-0 transition shadow-xs">
-                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            class="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-800 active:scale-[0.99] transition cursor-pointer group text-left">
+                        <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-500 dark:text-rose-400 group-hover:bg-rose-500/25 shrink-0 transition shadow-xs">
+                            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
                             </svg>
                         </div>
-                        <span class="text-sm font-bold text-slate-100 group-hover:text-white transition tracking-wide">{{ __('Log Out') }}</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition tracking-wide">{{ __('Log Out') }}</span>
                     </button>
                 </form>
             </div>
