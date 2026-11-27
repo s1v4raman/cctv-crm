@@ -62,7 +62,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         collectedCodes: [],
         recentReadMap: {},
         scanSource: 'manual',
-        useDirectCamera: false,
+        useDirectCamera: true,
         facingMode: 'environment',
         videoDevices: [],
         selectedCameraId: '',
@@ -184,11 +184,13 @@ export default function hardwareScannerModalComponent(config = {}) {
             this.activeTab = t;
 
             if (t === 'mobile') {
-                if (this.isMobile) {
-                    this.$nextTick(() => this.startMobileCamera(false));
-                } else {
-                    this.$nextTick(() => this.initMobileCam());
-                }
+                this.$nextTick(() => {
+                    if (this.isMobile || this.useDirectCamera) {
+                        this.startMobileCamera(false);
+                    } else {
+                        this.initMobileCam();
+                    }
+                });
             } else if (t === 'scanner_gun') {
                 this.$nextTick(() => {
                     if (this.$refs.gunInput) this.$refs.gunInput.focus();
@@ -332,20 +334,59 @@ export default function hardwareScannerModalComponent(config = {}) {
 
                 const detector = await this.getDetector();
 
-                // ~8 reads per second (125ms)
+                // ZXing reader fallback helper for universal hardware barcode decoding
+                const getZxingReader = () => {
+                    if (!this._zxingReader && window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+                        try {
+                            this._zxingReader = new window.ZXing.BrowserMultiFormatReader();
+                        } catch (e) {}
+                    }
+                    return this._zxingReader;
+                };
+
+                let isProcessingFrame = false;
+                let lastFrameTime = 0;
+
+                // Real-time continuous video frame scanning loop (100ms throttle)
                 this.cameraInterval = setInterval(async () => {
                     if (!this.isOpen || this.activeTab !== 'mobile' || !this.mobileStream) {
                         this.stopCamera();
                         return;
                     }
-                    if (video.readyState < 2) return;
+                    const now = Date.now();
+                    if (isProcessingFrame || (now - lastFrameTime < 95) || video.readyState < 2 || video.videoWidth === 0) return;
+                    isProcessingFrame = true;
+                    lastFrameTime = now;
 
                     try {
-                        const barcodes = await detector.detect(video);
-                        if (barcodes && barcodes.length > 0) {
+                        let detectedCodes = [];
+                        // 1. Native / Polyfill BarcodeDetector (hardware accelerated)
+                        if (detector) {
+                            try {
+                                const barcodes = await detector.detect(video);
+                                if (barcodes && barcodes.length > 0) {
+                                    detectedCodes = barcodes.map(b => ({ raw: b.rawValue, format: b.format || null }));
+                                }
+                            } catch (e) {}
+                        }
+
+                        // 2. ZXing BrowserMultiFormatReader fallback
+                        if (detectedCodes.length === 0) {
+                            const reader = getZxingReader();
+                            if (reader) {
+                                try {
+                                    const res = await reader.decodeFromVideoElement(video);
+                                    if (res && res.getText()) {
+                                        detectedCodes.push({ raw: res.getText(), format: null });
+                                    }
+                                } catch (zxErr) {}
+                            }
+                        }
+
+                        if (detectedCodes.length > 0) {
                             let added = false;
-                            for (const b of barcodes) {
-                                if (b.rawValue && this.recordSessionCode(b.rawValue, b.format || null, 'camera')) {
+                            for (const b of detectedCodes) {
+                                if (b.raw && this.recordSessionCode(b.raw, b.format, 'camera')) {
                                     added = true;
                                 }
                             }
@@ -353,8 +394,11 @@ export default function hardwareScannerModalComponent(config = {}) {
                                 await this.finishCameraSession();
                             }
                         }
-                    } catch (e) {}
-                }, 125);
+                    } catch (e) {
+                    } finally {
+                        isProcessingFrame = false;
+                    }
+                }, 100);
             } catch (err) {
                 if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
                     this.cameraError = 'Camera permission denied. Allow camera access in browser settings or use Scanner Gun.';

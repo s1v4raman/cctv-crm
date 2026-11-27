@@ -20,6 +20,17 @@
     ];
 @endphp
 
+{{-- Local Offline Barcode & QR Decoding Engine (ZXing MultiFormat) --}}
+<script src="{{ asset('vendor/zxing/zxing.min.js') }}"></script>
+
+<style>
+@keyframes scanLaserSweep {
+    0% { top: 12%; opacity: 0.25; }
+    50% { top: 88%; opacity: 1; }
+    100% { top: 12%; opacity: 0.25; }
+}
+</style>
+
 <script>
     // Cleanup candidate: thin helper kept for backward compatibility
     window.triggerAddCustomerSiteFromScanner = function() {
@@ -197,7 +208,7 @@
                     </div>
                 </div>
 
-                {{-- Viewport --}}
+                {{-- Viewport with Real-Time Reticle & Laser Sweep --}}
                 <div id="{{ $modalId }}-phone-viewport"
                      @click="startMobileCamera(true)"
                      class="relative bg-black rounded-lg sm:rounded-[4px] overflow-hidden w-full h-[240px] flex items-center justify-center border border-slate-800 select-none cursor-pointer">
@@ -205,10 +216,25 @@
                     <input type="file" id="{{ $modalId }}-phone-capture-fallback" accept="image/*" capture="environment" class="hidden" @change="uploadImage($event)">
 
                     <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-4">
-                        <div class="w-full max-w-[240px] h-[120px] rounded-[4px] border border-white/60"></div>
+                        <div class="relative w-full max-w-[260px] h-[140px] border border-emerald-500/50 rounded-lg shadow-[0_0_0_9999px_rgba(3,7,18,0.7)] flex flex-col justify-between p-2 overflow-hidden">
+                            {{-- Corner brackets --}}
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-t-2 border-l-2 border-emerald-400"></div>
+                                <div class="w-4 h-4 border-t-2 border-r-2 border-emerald-400"></div>
+                            </div>
+
+                            {{-- Animated green scanning laser sweep --}}
+                            <div class="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_#34d399]"
+                                 style="animation: scanLaserSweep 2s ease-in-out infinite;"></div>
+
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-b-2 border-l-2 border-emerald-400"></div>
+                                <div class="w-4 h-4 border-b-2 border-r-2 border-emerald-400"></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="absolute bottom-2 left-2 right-2 text-center text-xs font-medium px-2.5 py-1 rounded-[4px] bg-slate-900/90 text-slate-200" x-text="cameraStatus"></div>
+                    <div class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 rounded bg-slate-900/90 text-slate-200 shadow-sm" x-text="cameraStatus"></div>
                 </div>
 
                 <div class="flex items-center gap-2">
