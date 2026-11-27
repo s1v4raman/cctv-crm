@@ -1802,8 +1802,7 @@
             </div>
         </nav>
 
-    {{-- HARDWARE BARCODE SCANNER COMPONENT (Modal provided globally via app layout) --}}
-    <x-barcode-scanner modalId="tech-barcode-modal" :title="__('Hardware Scanner')" />
+    {{-- HARDWARE BARCODE SCANNER COMPONENT (Provided globally via app layout: x-hardware-scanner-modal) --}}
 
     {{-- SPLIT GUIDED WORKER ATTENDANCE MODAL COMPONENT --}}
     <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" :today-attendances="$todayAttendanceByWorkerId ?? null" :assigned-project-ids="$assignedProjectIds ?? []" :default-project-id="$assignedProjects->first()?->id" />

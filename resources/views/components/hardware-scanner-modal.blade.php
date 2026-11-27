@@ -57,40 +57,41 @@
         {{-- Modal Top Header Bar --}}
         <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-2">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <div class="w-9 h-9 rounded-lg sm:rounded-[4px] border border-slate-200 dark:border-slate-700 text-[var(--crm-accent,#2563eb)] flex items-center justify-center shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
                 </div>
                 <div class="min-w-0 flex-1">
                     <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        <span>{{ __('Hardware Barcode Scanner & Analysis') }}</span>
+                        <span>{{ __('Scan Device Serial / Barcode') }}</span>
                     </h3>
-                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">{{ __('Scan EAN, S/N, and MAC in one session, review and save') }}</p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{{ __('Scan Barcode, Serial Number (S/N), or MAC Address tag') }}</p>
                 </div>
             </div>
             <x-close-button @click="closeModal()" :label="__('Close')" class="shrink-0" />
         </div>
 
-        {{-- Plain Text Tabs with 2px Underline --}}
-        <div class="flex items-center gap-4 border-b border-slate-200 dark:border-slate-700 text-xs overflow-x-auto select-none">
+        {{-- Plain Text Tabs with 2px Underline — never overlap on mobile --}}
+        <div class="flex items-center border-b border-slate-200 dark:border-slate-800 text-xs sm:text-sm select-none overflow-x-auto no-scrollbar gap-1 sm:gap-2">
             <button type="button" @click="switchTab('mobile')"
-                    class="py-2.5 px-1 font-semibold border-b-2 transition whitespace-nowrap cursor-pointer"
-                    :class="activeTab === 'mobile' ? 'border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)]' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    class="px-3.5 py-2.5 font-bold border-b-2 transition whitespace-nowrap cursor-pointer shrink-0"
+                    :class="activeTab === 'mobile' ? 'border-[#84cc16] text-[#84cc16]' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Mobile Scan') }}
             </button>
             <button type="button" @click="switchTab('scanner_gun')"
-                    class="py-2.5 px-1 font-semibold border-b-2 transition whitespace-nowrap cursor-pointer"
-                    :class="activeTab === 'scanner_gun' ? 'border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)]' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    class="px-3.5 py-2.5 font-bold border-b-2 transition whitespace-nowrap cursor-pointer shrink-0"
+                    :class="activeTab === 'scanner_gun' ? 'border-[#84cc16] text-[#84cc16]' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Barcode Machine') }}
             </button>
             <button type="button" @click="switchTab('lookup')"
-                    class="py-2.5 px-1 font-semibold border-b-2 transition whitespace-nowrap cursor-pointer"
-                    :class="activeTab === 'lookup' ? 'border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)]' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    class="px-3.5 py-2.5 font-bold border-b-2 transition whitespace-nowrap cursor-pointer shrink-0"
+                    :class="activeTab === 'lookup' ? 'border-[#84cc16] text-[#84cc16]' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                 {{ __('Analysis & S/N') }}
             </button>
             <button type="button" @click="switchTab('register')"
-                    class="py-2.5 px-1 font-semibold border-b-2 transition whitespace-nowrap cursor-pointer"
-                    :class="activeTab === 'register' ? 'border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)]' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-                {{ __('Register Asset') }}
+                    class="px-3.5 py-2.5 font-bold border-b-2 transition whitespace-nowrap cursor-pointer shrink-0 inline-flex items-center gap-1.5"
+                    :class="activeTab === 'register' ? 'border-[#84cc16] text-[#84cc16]' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                <span>{{ __('Register Asset') }}</span>
+                <span x-show="collectedCodes.length > 0" class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500 text-white font-bold" x-text="collectedCodes.length"></span>
             </button>
         </div>
 
@@ -168,50 +169,26 @@
             {{-- Continuous Live Camera Scanner (Mobile or Direct Webcam) --}}
             <div x-show="isMobile || useDirectCamera" class="space-y-3">
                 <template x-if="cameraError">
-                    <p class="text-xs font-semibold text-rose-700 dark:text-rose-400" x-text="cameraError"></p>
+                    <p class="text-xs font-semibold text-rose-500" x-text="cameraError"></p>
                 </template>
 
-                {{-- Camera Controls Bar (Device Selector / Flip / Mode Toggle) --}}
-                <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        {{-- Video Device Enumeration Dropdown --}}
-                        <template x-if="videoDevices.length > 1">
-                            <select x-model="selectedCameraId" @change="switchCameraDevice(selectedCameraId)"
-                                    class="h-[38px] text-xs rounded-[4px] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 font-medium focus:ring-1 focus:ring-blue-500">
-                                <template x-for="(dev, idx) in videoDevices" :key="dev.deviceId || idx">
-                                    <option :value="dev.deviceId" x-text="dev.label || ('Camera ' + (idx + 1))"></option>
-                                </template>
-                            </select>
-                        </template>
-
-                        {{-- Flip Front/Rear Camera --}}
-                        <button type="button" @click="switchCameraFacing()"
-                                class="h-[38px] px-2.5 rounded-[4px] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-                            <span>{{ __('Flip') }}</span>
-                        </button>
-
-                        {{-- Torch --}}
-                        <button type="button" x-show="torchSupported" @click="toggleTorch()"
-                                class="h-[38px] px-2.5 rounded-[4px] border border-slate-300 dark:border-slate-700 text-xs font-bold inline-flex items-center gap-1 cursor-pointer"
-                                :class="torchOn ? 'border-[var(--crm-accent,#2563eb)] text-[var(--crm-accent,#2563eb)]' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-                            <span>{{ __('Torch') }}</span>
-                        </button>
+                {{-- Camera selector if multiple cameras detected --}}
+                <template x-if="videoDevices.length > 1">
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                        <select x-model="selectedCameraId" @change="switchCameraDevice(selectedCameraId)"
+                                class="w-full h-[32px] px-2 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium focus:ring-1 focus:ring-emerald-500">
+                            <template x-for="(dev, idx) in videoDevices" :key="dev.deviceId || idx">
+                                <option :value="dev.deviceId" x-text="dev.label || ('Camera ' + (idx + 1))"></option>
+                            </template>
+                        </select>
                     </div>
+                </template>
 
-                    <div class="flex items-center gap-2">
-                        <button type="button" x-show="!isMobile && useDirectCamera" @click="disableDirectCamera()"
-                                class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline cursor-pointer">
-                            {{ __('Switch to Phone QR Sync') }}
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Viewport with Real-Time Reticle & Laser Sweep --}}
+                {{-- Viewport with Real-Time Centered Reticle & Laser Sweep --}}
                 <div id="{{ $modalId }}-phone-viewport"
                      @click="startMobileCamera(true)"
-                     class="relative bg-black rounded-lg sm:rounded-[4px] overflow-hidden w-full h-[240px] flex items-center justify-center border border-slate-800 select-none cursor-pointer">
+                     class="relative bg-black rounded-xl overflow-hidden w-full aspect-[4/3] sm:h-[280px] flex items-center justify-center border border-slate-800 select-none cursor-pointer">
                     <video id="{{ $modalId }}-phone-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
                     <input type="file" id="{{ $modalId }}-phone-capture-fallback" accept="image/*" capture="environment" class="hidden" @change="uploadImage($event)">
 
@@ -234,45 +211,77 @@
                         </div>
                     </div>
 
-                    <div class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 rounded bg-slate-900/90 text-slate-200 shadow-sm" x-text="cameraStatus"></div>
+                    {{-- Dynamic status badge inside viewport --}}
+                    <div class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 rounded bg-slate-900/90 text-slate-200 shadow-sm border border-slate-700/60" x-text="cameraStatus || 'Point camera at barcode or S/N sticker...'"></div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="startMobileCamera(true)"
-                            class="btn-primary flex-1 h-[52px] sm:h-[38px] px-3 rounded-lg sm:rounded-[4px] font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
-                        <span>{{ __('Start Camera') }}</span>
-                    </button>
-                    <button type="button" @click="finishCameraSession()"
-                            class="btn-primary h-[52px] sm:h-[38px] px-4 rounded-lg sm:rounded-[4px] font-bold text-xs cursor-pointer">
-                        <span>{{ __('Done') }} (<span x-text="collectedCodes.length"></span>)</span>
-                    </button>
-                    <button type="button" @click="switchTab('register')"
-                            class="h-[52px] sm:h-[38px] px-3 rounded-lg sm:rounded-[4px] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs cursor-pointer">
-                        <span>{{ __('Enter Manually') }}</span>
-                    </button>
+                {{-- Live Multi-Scan Captured Badges --}}
+                <div x-show="collectedCodes.length > 0" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>{{ __('Captured Device Codes:') }}</span>
+                        </span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-normal"><span x-text="collectedCodes.length"></span> {{ __('scanned') }}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 items-center">
+                        <template x-for="(code, idx) in collectedCodes" :key="code.id">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-mono bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 shadow-xs">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400" x-text="getCodeTagType(code.raw)"></span>
+                                <span class="truncate max-w-[140px]" x-text="cleanBarcode(code.raw)"></span>
+                                <button type="button" @click="removeCollectedCode(idx)" class="ml-1 text-slate-400 hover:text-rose-500 cursor-pointer font-bold">&times;</button>
+                            </span>
+                        </template>
+                    </div>
                 </div>
-            </div>
 
-            {{-- Live Collected Codes Session List --}}
-            <div x-show="collectedCodes.length > 0" class="p-3 rounded-lg sm:rounded-[4px] bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-slate-700 dark:text-slate-200">{{ __('Collected Codes This Session') }} (<span x-text="collectedCodes.length"></span>)</span>
-                    <button type="button" @click="finishCameraSession()"
-                            class="btn-primary h-[38px] px-3 rounded-lg sm:rounded-[4px] font-bold text-xs cursor-pointer">
-                        <span>{{ __('Review & Save') }}</span>
+                {{-- Bottom Action Row — Exact match to Screenshot 1 & 2 --}}
+                <div class="flex items-center gap-2 pt-1">
+                    {{-- Left: Primary vibrant lime green button --}}
+                    <button type="button"
+                            @click="collectedCodes.length > 0 ? finishCameraSession() : startMobileCamera(true)"
+                            class="flex-1 h-11 sm:h-12 px-4 rounded-xl font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition active:scale-98"
+                            :class="collectedCodes.length > 0 ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-[#84cc16] hover:bg-[#65a30d] text-slate-950'">
+                        <template x-if="collectedCodes.length > 0">
+                            <span class="inline-flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                <span>{{ __('Done') }} (<span x-text="collectedCodes.length"></span>)</span>
+                            </span>
+                        </template>
+                        <template x-if="collectedCodes.length === 0">
+                            <span class="inline-flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                                <span>{{ __('Restart Camera') }}</span>
+                            </span>
+                        </template>
+                    </button>
+
+                    {{-- Flip Camera Button --}}
+                    <button type="button" @click="switchCameraFacing()"
+                            class="h-11 sm:h-12 px-3 sm:px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs inline-flex items-center gap-1 cursor-pointer transition shrink-0">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                        <span>{{ __('Flip') }}</span>
+                    </button>
+
+                    {{-- Torch Button (if supported) --}}
+                    <button type="button" x-show="torchSupported" @click="toggleTorch()"
+                            class="h-11 sm:h-12 px-3 rounded-xl border font-bold text-xs inline-flex items-center justify-center cursor-pointer transition shrink-0"
+                            :class="torchOn ? 'border-[#84cc16] bg-[#84cc16]/20 text-[#84cc16]' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700'">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                    </button>
+
+                    {{-- Scanner Gun Button --}}
+                    <button type="button" @click="switchTab('scanner_gun')"
+                            class="h-11 sm:h-12 px-3 sm:px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs inline-flex items-center gap-1 cursor-pointer transition shrink-0">
+                        <span>{{ __('Scanner Gun') }}</span>
                     </button>
                 </div>
-                <div class="space-y-1 max-h-32 overflow-y-auto">
-                    <template x-for="(item, idx) in collectedCodes" :key="item.id">
-                        <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg sm:rounded-[4px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-mono">
-                            <div class="truncate">
-                                <span class="text-[11px] uppercase px-1.5 py-0.5 rounded-[4px] bg-slate-100 dark:bg-slate-800 text-slate-500 mr-1.5" x-text="item.format || item.source"></span>
-                                <span class="text-slate-900 dark:text-white" x-text="item.raw"></span>
-                            </div>
-                            <button type="button" @click="removeCollectedCode(idx)" class="text-rose-600 hover:text-rose-800 font-bold px-1 cursor-pointer">&times;</button>
-                        </div>
-                    </template>
+
+                {{-- Desktop Helper: Switch to Phone QR Sync --}}
+                <div x-show="!isMobile && useDirectCamera" class="pt-1 text-center">
+                    <button type="button" @click="disableDirectCamera()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium">
+                        {{ __('Pair another phone with QR code instead') }} &rarr;
+                    </button>
                 </div>
             </div>
         </div>

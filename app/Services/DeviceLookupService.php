@@ -322,7 +322,7 @@ class DeviceLookupService
                 }
 
                 // CCTV Model prefix detection (Hikvision, CP PLUS, Dahua, Uniview, Ezviz, Imou, TP-Link, Tiandy)
-                if (preg_match('/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR)/i', $token)) {
+                if (preg_match('/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR|DHI-|HFW|HDW|HDBW)/i', $token)) {
                     if (!in_array($token, $modelTokens, true)) {
                         $modelTokens[] = $token;
                     }

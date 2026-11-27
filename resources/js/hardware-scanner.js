@@ -60,8 +60,8 @@ export function parseDeviceBarcode(rawCode) {
         if (!str) return false;
         const s = String(str).trim();
         if (/^(?:MODEL|MDL|PROD|ITEM|PART|P\/N|PN)[:\s=-]+/i.test(s)) return true;
-        if (/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR)/i.test(s)) return true;
-        if (/^(?:2CD|2CE|7204|7208|7216|7604|7608|7616|UNC-|UVR-|HFW[0-9]|HDW[0-9]|HDBW[0-9])/i.test(s)) return true;
+        if (/^(?:DS-|iDS-|IDS-|HWI-|HWD-|CP-|DH-|IPC-|UNV-|CS-|EZ-|VIGI|TAPO|TC-|NVR|DVR|XVR|DHI-)/i.test(s)) return true;
+        if (/^(?:2CD|2CE|7204|7208|7216|7604|7608|7616|UNC-|UVR-|HFW|HDW|HDBW)/i.test(s)) return true;
         return false;
     }
 
@@ -253,7 +253,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         facingMode: 'environment',
         videoDevices: [],
         selectedCameraId: '',
-        singleScanAutoStop: true,
+        singleScanAutoStop: false,
         cameraInterval: null,
         sessionDetector: null,
         mobileStream: null,
@@ -261,7 +261,7 @@ export default function hardwareScannerModalComponent(config = {}) {
         torchSupported: false,
         torchOn: false,
         cameraError: '',
-        cameraStatus: 'Point camera at CCTV barcode, QR, or S/N sticker...',
+        cameraStatus: 'Point camera at barcode or S/N sticker...',
 
         // Mobile Phone Remote Scanner State (QR Sync)
         sessionToken: '',
@@ -515,9 +515,7 @@ export default function hardwareScannerModalComponent(config = {}) {
                 } catch (playErr) {
                     console.warn('Video play error:', playErr);
                 }
-                this.cameraStatus = this.singleScanAutoStop
-                    ? 'Point camera at barcode or QR code (auto-stops on scan)...'
-                    : 'Scanning... Point at EAN, S/N, and MAC, then tap Done.';
+                this.cameraStatus = 'Point camera at barcode or S/N sticker...';
 
                 const detector = await this.getDetector();
 
@@ -641,6 +639,30 @@ export default function hardwareScannerModalComponent(config = {}) {
             this.$nextTick(() => this.initMobileCam());
         },
 
+        getCodeTagType(rawCode) {
+            if (!rawCode) return 'TAG';
+            const parsed = parseDeviceBarcode(rawCode);
+            if (parsed.isMacOnly || (parsed.mac && !parsed.serial && !parsed.model)) return 'MAC';
+            if (parsed.model && !parsed.serial && !parsed.mac) return 'MODEL';
+            if (parsed.ean && !parsed.serial && !parsed.model && !parsed.mac) return 'EAN';
+            if (parsed.isSerialOnly || parsed.serial) return 'S/N';
+            return 'S/N';
+        },
+
+        addCollectedItem(raw, format = null, source = 'camera') {
+            const clean = cleanBarcode(raw);
+            if (!clean) return;
+            const alreadyExists = this.collectedCodes.some(c => c.raw === clean);
+            if (!alreadyExists) {
+                this.collectedCodes.push({
+                    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                    raw: clean,
+                    format: format || null,
+                    source,
+                });
+            }
+        },
+
         recordSessionCode(rawValue, format = null, source = 'camera') {
             const raw = cleanBarcode(rawValue);
             if (!raw) return false;
@@ -657,14 +679,14 @@ export default function hardwareScannerModalComponent(config = {}) {
                 navigator.vibrate([100, 40, 100]);
             }
 
-            const alreadyExists = this.collectedCodes.some(c => c.raw === raw && (c.format || null) === (format || null));
-            if (!alreadyExists) {
-                this.collectedCodes.push({
-                    id: `${now}-${Math.random().toString(36).slice(2, 7)}`,
-                    raw,
-                    format: format || null,
-                    source,
-                });
+            const parsed = parseDeviceBarcode(raw);
+            if (parsed.isComposite) {
+                if (parsed.model) this.addCollectedItem(parsed.model, 'model', source);
+                if (parsed.serial) this.addCollectedItem(parsed.serial, 'serial', source);
+                if (parsed.mac) this.addCollectedItem(parsed.mac, 'mac', source);
+                if (parsed.ean) this.addCollectedItem(parsed.ean, 'ean', source);
+            } else {
+                this.addCollectedItem(raw, format, source);
             }
 
             this.scanSource = source;
