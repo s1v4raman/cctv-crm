@@ -249,6 +249,10 @@
         let animationFrameId = null;
         let recentScans = [];
         let isLiveCameraSupported = false;
+        let availableVideoDevices = [];
+        let currentDeviceIndex = 0;
+        let isDecodingFrame = false;
+        let lastDecodeTime = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             // Attempt auto-starting camera stream immediately (pass false so file dialog is not popped without user gesture)
@@ -308,7 +312,11 @@
                 // Enumerate video devices to allow cycling between back lenses and front
                 try {
                     const devs = await navigator.mediaDevices.enumerateDevices();
-                    availableVideoDevices = devs.filter(d => d.kind === 'videoinput');
+                    const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+                    availableVideoDevices = devs.filter(d => d.kind === 'videoinput' && !isIR(d));
+                    if (availableVideoDevices.length === 0) {
+                        availableVideoDevices = devs.filter(d => d.kind === 'videoinput');
+                    }
                 } catch (e) {}
 
                 let stream = null;
@@ -422,20 +430,25 @@
             if (!isLiveCameraSupported || !isScanningActive) return;
 
             const video = document.getElementById('scannerVideo');
-            if (video && video.readyState === video.HAVE_ENOUGH_DATA) {
+            const now = Date.now();
+            if (video && video.readyState >= 2 && video.videoWidth > 0 && !isDecodingFrame && (now - lastDecodeTime > 110)) {
+                isDecodingFrame = true;
+                lastDecodeTime = now;
                 // Try decoding current video frame
                 decodeBarcodeFromSource(video).then(code => {
+                    isDecodingFrame = false;
                     if (code && isScanningActive) {
                         onBarcodeScanned(code);
                     } else if (isScanningActive) {
                         animationFrameId = requestAnimationFrame(startLiveScanLoop);
                     }
                 }).catch(() => {
+                    isDecodingFrame = false;
                     if (isScanningActive) {
                         animationFrameId = requestAnimationFrame(startLiveScanLoop);
                     }
                 });
-            } else {
+            } else if (isScanningActive) {
                 animationFrameId = requestAnimationFrame(startLiveScanLoop);
             }
         }

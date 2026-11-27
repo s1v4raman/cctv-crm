@@ -633,54 +633,32 @@ async function startMobileDirectCamera(modalId, isUserGesture = true) {
             state.mobileStream = null;
         }
 
-        // 1. Enumerate video devices to detect color cameras and exclude IR / Windows Hello depth cameras
-        let devices = [];
-        try {
-            devices = await getBarcodeVideoDevices();
-            if (state) state.videoDevices = devices;
-        } catch (e) {}
-
-        const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
-        const usableDevices = devices.filter(d => !isIR(d));
-        const listToUse = usableDevices.length > 0 ? usableDevices : devices;
-
-        // Populate dropdown
-        if (selectEl && devices.length > 0) {
-            selectEl.innerHTML = '';
-            devices.forEach((dev, idx) => {
-                const opt = document.createElement('option');
-                opt.value = dev.deviceId;
-                const irSuffix = isIR(dev) ? ' (Infrared/Black)' : '';
-                opt.text = dev.label ? (dev.label + irSuffix) : `Camera ${idx + 1}${irSuffix}`;
-                selectEl.appendChild(opt);
-            });
-        }
-
-        // Determine target deviceId
+        // 1. Build camera constraints
+        // If user already explicitly picked a camera device, use it.
+        // Otherwise, avoid forcing deviceId initially:
+        // - on mobile, request facingMode: 'environment' (rear lens)
+        // - on desktop/laptop, request standard video so browser does not lock to Device 0 (which may be an IR sensor) before labels are known
+        const isMobile = isMobileScannerDevice();
         let targetDeviceId = state ? state.selectedDeviceId : null;
-        if (!targetDeviceId && listToUse.length > 0) {
-            const isMobile = isMobileScannerDevice();
-            let preferred = null;
-            if (isMobile) {
-                preferred = listToUse.find(d => /back|rear|environment/i.test(d.label || ''));
-            } else {
-                preferred = listToUse.find(d => /webcam|integrated|camera|rgb|color|hd|usb/i.test(d.label || ''));
-            }
-            targetDeviceId = (preferred || listToUse[0]).deviceId;
-            if (state) state.selectedDeviceId = targetDeviceId;
-        }
-
-        if (selectEl && targetDeviceId) {
-            selectEl.value = targetDeviceId;
-        }
-
         let stream = null;
+
         const attempts = [];
         if (targetDeviceId) {
-            attempts.push({ video: { deviceId: { exact: targetDeviceId } }, audio: false });
+            attempts.push({ video: { deviceId: { exact: targetDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
             attempts.push({ video: { deviceId: targetDeviceId }, audio: false });
+        } else if (isMobile) {
+            attempts.push({
+                video: {
+                    facingMode: { ideal: (state && state.facingMode) || 'environment' },
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            });
+            attempts.push({ video: { facingMode: (state && state.facingMode) || 'environment' }, audio: false });
+        } else {
+            attempts.push({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
         }
-        attempts.push({ video: { facingMode: { ideal: (state && state.facingMode) || 'environment' } }, audio: false });
         attempts.push({ video: true, audio: false });
 
         let lastErr = null;
@@ -697,7 +675,59 @@ async function startMobileDirectCamera(modalId, isUserGesture = true) {
             throw lastErr || new Error('Could not access any camera');
         }
 
-        if (state) state.mobileStream = stream;
+        // 2. Permissions granted! Now enumerate devices with REAL human-readable labels
+        const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+        let freshDevs = [];
+        try {
+            freshDevs = await getBarcodeVideoDevices();
+            if (state) state.videoDevices = freshDevs;
+        } catch (e) {}
+
+        // Check if the stream we just got is an IR/Windows Hello sensor (outputs pitch-black frames in visible light)
+        const activeTrack = stream.getVideoTracks()[0];
+        const activeLabel = activeTrack ? (activeTrack.label || '') : '';
+        if (!targetDeviceId && isIR({ label: activeLabel }) && freshDevs.length > 0) {
+            // Find a visible RGB/color webcam
+            const realColorCam = freshDevs.find(d => !isIR(d) && /webcam|integrated|camera|rgb|color|hd|usb|back|rear/i.test(d.label || ''))
+                              || freshDevs.find(d => !isIR(d));
+            if (realColorCam && realColorCam.deviceId) {
+                try {
+                    const colorStream = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: { exact: realColorCam.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
+                        audio: false
+                    });
+                    if (colorStream) {
+                        stream.getTracks().forEach(t => t.stop());
+                        stream = colorStream;
+                        targetDeviceId = realColorCam.deviceId;
+                        if (state) state.selectedDeviceId = targetDeviceId;
+                    }
+                } catch (swapErr) {
+                    console.warn('Could not switch to RGB camera:', swapErr);
+                }
+            }
+        }
+
+        if (state) {
+            state.mobileStream = stream;
+            const finalTrack = stream.getVideoTracks()[0];
+            if (finalTrack && finalTrack.getSettings) {
+                state.selectedDeviceId = finalTrack.getSettings().deviceId || targetDeviceId;
+            }
+        }
+
+        // Populate camera dropdown with labeled devices
+        if (selectEl && freshDevs.length > 0) {
+            selectEl.innerHTML = '';
+            freshDevs.forEach((dev, idx) => {
+                const opt = document.createElement('option');
+                opt.value = dev.deviceId;
+                const irSuffix = isIR(dev) ? ' (IR/Face - Black)' : '';
+                opt.text = dev.label ? (dev.label + irSuffix) : `Camera ${idx + 1}${irSuffix}`;
+                if (dev.deviceId === state.selectedDeviceId) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+        }
         
         // Ensure video element plays with live stream
         video.muted = true;
@@ -837,7 +867,9 @@ window.switchBarcodeCameraDevice = switchBarcodeCameraDevice;
 function switchMobileDirectCamera(modalId) {
     const state = window.barcodeScannerState[modalId];
     if (!state) return;
-    const devs = state.videoDevices || [];
+    const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+    const nonIR = (state.videoDevices || []).filter(d => !isIR(d));
+    const devs = nonIR.length > 0 ? nonIR : (state.videoDevices || []);
     if (devs.length > 1) {
         const curIdx = devs.findIndex(d => d.deviceId === state.selectedDeviceId);
         const nextIdx = (curIdx + 1) % devs.length;

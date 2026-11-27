@@ -263,6 +263,34 @@ export default function hardwareScannerModalComponent(config = {}) {
                     throw lastErr || new Error('Could not access camera');
                 }
 
+                // Inspect active track to ensure it is not an IR / Windows Hello depth camera
+                const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+                const activeTrack = stream.getVideoTracks()[0];
+                const activeLabel = activeTrack ? (activeTrack.label || '') : '';
+                if (navigator.mediaDevices.enumerateDevices) {
+                    try {
+                        const freshDevs = await navigator.mediaDevices.enumerateDevices();
+                        this.videoDevices = freshDevs.filter(d => d.kind === 'videoinput');
+                        if (isIR({ label: activeLabel }) && this.videoDevices.length > 0) {
+                            const realColorCam = this.videoDevices.find(d => !isIR(d) && /webcam|integrated|rgb|color|hd|usb|back|rear/i.test(d.label || ''))
+                                              || this.videoDevices.find(d => !isIR(d));
+                            if (realColorCam && realColorCam.deviceId) {
+                                try {
+                                    const colorStream = await navigator.mediaDevices.getUserMedia({
+                                        video: { deviceId: { exact: realColorCam.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
+                                        audio: false
+                                    });
+                                    if (colorStream) {
+                                        stream.getTracks().forEach(t => t.stop());
+                                        stream = colorStream;
+                                        this.selectedCameraId = realColorCam.deviceId;
+                                    }
+                                } catch (swapErr) {}
+                            }
+                        }
+                    } catch (e) {}
+                }
+
                 this.mobileStream = stream;
                 this.videoTrack = stream.getVideoTracks()[0] || null;
                 this.torchSupported = !!(this.videoTrack && typeof this.videoTrack.getCapabilities === 'function' && this.videoTrack.getCapabilities().torch);
