@@ -84,56 +84,35 @@
         </div>
 
         <!-- Camera Viewport Card -->
-        <div id="scannerViewportCard" onclick="startLiveCameraScanner()" 
+        <div id="scannerViewportCard" onclick="startLiveCameraScanner(true)" 
              class="relative w-full aspect-[4/3] rounded-2xl bg-black overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center cursor-pointer select-none">
             
             <!-- Live HTML5 Video Feed (Continuous Real-time Viewfinder) -->
             <video id="scannerVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
 
-            <!-- Image Preview when photo is captured (Camera Fallback for Insecure HTTP) -->
-            <img id="scannerImagePreview" class="hidden w-full h-full object-cover" alt="Captured Barcode">
-
-            <!-- Native Mobile Camera Input for HTTP / Insecure Contexts -->
-            <input type="file" id="mobileCameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleMobileImageUpload(event)">
-
-            <!-- Canvas for Frame Decoding -->
-            <canvas id="scannerCanvas" class="hidden"></canvas>
-
-            <!-- Tap to Open Camera Prompt (Initial Viewport Overlay) -->
-            <div id="tapToScanPrompt" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 bg-gradient-to-b from-slate-900/90 to-slate-950/95">
-                <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 flex items-center justify-center text-3xl mb-3 shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
-                    📷
-                </div>
-                <div class="text-sm font-bold text-white mb-1">Tap to Scan CCTV Barcode</div>
-                <div class="text-xs text-slate-300 max-w-[220px]">Point camera directly at CCTV barcode, S/N or MAC sticker</div>
-                <div class="mt-3 px-4 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs shadow-lg inline-flex items-center gap-1.5">
-                    <span>⚡ Scan Barcode with Camera</span>
-                </div>
-            </div>
-
-            <!-- Holographic Reticle Overlay -->
+            <!-- Holographic Reticle Overlay with Animated Scanning Laser -->
             <div id="reticleOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-                <div class="relative w-full max-w-[260px] h-[150px] rounded-xl border border-blue-500/40 shadow-[0_0_0_9999px_rgba(3,7,18,0.65)] flex flex-col justify-between p-2">
+                <div class="relative w-full max-w-[260px] h-[150px] rounded-xl border border-emerald-500/50 shadow-[0_0_0_9999px_rgba(3,7,18,0.7)] flex flex-col justify-between p-2 overflow-hidden">
                     
                     <!-- Top Corners -->
                     <div class="flex justify-between w-full">
-                        <div class="w-5 h-5 border-t-2 border-l-2 border-cyan-400 rounded-tl-lg"></div>
-                        <div class="w-5 h-5 border-t-2 border-r-2 border-cyan-400 rounded-tr-lg"></div>
+                        <div class="w-5 h-5 border-t-2 border-l-2 border-emerald-400 rounded-tl-lg"></div>
+                        <div class="w-5 h-5 border-t-2 border-r-2 border-emerald-400 rounded-tr-lg"></div>
                     </div>
 
                     <!-- Scanning Laser Sweep Line -->
-                    <div class="laser-sweep-line absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee]"></div>
+                    <div class="laser-sweep-line absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_#34d399]"></div>
 
                     <!-- Bottom Corners -->
                     <div class="flex justify-between w-full">
-                        <div class="w-5 h-5 border-b-2 border-l-2 border-cyan-400 rounded-bl-lg"></div>
-                        <div class="w-5 h-5 border-b-2 border-r-2 border-cyan-400 rounded-br-lg"></div>
+                        <div class="w-5 h-5 border-b-2 border-l-2 border-emerald-400 rounded-bl-lg"></div>
+                        <div class="w-5 h-5 border-b-2 border-r-2 border-emerald-400 rounded-br-lg"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Live Status Ribbon in Camera Viewport -->
-            <div id="scannerStatusPill" class="absolute bottom-3 left-3 right-3 text-center text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-sm border border-slate-700/80 text-slate-200 z-20">
+            <div id="scannerStatusPill" class="absolute bottom-3 left-3 right-3 text-center text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-sm border border-slate-700/80 text-slate-200 z-20 shadow-md">
                 Point at CCTV Barcode / S/N sticker...
             </div>
 
@@ -304,7 +283,6 @@
 
         async function startLiveCameraScanner(isUserGesture = true) {
             const video = document.getElementById('scannerVideo');
-            const tapPrompt = document.getElementById('tapToScanPrompt');
             const torchBtn = document.getElementById('torchBtn');
             const flipBtn = document.getElementById('mobileFlipBtn');
             const status = document.getElementById('scannerStatusPill');
@@ -313,12 +291,8 @@
 
             if (!hasGetUserMedia) {
                 isLiveCameraSupported = false;
-                if (tapPrompt) tapPrompt.classList.remove('hidden');
-                if (isUserGesture) {
-                    if (status) status.innerText = 'Opening mobile camera...';
-                    triggerMobileCameraSnap();
-                } else {
-                    if (status) status.innerText = 'Camera Ready — Tap button to scan barcode';
+                if (status) {
+                    status.innerHTML = `<span class="text-rose-400 font-semibold">Camera requires HTTPS or supported Chrome/Safari browser.</span>`;
                 }
                 return;
             }
@@ -329,52 +303,115 @@
                     currentStream = null;
                 }
 
-                if (status) status.innerText = 'Connecting camera...';
+                if (status) status.innerText = 'Starting live camera feed...';
+
+                // Enumerate video devices to allow cycling between back lenses and front
+                try {
+                    const devs = await navigator.mediaDevices.enumerateDevices();
+                    availableVideoDevices = devs.filter(d => d.kind === 'videoinput');
+                } catch (e) {}
 
                 let stream = null;
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            facingMode: { ideal: currentFacingMode },
-                            width: { ideal: 1920 },
-                            height: { ideal: 1080 }
-                        },
-                        audio: false
-                    });
-                } catch (e1) {
-                    // Fallback to simpler constraints
-                    stream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: currentFacingMode },
-                        audio: false
-                    });
+                const attempts = [];
+                if (availableVideoDevices.length > 0 && availableVideoDevices[currentDeviceIndex]) {
+                    attempts.push({ video: { deviceId: { exact: availableVideoDevices[currentDeviceIndex].deviceId } }, audio: false });
+                }
+                attempts.push({
+                    video: {
+                        facingMode: { ideal: currentFacingMode },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+                attempts.push({
+                    video: { facingMode: currentFacingMode },
+                    audio: false
+                });
+                attempts.push({ video: true, audio: false });
+
+                let lastErr = null;
+                for (const constraint of attempts) {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia(constraint);
+                        if (stream) break;
+                    } catch (err) {
+                        lastErr = err;
+                    }
+                }
+
+                if (!stream) {
+                    throw lastErr || new Error('Unable to access mobile camera');
                 }
 
                 isLiveCameraSupported = true;
                 currentStream = stream;
-                videoTrack = stream.getVideoTracks()[0];
+                videoTrack = stream.getVideoTracks()[0] || null;
+
+                video.muted = true;
+                video.defaultMuted = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
+                video.setAttribute('autoplay', '');
                 video.srcObject = stream;
                 video.classList.remove('hidden');
-                const previewImg = document.getElementById('scannerImagePreview');
-                if (previewImg) previewImg.classList.add('hidden');
-                if (tapPrompt) tapPrompt.classList.add('hidden');
-                if (torchBtn) torchBtn.classList.remove('hidden');
-                if (flipBtn) flipBtn.classList.remove('hidden');
 
-                await video.play();
+                if (torchBtn) {
+                    const hasTorch = !!(videoTrack && typeof videoTrack.getCapabilities === 'function' && videoTrack.getCapabilities().torch);
+                    if (hasTorch) torchBtn.classList.remove('hidden');
+                }
+                if (flipBtn && (availableVideoDevices.length > 1 || true)) {
+                    flipBtn.classList.remove('hidden');
+                }
+
+                // Wait for loadeddata / canplay before playing
+                await new Promise((resolve) => {
+                    if (video.readyState >= 2 && video.videoWidth > 0) {
+                        resolve();
+                    } else {
+                        const onReady = () => {
+                            video.removeEventListener('loadeddata', onReady);
+                            video.removeEventListener('canplay', onReady);
+                            resolve();
+                        };
+                        video.addEventListener('loadeddata', onReady);
+                        video.addEventListener('canplay', onReady);
+                        setTimeout(resolve, 800);
+                    }
+                });
+
+                try {
+                    await video.play();
+                } catch (playErr) {
+                    console.warn('Video play error:', playErr);
+                }
+
                 isScanningActive = true;
                 if (status) status.innerText = 'Point camera directly at CCTV barcode or S/N...';
                 startLiveScanLoop();
             } catch (err) {
-                console.warn('Live camera stream not permitted or failed, falling back to camera snap:', err);
+                console.warn('Live camera stream error:', err);
                 isLiveCameraSupported = false;
-                if (isUserGesture) {
-                    if (status) status.innerText = 'Opening camera...';
-                    triggerMobileCameraSnap();
-                } else {
-                    if (tapPrompt) tapPrompt.classList.remove('hidden');
-                    if (status) status.innerText = 'Camera Ready — Tap button to scan barcode';
+                if (status) {
+                    let msg = 'Camera permission required. Please allow camera access in browser.';
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        msg = 'Camera permission blocked. Tap the address bar lock icon to allow.';
+                    } else if (err.name === 'NotFoundError') {
+                        msg = 'No camera device found.';
+                    }
+                    status.innerHTML = `<span class="text-rose-400 font-semibold">${msg}</span>`;
                 }
             }
+        }
+
+        async function switchMobileCamera() {
+            if (availableVideoDevices.length > 1) {
+                currentDeviceIndex = (currentDeviceIndex + 1) % availableVideoDevices.length;
+            } else {
+                currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
+            }
+            await startLiveCameraScanner(true);
         }
 
         async function checkAndInitCamera() {
