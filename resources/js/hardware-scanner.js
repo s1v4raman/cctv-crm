@@ -210,53 +210,94 @@ export default function hardwareScannerModalComponent(config = {}) {
             if (!video) return;
 
             if (!window.isSecureContext && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-                this.cameraError = 'Live camera requires HTTPS or localhost. Use photo capture or Phone QR Sync.';
-                if (isUserGesture && fallbackInput) {
-                    fallbackInput.value = '';
-                    fallbackInput.click();
-                }
+                this.cameraError = 'Live camera requires HTTPS or localhost. Please allow camera permissions or use Scanner Gun.';
                 return;
             }
 
             if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-                this.cameraError = 'Camera API unavailable in this browser. Use photo capture or Scanner Gun.';
-                if (isUserGesture && fallbackInput) {
-                    fallbackInput.value = '';
-                    fallbackInput.click();
-                }
+                this.cameraError = 'Camera API unavailable in this browser. Please use Scanner Gun.';
                 return;
             }
 
             try {
                 this.stopCamera();
-                const videoConstraints = this.selectedCameraId
-                    ? { deviceId: { exact: this.selectedCameraId }, width: { ideal: 1280 }, height: { ideal: 720 } }
-                    : { facingMode: { ideal: this.facingMode || 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } };
 
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: videoConstraints,
-                    audio: false
-                });
+                // 1. Enumerate and filter out IR/Infrared cameras
+                if (navigator.mediaDevices.enumerateDevices) {
+                    try {
+                        const devs = await navigator.mediaDevices.enumerateDevices();
+                        this.videoDevices = devs.filter(d => d.kind === 'videoinput');
+                        const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+                        const nonIR = this.videoDevices.filter(d => !isIR(d));
+                        const usable = nonIR.length > 0 ? nonIR : this.videoDevices;
+
+                        if (!this.selectedCameraId && usable.length > 0) {
+                            const preferred = this.facingMode === 'environment'
+                                ? usable.find(d => /back|rear|environment/i.test(d.label || ''))
+                                : usable.find(d => /webcam|integrated|rgb|color|hd|usb/i.test(d.label || ''));
+                            this.selectedCameraId = (preferred || usable[0]).deviceId;
+                        }
+                    } catch (e) {}
+                }
+
+                let stream = null;
+                const attempts = [];
+                if (this.selectedCameraId) {
+                    attempts.push({ video: { deviceId: { exact: this.selectedCameraId } }, audio: false });
+                    attempts.push({ video: { deviceId: this.selectedCameraId }, audio: false });
+                }
+                attempts.push({ video: { facingMode: { ideal: this.facingMode || 'environment' } }, audio: false });
+                attempts.push({ video: true, audio: false });
+
+                let lastErr = null;
+                for (const constraint of attempts) {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia(constraint);
+                        if (stream) break;
+                    } catch (err) {
+                        lastErr = err;
+                    }
+                }
+
+                if (!stream) {
+                    throw lastErr || new Error('Could not access camera');
+                }
 
                 this.mobileStream = stream;
                 this.videoTrack = stream.getVideoTracks()[0] || null;
                 this.torchSupported = !!(this.videoTrack && typeof this.videoTrack.getCapabilities === 'function' && this.videoTrack.getCapabilities().torch);
                 this.torchOn = false;
 
-                if (navigator.mediaDevices.enumerateDevices) {
-                    try {
-                        const devs = await navigator.mediaDevices.enumerateDevices();
-                        this.videoDevices = devs.filter(d => d.kind === 'videoinput');
-                        if (!this.selectedCameraId && this.videoTrack && typeof this.videoTrack.getSettings === 'function') {
-                            const s = this.videoTrack.getSettings();
-                            if (s && s.deviceId) this.selectedCameraId = s.deviceId;
-                        }
-                    } catch (e) {}
-                }
-
+                video.muted = true;
+                video.defaultMuted = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
+                video.setAttribute('autoplay', '');
                 video.srcObject = stream;
                 video.classList.remove('hidden');
-                await video.play();
+
+                // Wait for loadeddata / canplay before calling play()
+                await new Promise((resolve) => {
+                    if (video.readyState >= 2 && video.videoWidth > 0) {
+                        resolve();
+                    } else {
+                        const onReady = () => {
+                            video.removeEventListener('loadeddata', onReady);
+                            video.removeEventListener('canplay', onReady);
+                            resolve();
+                        };
+                        video.addEventListener('loadeddata', onReady);
+                        video.addEventListener('canplay', onReady);
+                        setTimeout(resolve, 800);
+                    }
+                });
+
+                try {
+                    await video.play();
+                } catch (playErr) {
+                    console.warn('Video play error:', playErr);
+                }
                 this.cameraStatus = this.singleScanAutoStop
                     ? 'Point camera at barcode or QR code (auto-stops on scan)...'
                     : 'Scanning... Point at EAN, S/N, and MAC, then tap Done.';
@@ -291,10 +332,6 @@ export default function hardwareScannerModalComponent(config = {}) {
                     this.cameraError = 'Camera permission denied. Allow camera access in browser settings or use Scanner Gun.';
                 } else {
                     this.cameraError = 'Unable to start camera: ' + (err?.message || 'Unknown error');
-                }
-                if (isUserGesture && fallbackInput) {
-                    fallbackInput.value = '';
-                    fallbackInput.click();
                 }
             }
         },

@@ -247,11 +247,12 @@
                                 e.preventDefault();
                                 const val = el.value.trim();
                                 if (val) {
+                                    this.modelNotFound = false;
                                     const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(val) : { serial: val, mac: '', model: '' };
                                     this.handleScanResult(val, parsed, null, inputId);
                                     this.fetchLookup(val, parsed);
                                     el.classList.add('ring-2', 'ring-emerald-500');
-                                    setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1200);
+                                    setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1500);
                                 }
                             }
                         });
@@ -335,6 +336,8 @@
                         mInput.value = detectedMac;
                         mInput.dispatchEvent(new Event('input', { bubbles: true }));
                         mInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        mInput.classList.add('ring-2', 'ring-emerald-500');
+                        setTimeout(() => mInput.classList.remove('ring-2', 'ring-emerald-500'), 1500);
                     }
 
                     // 2. Strictly extract and assign Serial Number (NEVER assign pure MAC or EAN overwriting existing serial)
@@ -360,6 +363,9 @@
                         sInput.value = detectedSerial;
                         sInput.dispatchEvent(new Event('input', { bubbles: true }));
                         sInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        sInput.classList.add('ring-2', 'ring-emerald-500');
+                        setTimeout(() => sInput.classList.remove('ring-2', 'ring-emerald-500'), 1500);
+                        this.modelNotFound = false;
                     }
 
                     // 3. Auto-fill Product / Model Name into equipmentName & Select Catalog Model
@@ -404,10 +410,12 @@
                             this.duplicateWarning = '';
                         }
 
-                        // Model not found helper from diagram: "Model not found: Pick it once, saved"
-                        if (lookupData.model_not_found && !this.selectedProduct) {
+                        // Only show "Model not found" helper if an EAN/catalog code was specifically scanned and failed to match,
+                        // and NEVER when simply entering/scanning physical hardware serial numbers.
+                        const isUnitSerial = detectedSerial && !isStrictEan(detectedSerial);
+                        if (lookupData.model_not_found && !this.selectedProduct && !isUnitSerial) {
                             this.modelNotFound = true;
-                        } else if (lookupData.product_id || this.selectedProduct) {
+                        } else {
                             this.modelNotFound = false;
                         }
                     }

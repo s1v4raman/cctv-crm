@@ -17,23 +17,23 @@
 
 <div id="{{ $modalId }}"
      style="display:none;"
-     class="barcode-modal-wrapper fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+     class="barcode-modal-wrapper fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto"
      data-lan-ip="{{ $lanIp }}">
     
-    <div class="crm-card bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 my-auto transition-all flex flex-col space-y-4">
+    <div class="crm-card bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 my-0 sm:my-auto transition-all flex flex-col space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
         
         {{-- Modal Top Bar --}}
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-2">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
                 </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">{{ $title }}</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Scan Barcode, Serial Number (S/N), or MAC Address tag') }}</p>
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">{{ $title }}</h3>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">{{ __('Scan Barcode, Serial Number (S/N), or MAC Address tag') }}</p>
                 </div>
             </div>
-            <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" />
+            <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" class="shrink-0" />
         </div>
 
         {{-- Plain text tabs with 2px underline — project style guide --}}
@@ -49,12 +49,81 @@
         </div>
 
         {{-- ═══════════════════════════════════════════════════════════ --}}
-        {{-- PANE 1: MOBILE BASED SCAN (PHONE QR SYNC / CAMERA)         --}}
+        {{-- PANE 1: REAL-TIME IN-WEBPAGE CAMERA BARCODE SCANNER       --}}
         {{-- ═══════════════════════════════════════════════════════════ --}}
         <div id="{{ $modalId }}-mobile-pane" class="space-y-4">
             
-            {{-- Desktop / Laptop View: QR Code Pairing Card --}}
-            <div id="{{ $modalId }}-mobile-desktop-view" class="p-4 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center space-y-3">
+            {{-- Live Continuous Camera Viewport --}}
+            <div id="{{ $modalId }}-mobile-phone-view" class="space-y-3">
+                
+                {{-- Camera Source Selection & Status Bar --}}
+                <div class="flex items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                        <select id="{{ $modalId }}-camera-select" onchange="switchBarcodeCameraDevice('{{ $modalId }}', this.value)"
+                                class="w-full h-[32px] px-2 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium focus:ring-1 focus:ring-emerald-500">
+                            <option value="">{{ __('Detecting cameras...') }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="relative bg-black rounded-lg sm:rounded-[4px] overflow-hidden w-full aspect-[4/3] flex items-center justify-center border border-slate-800 select-none cursor-pointer"
+                     onclick="startMobileDirectCamera('{{ $modalId }}', true)">
+                    <video id="{{ $modalId }}-mobile-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+                    {{-- Reticle Viewfinder with Animated Real-time Laser Line --}}
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-4">
+                        <div class="relative w-full max-w-[260px] h-[140px] border border-emerald-500/50 rounded-lg shadow-[0_0_0_9999px_rgba(3,7,18,0.7)] flex flex-col justify-between p-2 overflow-hidden">
+                            {{-- Corner brackets --}}
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-t-2 border-l-2 border-emerald-400"></div>
+                                <div class="w-4 h-4 border-t-2 border-r-2 border-emerald-400"></div>
+                            </div>
+
+                            {{-- Animated green scanning laser sweep --}}
+                            <div class="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_#34d399]"
+                                 style="animation: scanLaserSweep 2s ease-in-out infinite;"></div>
+
+                            <div class="flex justify-between w-full">
+                                <div class="w-4 h-4 border-b-2 border-l-2 border-emerald-400"></div>
+                                <div class="w-4 h-4 border-b-2 border-r-2 border-emerald-400"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Dynamic status badge --}}
+                    <div id="{{ $modalId }}-mobile-cam-status" class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 rounded bg-slate-900/90 text-slate-200 shadow-sm">
+                        {{ __('Point camera at barcode or S/N sticker...') }}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="startMobileDirectCamera('{{ $modalId }}', true)"
+                            class="flex-1 h-[38px] sm:h-[44px] px-4 rounded-[4px] btn-primary font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                        <span>{{ __('Restart Camera') }}</span>
+                    </button>
+                    <button type="button" onclick="switchMobileDirectCamera('{{ $modalId }}')"
+                            class="h-[38px] sm:h-[44px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer inline-flex items-center gap-1">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                        <span>{{ __('Flip') }}</span>
+                    </button>
+                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'machine')"
+                            class="h-[38px] sm:h-[44px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer">
+                        <span>{{ __('Scanner Gun') }}</span>
+                    </button>
+                </div>
+
+                {{-- Secondary Option: Toggle Phone QR Pairing Card for Desktop / Remote phone pairing --}}
+                <div class="pt-2 text-center">
+                    <button type="button" onclick="toggleScannerPairingCard('{{ $modalId }}')" class="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium">
+                        <span id="{{ $modalId }}-toggle-qr-text">{{ __('Pair another phone with QR code instead') }} &rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Optional Desktop / Remote Pairing Card (hidden by default) --}}
+            <div id="{{ $modalId }}-mobile-desktop-view" style="display:none;" class="p-4 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center space-y-3">
                 <div class="flex items-center justify-center gap-2 mb-1">
                     <svg class="w-5 h-5 text-[var(--crm-accent,#2563eb)] shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3m-3 3h3m-3 3h3"/></svg>
                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Scan Hardware with Smartphone Camera') }}</h4>
@@ -91,61 +160,13 @@
                         </button>
                     </div>
                     <div class="pt-1 flex items-center justify-between text-xs flex-wrap gap-2">
-                        <a id="{{ $modalId }}-direct-mobile-link" href="#" target="_blank"
-                           class="text-blue-600 dark:text-blue-400 font-bold hover:underline inline-flex items-center gap-1">
-                            <span>{{ __('Open Mobile Scanner Directly in New Tab') }} &rarr;</span>
-                        </a>
+                        <button type="button" onclick="toggleScannerPairingCard('{{ $modalId }}')" class="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
+                            &larr; {{ __('Back to Live Camera') }}
+                        </button>
                         <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'machine')" class="text-slate-600 dark:text-slate-400 hover:underline cursor-pointer">
                             {{ __('Using a Barcode Scanner Gun?') }} &rarr;
                         </button>
                     </div>
-                </div>
-            </div>
-
-            {{-- Mobile Phone Direct View: Native Live Camera Stream --}}
-            <div id="{{ $modalId }}-mobile-phone-view" style="display:none;" class="space-y-3">
-                <div class="relative bg-black rounded-[4px] overflow-hidden w-full aspect-[4/3] flex items-center justify-center border border-slate-800 select-none cursor-pointer"
-                     onclick="startMobileDirectCamera('{{ $modalId }}', true)">
-                    <video id="{{ $modalId }}-mobile-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-
-                    {{-- Captured photo preview for HTTP camera fallback --}}
-                    <img id="{{ $modalId }}-mobile-cam-preview" class="hidden w-full h-full object-cover" alt="Captured Barcode">
-                    <input type="file" id="{{ $modalId }}-mobile-capture-fallback" accept="image/*" capture="environment" style="display:none;" onchange="handleMobileDirectImageCapture(event, '{{ $modalId }}')">
-
-                    {{-- Reticle — corner marks only, no laser sweep --}}
-                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-4">
-                        <div class="relative w-full max-w-[240px] h-[130px] border border-blue-500/40 shadow-[0_0_0_9999px_rgba(3,7,18,0.65)] flex flex-col justify-between p-2">
-                            <div class="flex justify-between w-full">
-                                <div class="w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
-                                <div class="w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
-                            </div>
-                            <div class="flex justify-between w-full">
-                                <div class="w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
-                                <div class="w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="{{ $modalId }}-mobile-cam-status" class="absolute bottom-2 left-2 right-2 text-center text-xs font-semibold px-2.5 py-1 bg-slate-900/90 text-slate-200">
-                        {{ __('Point camera at CCTV barcode or S/N sticker...') }}
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="startMobileDirectCamera('{{ $modalId }}', true)"
-                            class="flex-1 h-[38px] sm:h-[52px] px-4 rounded-[4px] btn-primary font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
-                        <span>{{ __('Start / Re-scan Camera') }}</span>
-                    </button>
-                    <button type="button" onclick="switchMobileDirectCamera('{{ $modalId }}')"
-                            class="h-[38px] sm:h-[52px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer inline-flex items-center gap-1">
-                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-                        <span>{{ __('Flip') }}</span>
-                    </button>
-                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'machine')"
-                            class="h-[38px] sm:h-[52px] px-3 rounded-[4px] text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer">
-                        <span>{{ __('Scanner Gun') }}</span>
-                    </button>
                 </div>
             </div>
 
@@ -242,6 +263,11 @@
     0% { transform: translateY(-55px); opacity: 0.3; }
     50% { transform: translateY(55px); opacity: 1; }
     100% { transform: translateY(-55px); opacity: 0.3; }
+}
+@keyframes scanLaserSweep {
+    0% { top: 12%; opacity: 0.25; }
+    50% { top: 88%; opacity: 1; }
+    100% { top: 12%; opacity: 0.25; }
 }
 </style>
 
@@ -559,49 +585,44 @@ function closeBarcodeScanner(modalId) {
     }
 }
 
-function triggerMobileDirectCapture(modalId) {
-    const input = document.getElementById(`${modalId}-mobile-capture-fallback`);
-    if (input) {
-        input.value = '';
-        input.click();
+function toggleScannerPairingCard(modalId) {
+    const desktopView = document.getElementById(`${modalId}-mobile-desktop-view`);
+    const phoneView = document.getElementById(`${modalId}-mobile-phone-view`);
+    const toggleText = document.getElementById(`${modalId}-toggle-qr-text`);
+    const state = window.barcodeScannerState[modalId];
+
+    if (!desktopView || !phoneView) return;
+
+    if (desktopView.style.display === 'none') {
+        // Stop active camera when viewing pairing QR
+        if (state && state.mobileStream) {
+            state.mobileStream.getTracks().forEach(t => t.stop());
+            state.mobileStream = null;
+        }
+        desktopView.style.display = 'block';
+        phoneView.style.display = 'none';
+        if (toggleText) toggleText.innerText = '← Back to Live Camera';
+    } else {
+        desktopView.style.display = 'none';
+        phoneView.style.display = 'block';
+        if (toggleText) toggleText.innerText = 'Pair another phone with QR code instead →';
+        startMobileDirectCamera(modalId, true);
     }
 }
-window.triggerMobileDirectCapture = triggerMobileDirectCapture;
-
-async function handleMobileDirectImageCapture(event, modalId) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    const status = document.getElementById(`${modalId}-mobile-cam-status`);
-    const preview = document.getElementById(`${modalId}-mobile-cam-preview`);
-    const video = document.getElementById(`${modalId}-mobile-video`);
-    
-    if (preview) {
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('hidden');
-    }
-    if (video) video.classList.add('hidden');
-    if (status) status.innerText = 'Analyzing barcode from camera...';
-
-    // Decode image directly and invoke handleBarcodeDetected
-    handleBarcodeImageUpload(event, modalId);
-}
-window.handleMobileDirectImageCapture = handleMobileDirectImageCapture;
+window.toggleScannerPairingCard = toggleScannerPairingCard;
 
 async function startMobileDirectCamera(modalId, isUserGesture = true) {
     const state = window.barcodeScannerState[modalId];
     const video = document.getElementById(`${modalId}-mobile-video`);
     const status = document.getElementById(`${modalId}-mobile-cam-status`);
-    const preview = document.getElementById(`${modalId}-mobile-cam-preview`);
+    const selectEl = document.getElementById(`${modalId}-camera-select`);
     if (!video) return;
 
     const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
     if (!hasGetUserMedia) {
-        if (isUserGesture) {
-            if (status) status.innerText = 'Opening mobile camera...';
-            triggerMobileDirectCapture(modalId);
-        } else {
-            if (status) status.innerText = 'Camera Ready — Tap to scan barcode';
+        if (status) {
+            status.innerHTML = `<span class="text-rose-400 font-semibold">${barcodeScannerText.notSupported || 'Live camera requires HTTPS or Chrome/Safari browser.'}</span>`;
         }
         return;
     }
@@ -612,33 +633,144 @@ async function startMobileDirectCamera(modalId, isUserGesture = true) {
             state.mobileStream = null;
         }
 
-        const facing = (state && state.facingMode) || 'environment';
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: { ideal: facing },
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            },
-            audio: false
-        });
+        // 1. Enumerate video devices to detect color cameras and exclude IR / Windows Hello depth cameras
+        let devices = [];
+        try {
+            devices = await getBarcodeVideoDevices();
+            if (state) state.videoDevices = devices;
+        } catch (e) {}
+
+        const isIR = (d) => /ir\b|infrared|hello|depth|face/i.test(d.label || '');
+        const usableDevices = devices.filter(d => !isIR(d));
+        const listToUse = usableDevices.length > 0 ? usableDevices : devices;
+
+        // Populate dropdown
+        if (selectEl && devices.length > 0) {
+            selectEl.innerHTML = '';
+            devices.forEach((dev, idx) => {
+                const opt = document.createElement('option');
+                opt.value = dev.deviceId;
+                const irSuffix = isIR(dev) ? ' (Infrared/Black)' : '';
+                opt.text = dev.label ? (dev.label + irSuffix) : `Camera ${idx + 1}${irSuffix}`;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // Determine target deviceId
+        let targetDeviceId = state ? state.selectedDeviceId : null;
+        if (!targetDeviceId && listToUse.length > 0) {
+            const isMobile = isMobileScannerDevice();
+            let preferred = null;
+            if (isMobile) {
+                preferred = listToUse.find(d => /back|rear|environment/i.test(d.label || ''));
+            } else {
+                preferred = listToUse.find(d => /webcam|integrated|camera|rgb|color|hd|usb/i.test(d.label || ''));
+            }
+            targetDeviceId = (preferred || listToUse[0]).deviceId;
+            if (state) state.selectedDeviceId = targetDeviceId;
+        }
+
+        if (selectEl && targetDeviceId) {
+            selectEl.value = targetDeviceId;
+        }
+
+        let stream = null;
+        const attempts = [];
+        if (targetDeviceId) {
+            attempts.push({ video: { deviceId: { exact: targetDeviceId } }, audio: false });
+            attempts.push({ video: { deviceId: targetDeviceId }, audio: false });
+        }
+        attempts.push({ video: { facingMode: { ideal: (state && state.facingMode) || 'environment' } }, audio: false });
+        attempts.push({ video: true, audio: false });
+
+        let lastErr = null;
+        for (const constraint of attempts) {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraint);
+                if (stream) break;
+            } catch (err) {
+                lastErr = err;
+            }
+        }
+
+        if (!stream) {
+            throw lastErr || new Error('Could not access any camera');
+        }
 
         if (state) state.mobileStream = stream;
+        
+        // Ensure video element plays with live stream
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('autoplay', '');
         video.srcObject = stream;
         video.classList.remove('hidden');
-        if (preview) preview.classList.add('hidden');
-        await video.play();
-        if (status) status.innerText = 'Point camera at CCTV barcode...';
+
+        // Re-enumerate devices with fresh labels after permission is active
+        setTimeout(async () => {
+            try {
+                const freshDevs = await getBarcodeVideoDevices();
+                if (state) state.videoDevices = freshDevs;
+                if (selectEl && freshDevs.length > 0) {
+                    selectEl.innerHTML = '';
+                    freshDevs.forEach((dev, idx) => {
+                        const opt = document.createElement('option');
+                        opt.value = dev.deviceId;
+                        const irSuffix = isIR(dev) ? ' (Infrared/Black)' : '';
+                        opt.text = dev.label ? (dev.label + irSuffix) : `Camera ${idx + 1}${irSuffix}`;
+                        if (dev.deviceId === state.selectedDeviceId) opt.selected = true;
+                        selectEl.appendChild(opt);
+                    });
+                }
+            } catch (e) {}
+        }, 350);
+
+        // Wait for loadedmetadata so video frames actually start painting
+        await new Promise((resolve) => {
+            if (video.readyState >= 2 && video.videoWidth > 0) {
+                resolve();
+            } else {
+                const onReady = () => {
+                    video.removeEventListener('loadeddata', onReady);
+                    video.removeEventListener('canplay', onReady);
+                    resolve();
+                };
+                video.addEventListener('loadeddata', onReady);
+                video.addEventListener('canplay', onReady);
+                setTimeout(resolve, 800);
+            }
+        });
+
+        try {
+            await video.play();
+        } catch (playErr) {
+            console.warn('Video play error:', playErr);
+        }
+
+        if (status) status.innerText = 'Point camera at barcode or S/N sticker...';
+
+        let isProcessing = false;
+        let lastScanTime = 0;
 
         const scanLoop = async () => {
             const modal = document.getElementById(modalId);
             if (!modal || modal.style.display === 'none' || (state && state.activeTab !== 'mobile')) {
-                stream.getTracks().forEach(t => t.stop());
+                if (stream) stream.getTracks().forEach(t => t.stop());
                 if (state) state.mobileStream = null;
                 return;
             }
 
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            const now = Date.now();
+            if (!isProcessing && (now - lastScanTime > 90) && video.readyState >= 2 && video.videoWidth > 0) {
+                isProcessing = true;
+                lastScanTime = now;
+
                 let detected = null;
+
+                // 1. Native BarcodeDetector (Chrome Android, Safari 17+, Edge)
                 if ('BarcodeDetector' in window) {
                     try {
                         const detector = new BarcodeDetector({
@@ -651,41 +783,71 @@ async function startMobileDirectCamera(modalId, isUserGesture = true) {
                     } catch (e) {}
                 }
 
+                // 2. ZXing BrowserMultiFormatReader fallback
                 if (!detected && window.ZXing && window.ZXing.BrowserMultiFormatReader) {
                     try {
-                        const reader = new window.ZXing.BrowserMultiFormatReader();
-                        const res = await reader.decodeFromVideoElement(video);
-                        if (res && res.getText()) detected = res.getText();
+                        const reader = getZxingReader ? getZxingReader() : new window.ZXing.BrowserMultiFormatReader();
+                        if (reader) {
+                            const res = await reader.decodeFromVideoElement(video);
+                            if (res && res.getText()) detected = res.getText();
+                        }
                     } catch (e) {}
                 }
 
                 if (detected) {
-                    stream.getTracks().forEach(t => t.stop());
+                    if (status) {
+                        status.innerHTML = `<span class="text-emerald-400 font-bold">✓ Scanned: ${detected}</span>`;
+                    }
+                    if (stream) stream.getTracks().forEach(t => t.stop());
                     if (state) state.mobileStream = null;
+                    isProcessing = false;
                     handleBarcodeDetected(modalId, detected);
                     return;
                 }
+
+                isProcessing = false;
             }
 
             requestAnimationFrame(scanLoop);
         };
         requestAnimationFrame(scanLoop);
     } catch (err) {
-        console.warn('Failed to start mobile direct stream, falling back to camera snap:', err);
-        if (isUserGesture) {
-            if (status) status.innerText = 'Opening mobile camera...';
-            triggerMobileDirectCapture(modalId);
-        } else {
-            if (status) status.innerText = 'Camera Ready — Tap to scan barcode';
+        console.warn('Direct live camera error:', err);
+        if (status) {
+            let msg = 'Camera permission required. Please allow camera access in your browser.';
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                msg = 'Camera access blocked. Tap the address bar icon to allow camera.';
+            } else if (err.name === 'NotFoundError') {
+                msg = 'No camera found on this device. Please use Scanner Gun.';
+            }
+            status.innerHTML = `<span class="text-rose-400 font-semibold">${msg}</span>`;
         }
     }
 }
 window.startMobileDirectCamera = startMobileDirectCamera;
 
+function switchBarcodeCameraDevice(modalId, deviceId) {
+    const state = window.barcodeScannerState[modalId];
+    if (!state) return;
+    state.selectedDeviceId = deviceId;
+    startMobileDirectCamera(modalId, true);
+}
+window.switchBarcodeCameraDevice = switchBarcodeCameraDevice;
+
 function switchMobileDirectCamera(modalId) {
     const state = window.barcodeScannerState[modalId];
     if (!state) return;
-    state.facingMode = (state.facingMode === 'user') ? 'environment' : 'user';
+    const devs = state.videoDevices || [];
+    if (devs.length > 1) {
+        const curIdx = devs.findIndex(d => d.deviceId === state.selectedDeviceId);
+        const nextIdx = (curIdx + 1) % devs.length;
+        state.selectedDeviceId = devs[nextIdx].deviceId;
+        const selectEl = document.getElementById(`${modalId}-camera-select`);
+        if (selectEl) selectEl.value = state.selectedDeviceId;
+    } else {
+        state.facingMode = (state.facingMode === 'user') ? 'environment' : 'user';
+        state.selectedDeviceId = null;
+    }
     startMobileDirectCamera(modalId, true);
 }
 window.switchMobileDirectCamera = switchMobileDirectCamera;
@@ -716,6 +878,12 @@ function switchScannerMode(modalId, mode) {
         if (laptopPane) laptopPane.style.display = 'block';
         if (mobilePane) mobilePane.style.display = 'none';
 
+        // Stop live mobile camera when switching to machine
+        if (state.mobileStream) {
+            state.mobileStream.getTracks().forEach(t => t.stop());
+            state.mobileStream = null;
+        }
+
         if (state.pollInterval) {
             clearInterval(state.pollInterval);
             state.pollInterval = null;
@@ -730,7 +898,7 @@ function switchScannerMode(modalId, mode) {
             }
         }, 120);
     } else {
-        // Mobile Based Scan Tab Active
+        // Mobile Based Scan Tab Active: ALWAYS display live camera viewport in webpage
         if (laptopTab) {
             laptopTab.style.cssText = '';
             laptopTab.className = "px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 -mb-px cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 transition-colors";
@@ -742,16 +910,10 @@ function switchScannerMode(modalId, mode) {
         if (laptopPane) laptopPane.style.display = 'none';
         if (mobilePane) mobilePane.style.display = 'block';
 
-        // Check if on a mobile browser or laptop/desktop
-        const onMobileDevice = isMobileScannerDevice();
-        if (onMobileDevice) {
-            if (desktopView) desktopView.style.display = 'none';
-            if (phoneView) phoneView.style.display = 'block';
-            setTimeout(() => startMobileDirectCamera(modalId, false), 150);
-        } else {
-            if (desktopView) desktopView.style.display = 'block';
-            if (phoneView) phoneView.style.display = 'none';
-        }
+        // Always show live in-webpage camera viewport
+        if (desktopView) desktopView.style.display = 'none';
+        if (phoneView) phoneView.style.display = 'block';
+        setTimeout(() => startMobileDirectCamera(modalId, false), 150);
 
         // Stop laptop camera stream
         if (state.animFrame) {

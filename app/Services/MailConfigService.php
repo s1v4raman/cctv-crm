@@ -19,18 +19,31 @@ class MailConfigService
 
             if (!empty($settings->smtp_host) && !empty($settings->smtp_username)) {
                 $mailerType = $settings->smtp_mailer ?: 'smtp';
+                $port = (int) ($settings->smtp_port ?: 587);
                 $encryption = strtolower((string) $settings->smtp_encryption);
                 if (!in_array($encryption, ['tls', 'ssl', 'starttls'])) {
                     $encryption = null;
                 }
 
+                // If port is 465 or ssl encryption is chosen, use 'smtps' scheme for direct SSL socket connection
+                $scheme = ($port === 465 || $encryption === 'ssl') ? 'smtps' : null;
+
+                // Sanitize Google App Password if pasted with spaces (e.g. "xxxx xxxx xxxx xxxx")
+                $password = (string) $settings->smtp_password;
+                $cleanPassword = trim($password);
+                if (preg_match('/^[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}$/', $cleanPassword)) {
+                    $cleanPassword = str_replace(' ', '', $cleanPassword);
+                }
+
                 Config::set('mail.default', $mailerType);
                 Config::set('mail.mailers.smtp.transport', 'smtp');
+                Config::set('mail.mailers.smtp.scheme', $scheme);
                 Config::set('mail.mailers.smtp.host', $settings->smtp_host);
-                Config::set('mail.mailers.smtp.port', (int) ($settings->smtp_port ?: 587));
+                Config::set('mail.mailers.smtp.port', $port);
                 Config::set('mail.mailers.smtp.encryption', $encryption);
-                Config::set('mail.mailers.smtp.username', $settings->smtp_username);
-                Config::set('mail.mailers.smtp.password', $settings->smtp_password);
+                Config::set('mail.mailers.smtp.username', trim((string) $settings->smtp_username));
+                Config::set('mail.mailers.smtp.password', $cleanPassword);
+                Config::set('mail.mailers.smtp.timeout', 15);
 
                 if (!empty($settings->smtp_from_address)) {
                     Config::set('mail.from.address', $settings->smtp_from_address);

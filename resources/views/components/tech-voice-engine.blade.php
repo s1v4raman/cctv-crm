@@ -134,19 +134,7 @@
     </div>
 </div>
 
-{{-- FLOATING MIC FAB (BOTTOM RIGHT CORNER FOR INSTANT VOICE DICTATION) --}}
-<div class="fixed bottom-5 right-5 z-40">
-    <button type="button" 
-            id="tech-global-fab-mic"
-            onclick="window.techVoice.handleFabClick()"
-            class="tech-fab-mic w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-xl flex items-center justify-center cursor-pointer border-2 border-white/20"
-            title="{{ __('Instant Voice Dictation (Tap to speak into active or next field)') }}"
-            aria-label="{{ __('Voice Dictation') }}">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
-        </svg>
-    </button>
-</div>
+
 
 <script>
 (function() {

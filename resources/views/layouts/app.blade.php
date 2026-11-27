@@ -107,6 +107,16 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <script>
+            // Universal Barcode Sanitizer for all hardware scanner guns & mobile inputs
+            window.cleanBarcode = function(rawCode) {
+                if (!rawCode) return '';
+                let val = String(rawCode).trim();
+                val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+                val = val.replace(/^[\]\[][a-zA-Z0-9]{2}[:\s=_-]*/i, '').trim();
+                val = val.replace(/^\(21\)[:\s=_-]*/i, '').trim();
+                return val.trim();
+            };
+
             // Cleanup candidates: thin wrappers delegating to the Alpine hardwareScannerModalComponent
             window.switchHardwareScannerTab = function(tab) {
                 if (window.__hardwareScannerInstance && typeof window.__hardwareScannerInstance.switchTab === 'function') {
@@ -863,6 +873,82 @@
                 border: 1px solid var(--input-border) !important;
             }
 
+            /* Dedicated User Profile Menu Dropdown & Action Items */
+            #crm-user-panel .crm-menu-item {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                gap: 12px !important;
+                width: 100% !important;
+                height: 44px !important;
+                min-height: 44px !important;
+                max-height: 44px !important;
+                padding: 0 12px !important;
+                border-radius: 12px !important;
+                border: none !important;
+                background: transparent !important;
+                color: var(--text-main) !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
+                text-align: left !important;
+                text-decoration: none !important;
+                box-sizing: border-box !important;
+                white-space: nowrap !important;
+                transition: background-color 0.15s ease, color 0.15s ease !important;
+                cursor: pointer !important;
+            }
+            #crm-user-panel .crm-menu-item:hover {
+                background-color: var(--row-hover, rgba(0,0,0,0.04)) !important;
+                color: var(--text-main) !important;
+            }
+            html.dark #crm-user-panel .crm-menu-item:hover {
+                background-color: rgba(255, 255, 255, 0.06) !important;
+            }
+            #crm-user-panel .crm-menu-icon-box {
+                width: 32px !important;
+                height: 32px !important;
+                min-width: 32px !important;
+                border-radius: 8px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex-shrink: 0 !important;
+            }
+            #crm-user-panel .crm-menu-icon-box svg {
+                width: 17px !important;
+                height: 17px !important;
+                flex-shrink: 0 !important;
+            }
+            #crm-user-panel .crm-menu-label {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                color: var(--text-main) !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            #crm-user-panel .crm-menu-badge {
+                font-size: 10px !important;
+                font-weight: 700 !important;
+                padding: 2px 8px !important;
+                border-radius: 9999px !important;
+                margin-left: auto !important;
+                flex-shrink: 0 !important;
+                white-space: nowrap !important;
+                letter-spacing: 0.03em !important;
+            }
+            #crm-user-panel .crm-menu-end-icon {
+                margin-left: auto !important;
+                color: var(--text-muted) !important;
+                flex-shrink: 0 !important;
+            }
+            #crm-user-panel .crm-menu-logout:hover {
+                background-color: rgba(244, 63, 94, 0.08) !important;
+            }
+
             /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
             .crm-user-avatar {
                 border-radius: 9999px !important;
@@ -1525,6 +1611,124 @@
                     }
                 }
             });
+
+            // ═══════════════════════════════════════════════════════════
+            // UNIVERSAL HARDWARE BARCODE SCANNER MACHINE GUN LISTENER
+            // Detects rapid keystroke bursts (< 55ms) from USB/Bluetooth Scanner Guns
+            // ═══════════════════════════════════════════════════════════
+            (function() {
+                let gunBuffer = '';
+                let lastKeyTime = 0;
+                const MAX_BURST_DELTA = 55; // ms between keys from hardware scanner gun
+
+                window.addEventListener('keydown', function(event) {
+                    // Ignore hotkeys with modifiers
+                    if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+                    const now = Date.now();
+                    const delta = now - lastKeyTime;
+                    lastKeyTime = now;
+
+                    // Barcode scanner guns terminate scan with Enter key
+                    if (event.key === 'Enter') {
+                        if (gunBuffer.length >= 3 && delta < 120) {
+                            // Hardware scanner gun pull detected!
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            const rawCode = gunBuffer;
+                            gunBuffer = '';
+
+                            const clean = window.cleanBarcode ? window.cleanBarcode(rawCode) : rawCode.trim();
+                            if (!clean) return;
+
+                            // 1. Audio Confirmation Beep
+                            try {
+                                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                                const osc = ctx.createOscillator();
+                                const gain = ctx.createGain();
+                                osc.type = 'sine';
+                                osc.frequency.setValueAtTime(1046.5, ctx.currentTime);
+                                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                                osc.connect(gain);
+                                gain.connect(ctx.destination);
+                                osc.start();
+                                osc.stop(ctx.currentTime + 0.12);
+                            } catch (e) {}
+
+                            // 2. Custom event dispatch
+                            window.dispatchEvent(new CustomEvent('hardware-gun-scan', {
+                                detail: { code: clean, raw: rawCode }
+                            }));
+
+                            // 3. If Barcode Scanner modal is open, forward to modal
+                            const openModal = document.querySelector('.crm-modal:not([style*="display: none"]), [id$="-barcode-modal"]:not([style*="display: none"])');
+                            if (openModal) {
+                                const manualInp = openModal.querySelector('input[id$="-manual-input"]');
+                                if (manualInp) {
+                                    manualInp.value = clean;
+                                    const modalId = openModal.id;
+                                    if (typeof window.handleBarcodeDetected === 'function') {
+                                        window.handleBarcodeDetected(modalId, clean);
+                                        if (typeof window.closeBarcodeScanner === 'function') {
+                                            window.closeBarcodeScanner(modalId);
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // 4. Populate Hardware Serial Number field directly on page
+                            const serialInput = document.getElementById('serial_number_input') 
+                                             || document.getElementById('rma_serial_input') 
+                                             || document.querySelector('input[name="serial_number"]')
+                                             || document.querySelector('input[name="faulty_serial_number"]');
+
+                            if (serialInput) {
+                                serialInput.value = clean;
+                                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                                serialInput.classList.add('ring-2', 'ring-emerald-500');
+                                setTimeout(() => serialInput.classList.remove('ring-2', 'ring-emerald-500'), 1500);
+
+                                if (window.onEquipmentScanSuccess && typeof window.onEquipmentScanSuccess === 'function') {
+                                    const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(clean) : { serial: clean, mac: '', model: '' };
+                                    window.onEquipmentScanSuccess(clean, parsed, null, 'serial_number_input');
+                                } else if (window.onEquipmentEditScanSuccess && typeof window.onEquipmentEditScanSuccess === 'function') {
+                                    const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(clean) : { serial: clean, mac: '', model: '' };
+                                    window.onEquipmentEditScanSuccess(clean, parsed, null, 'serial_number_input');
+                                }
+
+                                if (typeof window.crmToast === 'function') {
+                                    window.crmToast(`Hardware S/N Added: ${clean}`, 'success');
+                                }
+                                return;
+                            }
+
+                            // 5. If an active form input was focused, populate it
+                            const active = document.activeElement;
+                            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') && !active.readOnly) {
+                                active.value = clean;
+                                active.dispatchEvent(new Event('input', { bubbles: true }));
+                                active.dispatchEvent(new Event('change', { bubbles: true }));
+                                active.classList.add('ring-2', 'ring-emerald-500');
+                                setTimeout(() => active.classList.remove('ring-2', 'ring-emerald-500'), 1200);
+                            }
+                        }
+                        gunBuffer = '';
+                        return;
+                    }
+
+                    // Buffer characters received at hardware scanner speed
+                    if (event.key && event.key.length === 1) {
+                        if (delta > MAX_BURST_DELTA) {
+                            gunBuffer = event.key;
+                        } else {
+                            gunBuffer += event.key;
+                        }
+                    }
+                }, true);
+            })();
         </script>
         @if(request()->routeIs('calendar.*'))
         <style>
@@ -2061,40 +2265,47 @@
                                      x-transition:leave="transition ease-in duration-75"
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-60 bg-[var(--card-bg)] rounded-xl border border-[var(--card-border)] shadow-xl py-1 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 overflow-hidden"
+                                     class="absolute right-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-20px)] bg-[var(--card-bg)] rounded-2xl border border-[var(--card-border)] shadow-2xl py-1 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 overflow-hidden"
                                      style="display: none;">
                                     
                                     {{-- User identity card in menu --}}
-                                    <div class="px-3.5 py-2.5 border-b border-[var(--card-border)] bg-slate-50/70 dark:bg-slate-900/60 flex items-center gap-3">
+                                    <div class="px-4 py-3.5 border-b border-[var(--card-border)] bg-slate-50/80 dark:bg-slate-900/80 flex items-center gap-3">
                                         @if(Auth::user()->avatar_url)
-                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-                                            <div class="w-9 h-9 rounded-full text-white items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb); display: none;">
+                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-xs" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                                            <div class="w-10 h-10 rounded-full text-white items-center justify-center font-bold text-sm shrink-0 shadow-xs" style="background-color: var(--crm-accent, #2563eb); display: none;">
                                                 {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                         @else
-                                            <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
+                                            <div class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
                                                 {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                         @endif
                                         <div class="min-w-0 flex-1">
-                                            <p class="font-bold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name }}</p>
-                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight">{{ Auth::user()->email }}</p>
-                                            <span class="inline-block mt-1 text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                                {{ __(Auth::user()->role_title) }}
+                                            <p class="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 truncate leading-tight mt-0.5">{{ Auth::user()->email }}</p>
+                                            <span class="inline-flex items-center gap-1.5 mt-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"></span>
+                                                <span>{{ __(Auth::user()->role_title) }}</span>
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div class="py-1">
-                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                            <span>{{ __('Profile Settings & Photo') }}</span>
+                                    <div class="p-1.5 space-y-0.5">
+                                        <a href="{{ route('profile.edit') }}" class="crm-menu-item plain-link">
+                                            <div class="crm-menu-icon-box text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800">
+                                                <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                            </div>
+                                            <span class="crm-menu-label">{{ __('Profile Settings & Photo') }}</span>
+                                            <svg class="w-3.5 h-3.5 crm-menu-end-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                                         </a>
 
                                         @if(Auth::user()->isAdmin())
-                                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/><circle cx="8" cy="6" r="2.5"/><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/><circle cx="16" cy="12" r="2.5"/><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/><circle cx="10" cy="18" r="2.5"/></svg>
-                                                <span>Manage User Accounts</span>
+                                            <a href="{{ route('admin.users.index') }}" class="crm-menu-item plain-link">
+                                                <div class="crm-menu-icon-box text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60">
+                                                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                                </div>
+                                                <span class="crm-menu-label">{{ __('Manage User Accounts') }}</span>
+                                                <svg class="w-3.5 h-3.5 crm-menu-end-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                                             </a>
                                         @endif
 
@@ -2102,39 +2313,43 @@
                                              x-init="window.addEventListener('crm:pwa-state', e => { pwa = e.detail; })"
                                              x-show="pwa.canInstall && !pwa.isStandalone"
                                              x-cloak>
-                                            <button type="button" @click="userMenuOpen = false; window.crmPwa?.install()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
-                                                <span class="flex items-center gap-2.5">
-                                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
-                                                    <span>{{ __('Install Field App') }}</span>
-                                                </span>
-                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 uppercase">PWA</span>
+                                            <button type="button" @click="userMenuOpen = false; window.crmPwa?.install()" class="crm-menu-item">
+                                                <div class="crm-menu-icon-box text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60">
+                                                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                                                </div>
+                                                <span class="crm-menu-label">{{ __('Install Field App') }}</span>
+                                                <span class="crm-menu-badge bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">PWA</span>
                                             </button>
                                         </div>
 
-                                        <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
-                                            <span class="flex items-center gap-2.5">
-                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                                                <span>{{ __('Toggle Theme') }}</span>
-                                            </span>
-                                            <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? {{ Js::from(__('Night')) }} : {{ Js::from(__('Day')) }}"></span>
+                                        <button type="button" @click="toggleThemeMode()" class="crm-menu-item">
+                                            <div class="crm-menu-icon-box text-amber-500 bg-amber-50 dark:bg-amber-950/60">
+                                                <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+                                            </div>
+                                            <span class="crm-menu-label">{{ __('Theme Mode') }}</span>
+                                            <span class="crm-menu-badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" x-text="isDarkMode ? {{ Js::from(__('Night')) }} : {{ Js::from(__('Day')) }}"></span>
                                         </button>
 
-                                        <button type="button" @click="userMenuOpen = false; window.crmOpenShortcuts()" class="hidden lg:flex w-full text-left items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
-                                            <span class="flex items-center gap-2.5">
-                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 15h6"/></svg>
-                                                <span>{{ __('Keyboard Shortcuts') }}</span>
-                                            </span>
+                                        <button type="button" @click="userMenuOpen = false; window.crmOpenShortcuts()" class="hidden lg:flex crm-menu-item">
+                                            <div class="crm-menu-icon-box text-slate-500 bg-slate-100 dark:bg-slate-800">
+                                                <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 15h6"/></svg>
+                                            </div>
+                                            <span class="crm-menu-label">{{ __('Keyboard Shortcuts') }}</span>
                                             <kbd class="crm-kbd">?</kbd>
                                         </button>
                                     </div>
 
-                                    <form method="POST" action="{{ route('logout') }}" class="border-t border-[var(--card-border)]">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3.5 py-2 text-rose-600 dark:text-rose-400 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">
-                                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                            <span>{{ __('Log Out') }}</span>
-                                        </button>
-                                    </form>
+                                    <div class="p-1.5 border-t border-[var(--card-border)] bg-slate-50/40 dark:bg-slate-900/40">
+                                        <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                                            @csrf
+                                            <button type="submit" class="crm-menu-item crm-menu-logout text-rose-600 dark:text-rose-400">
+                                                <div class="crm-menu-icon-box text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60">
+                                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                                                </div>
+                                                <span class="crm-menu-label font-bold text-rose-600 dark:text-rose-400">{{ __('Log Out') }}</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

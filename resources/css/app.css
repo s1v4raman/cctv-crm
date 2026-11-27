@@ -5005,6 +5005,37 @@ button.ld-accent svg {
     stroke: #ffffff !important;
 }
 
+/* Unbreakable Close Button constraints - strictly prevents horizontal stretching */
+.btn-close,
+button.btn-close,
+.btn-icon.btn-close {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    aspect-ratio: 1 / 1 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+}
+@media (min-width: 640px) {
+    .btn-close,
+    button.btn-close,
+    .btn-icon.btn-close {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+    }
+}
+
 /* Universal Scrollbar Elimination for Pills & Tabs */
 .no-scrollbar::-webkit-scrollbar,
 .no-scrollbar::-webkit-scrollbar-track,
@@ -5726,6 +5757,437 @@ html.dark .ld-scroll::-webkit-scrollbar-thumb:hover {
 html.dark .tab-indicator {
     background-color: #ffffff !important;
 }
+
+/* =======================================================================
+   TECHNICIAN MOBILE APP DESIGN SYSTEM (Strict Mobile Standards)
+   Applied on mobile screens (< 1024px / < 640px)
+   Colors:
+   - Primary: #1E3A8A (Deep Blue)
+   - Background: #F8FAFC, Cards: #FFFFFF
+   - Text Primary: #0F172A, Secondary: #475569, Helper: #64748B
+   - Urgent: #F97316 (Orange), Success: #16A34A (Green), Warning: #F59E0B (Amber), Error: #DC2626 (Red)
+   Touch & Metrics:
+   - Minimum 48x48px touch targets
+   - 52px primary buttons (12px radius, #1E3A8A, 16px semibold white)
+   - 48px secondary buttons (12px radius, 1px #1E3A8A border, #1E3A8A text)
+   - 52px input fields (12px radius, 1px #CBD5E1 border, focus 2px #1E3A8A, error 2px #DC2626)
+   - Sticky bottom action bar with safe area padding
+   - 16px cards (16px padding, 12-16px gap, subtle shadow)
+   - 64-72px bottom navigation + safe area padding
+   ======================================================================= */
+.tech-mobile-scope {
+    font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --tech-primary: #1E3A8A;
+    --tech-primary-dark: #172554;
+    --tech-primary-light: #DBEAFE;
+    --tech-urgent: #F97316;
+    --tech-success: #16A34A;
+    --tech-warning: #F59E0B;
+    --tech-error: #DC2626;
+    --tech-bg: #F8FAFC;
+    --tech-card: #FFFFFF;
+    --tech-text-primary: #0F172A;
+    --tech-text-secondary: #475569;
+    --tech-text-muted: #64748B;
+    --tech-border: #CBD5E1;
+    --tech-border-light: #E2E8F0;
+}
+
+@media (max-width: 1023px) {
+    /* Technician Mobile Single Column & Spacing */
+    .tech-mobile-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        max-width: 100% !important;
+    }
+
+    /* Technician Mobile Cards: 16px radius, 16px padding, subtle shadow */
+    .tech-card {
+        background-color: #FFFFFF !important;
+        border-radius: 16px !important;
+        padding: 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+        margin-bottom: 12px !important;
+    }
+    .dark .tech-card {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Primary Button: 52px height, 12px radius, #1E3A8A bg, 16px semibold white */
+    .tech-btn-primary,
+    button.tech-btn-primary,
+    a.tech-btn-primary {
+        height: 52px !important;
+        min-height: 52px !important;
+        border-radius: 12px !important;
+        background-color: #1E3A8A !important;
+        color: #FFFFFF !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        padding: 0 16px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        border: none !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 3px rgba(30, 58, 138, 0.3) !important;
+        transition: background-color 0.15s ease, transform 0.05s ease !important;
+    }
+    .tech-btn-primary:active {
+        transform: scale(0.98) !important;
+        background-color: #172554 !important;
+    }
+    .tech-btn-primary svg {
+        width: 20px !important;
+        height: 20px !important;
+        stroke: #FFFFFF !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Secondary Button: 48px height, 12px radius, white bg, 1px #1E3A8A border, #1E3A8A text */
+    .tech-btn-secondary,
+    button.tech-btn-secondary,
+    a.tech-btn-secondary {
+        height: 48px !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #1E3A8A !important;
+        color: #1E3A8A !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        padding: 0 16px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: background-color 0.15s ease !important;
+    }
+    .dark .tech-btn-secondary,
+    .dark button.tech-btn-secondary,
+    .dark a.tech-btn-secondary {
+        background-color: #0f172a !important;
+        border-color: #3b82f6 !important;
+        color: #60a5fa !important;
+    }
+    .tech-btn-secondary:active {
+        background-color: #F1F5F9 !important;
+    }
+
+    /* Destructive Button: Red #DC2626 only for destructive actions */
+    .tech-btn-destructive,
+    button.tech-btn-destructive,
+    a.tech-btn-destructive {
+        height: 48px !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+        background-color: #DC2626 !important;
+        color: #FFFFFF !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        padding: 0 16px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+
+    /* Icon Buttons: Minimum 48x48px touch area with 24x24px icon */
+    .tech-icon-btn {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+    }
+    .tech-icon-btn svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Input Fields: 52px height, 12px radius, 1px #CBD5E1 border, 16px horizontal, 14px vertical */
+    .tech-input,
+    input.tech-input,
+    select.tech-input {
+        height: 52px !important;
+        min-height: 52px !important;
+        border-radius: 12px !important;
+        border: 1px solid #CBD5E1 !important;
+        padding: 14px 16px !important;
+        font-size: 16px !important;
+        color: #0F172A !important;
+        background-color: #FFFFFF !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .dark .tech-input,
+    .dark input.tech-input,
+    .dark select.tech-input {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    .tech-input:focus,
+    input.tech-input:focus,
+    select.tech-input:focus {
+        border: 2px solid #1E3A8A !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .tech-input.has-error,
+    input.tech-input.has-error {
+        border: 2px solid #DC2626 !important;
+    }
+    .tech-input::placeholder,
+    input.tech-input::placeholder {
+        color: #94A3B8 !important;
+        font-size: 16px !important;
+    }
+    .tech-input:disabled,
+    input.tech-input:disabled {
+        background-color: #F1F5F9 !important;
+        color: #94A3B8 !important;
+    }
+
+    /* Textarea: Minimum 120px height, 12px radius */
+    textarea.tech-textarea {
+        min-height: 120px !important;
+        border-radius: 12px !important;
+        border: 1px solid #CBD5E1 !important;
+        padding: 14px 16px !important;
+        font-size: 16px !important;
+        color: #0F172A !important;
+        background-color: #FFFFFF !important;
+        width: 100% !important;
+    }
+    textarea.tech-textarea:focus {
+        border: 2px solid #1E3A8A !important;
+        outline: none !important;
+    }
+
+    /* Labels: 14px medium, color #334155 placed above field */
+    .tech-label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+        margin-bottom: 6px !important;
+        display: block !important;
+    }
+    .dark .tech-label {
+        color: #cbd5e1 !important;
+    }
+
+    /* Helper & Error text */
+    .tech-helper-text {
+        font-size: 12px !important;
+        color: #64748B !important;
+        margin-top: 4px !important;
+        display: block !important;
+    }
+    .tech-error-text {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #DC2626 !important;
+        margin-top: 4px !important;
+        display: block !important;
+    }
+
+    /* Status Badges: 999px radius, 24-28px height, 8px horizontal, 4px vertical, 12px medium */
+    .tech-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        height: 26px !important;
+        border-radius: 999px !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+    .tech-badge-assigned { background-color: #FEF3C7 !important; color: #92400E !important; }
+    .tech-badge-accepted { background-color: #DBEAFE !important; color: #1E40AF !important; }
+    .tech-badge-on-the-way { background-color: #E0F2FE !important; color: #075985 !important; }
+    .tech-badge-in-progress { background-color: #FFEDD5 !important; color: #9A3412 !important; }
+    .tech-badge-completed { background-color: #DCFCE7 !important; color: #166534 !important; }
+    .tech-badge-cancelled { background-color: #FEE2E2 !important; color: #991B1B !important; }
+    .tech-badge-urgent { background-color: #F97316 !important; color: #FFFFFF !important; }
+
+    /* Sticky Bottom Action Bar */
+    .tech-sticky-action-bar {
+        position: fixed !important;
+        bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 45 !important;
+        background-color: #FFFFFF !important;
+        border-top: 1px solid #E2E8F0 !important;
+        padding: 12px 16px !important;
+        box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.08) !important;
+    }
+    .dark .tech-sticky-action-bar {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Fixed Top Header: 56-64px height, 16px padding */
+    .tech-top-header {
+        height: 60px !important;
+        padding: 0 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        width: 100% !important;
+    }
+    .dark .tech-top-header {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+    }
+
+    /* Bottom Navigation: 64-72px height + safe area */
+    .tech-bottom-nav {
+        height: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+        background-color: #FFFFFF !important;
+        border-top: 1px solid #E2E8F0 !important;
+    }
+    .dark .tech-bottom-nav {
+        background-color: #0f172a !important;
+        border-color: #1e293b !important;
+    }
+    .tech-nav-tab {
+        min-height: 48px !important;
+        min-width: 48px !important;
+    }
+    .tech-nav-tab.active {
+        color: #1E3A8A !important;
+    }
+    .dark .tech-nav-tab.active {
+        color: #60a5fa !important;
+    }
+    .tech-nav-tab.inactive {
+        color: #64748B !important;
+    }
+
+    /* Search Bar: 48-52px height, 999px pill, #F1F5F9 bg */
+    .tech-search-bar {
+        height: 50px !important;
+        border-radius: 999px !important;
+        background-color: #F1F5F9 !important;
+        border: 1px solid #E2E8F0 !important;
+        padding: 0 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    .dark .tech-search-bar {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+    .tech-search-input {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        font-size: 16px !important;
+        color: #0F172A !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    .dark .tech-search-input {
+        color: #F8FAFC !important;
+    }
+
+    /* Filter Chips: 36px height, 48px touch area, 999px radius */
+    .tech-chip {
+        height: 36px !important;
+        min-height: 36px !important;
+        border-radius: 999px !important;
+        padding: 8px 14px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+        border: 1px solid #CBD5E1 !important;
+        background-color: #FFFFFF !important;
+        color: #334155 !important;
+        touch-action: manipulation !important;
+    }
+    .tech-chip.active {
+        background-color: #DBEAFE !important;
+        color: #1E40AF !important;
+        border-color: #93C5FD !important;
+    }
+    .dark .tech-chip {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #cbd5e1 !important;
+    }
+    .dark .tech-chip.active {
+        background-color: #1e3a8a !important;
+        color: #dbeafe !important;
+        border-color: #3b82f6 !important;
+    }
+
+    /* Key-Value Row: 48px min height, 12-16px vertical padding, 1px divider */
+    .tech-kv-row {
+        min-height: 48px !important;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    .tech-kv-label {
+        width: 38% !important;
+        font-size: 13px !important;
+        color: #64748B !important;
+        font-weight: 400 !important;
+    }
+    .tech-kv-value {
+        width: 62% !important;
+        font-size: 15px !important;
+        color: #0F172A !important;
+        font-weight: 500 !important;
+        text-align: right !important;
+        word-break: break-word !important;
+    }
+    .dark .tech-kv-value {
+        color: #F8FAFC !important;
+    }
+
+    /* Two-column photo grid with 12px gutter */
+    .tech-photo-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+    .tech-photo-thumb {
+        width: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 12px !important;
+        object-fit: cover !important;
+    }
+}
+
 
 
 

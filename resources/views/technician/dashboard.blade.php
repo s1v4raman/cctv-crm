@@ -23,6 +23,8 @@
         showNewLeadQuoteModal: false,
         showAddAllowanceModal: false,
         selectedLeadIdForQuote: '',
+        jobSearchTerm: '',
+        jobStatusFilter: 'all',
         switchTab(t) {
             this.currentTab = t;
             this.$nextTick(() => {
@@ -33,10 +35,10 @@
                 }
             });
         }
-    }" class="min-h-screen pb-24 lg:pb-10 text-slate-800 dark:text-slate-100">
+    }" class="tech-mobile-scope min-h-screen pb-28 lg:pb-10 text-slate-800 dark:text-slate-100 bg-[#F8FAFC] dark:bg-slate-950">
 
-        {{-- Main Container: Adaptive Max-Width (Expansive on Laptop, Contained on Mobile) --}}
-        <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8">
+        {{-- Main Container: 16px screen side padding on mobile, Adaptive Max-Width on Desktop --}}
+        <div class="tech-mobile-container max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8">
 
             {{-- Flash Messages --}}
             @if (session('status'))
@@ -825,88 +827,128 @@
             {{-- TAB PANE 3: INSTALLATION JOBS & JCR SIGN-OFF (2-Cols on Laptop)     --}}
             {{-- ═══════════════════════════════════════════════════════════════════ --}}
             <div x-show="currentTab === 'jobs'" class="space-y-4 lg:space-y-5">
-                <div class="px-1">
-                    <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Active Installation Jobs') }}</h2>
-                    <p class="text-xs sm:text-sm text-slate-400">{{ __('Installation work orders assigned to you for field execution') }}</p>
+                <div class="px-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Active Installation Jobs') }}</h2>
+                        <p class="text-xs sm:text-sm text-[#475569] dark:text-slate-400">{{ __('Installation work orders assigned to you for field execution') }}</p>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {{-- Mobile-first Search & Filter Bar --}}
+                <div class="space-y-3">
+                    <div class="tech-search-bar">
+                        <svg class="w-5 h-5 text-[#64748B] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+                        <input type="text" x-model="jobSearchTerm" placeholder="{{ __('Search job ID, client, site address...') }}" class="tech-search-input">
+                        <button type="button" x-show="jobSearchTerm" @click="jobSearchTerm = ''" class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs cursor-pointer">✕</button>
+                    </div>
+
+                    {{-- Horizontal Scrolling Filter Chips --}}
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                        <button type="button" @click="jobStatusFilter = 'all'" class="tech-chip" :class="jobStatusFilter === 'all' ? 'active' : ''">{{ __('All Jobs') }}</button>
+                        <button type="button" @click="jobStatusFilter = 'pending'" class="tech-chip" :class="jobStatusFilter === 'pending' ? 'active' : ''">{{ __('Pending') }}</button>
+                        <button type="button" @click="jobStatusFilter = 'assigned'" class="tech-chip" :class="jobStatusFilter === 'assigned' ? 'active' : ''">{{ __('In Progress') }}</button>
+                        <button type="button" @click="jobStatusFilter = 'completed'" class="tech-chip" :class="jobStatusFilter === 'completed' ? 'active' : ''">{{ __('Completed') }}</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @forelse($activeJobs as $job)
-                        @php $lead = $job->quotation?->lead; @endphp
-                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4 flex flex-col justify-between">
-                            <div class="space-y-3.5">
-                                <div class="flex items-start justify-between gap-3 flex-wrap">
-                                    <div>
+                        @php 
+                            $lead = $job->quotation?->lead;
+                            $statusStyle = match($job->status) {
+                                'assigned' => 'tech-badge-in-progress',
+                                'completed' => 'tech-badge-completed',
+                                'cancelled' => 'tech-badge-cancelled',
+                                default => 'tech-badge-assigned'
+                            };
+                        @endphp
+                        <div x-show="(jobStatusFilter === 'all' || jobStatusFilter === '{{ $job->status }}') && (!jobSearchTerm || '{{ strtolower($job->job_no . ' ' . ($lead?->customer_name ?? '') . ' ' . ($lead?->site_address ?? '')) }}'.includes(jobSearchTerm.toLowerCase()))"
+                             class="tech-card crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
                                         <div class="flex items-center gap-2">
-                                            <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">{{ $job->job_no ?? ('JOB-' . $job->id) }}</span>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold capitalize bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                            <span class="font-mono text-xs font-bold text-[#1E3A8A] dark:text-blue-400">{{ $job->job_no ?? ('JOB-' . $job->id) }}</span>
+                                            <span class="tech-badge {{ $statusStyle }}">
                                                 {{ __(ucfirst(str_replace('_', ' ', $job->status))) }}
                                             </span>
                                         </div>
-                                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">{{ $lead?->customer_name ?? __('Installation Site') }}</h3>
-                                        <p class="text-xs text-slate-400 mt-0.5">{{ __('Scheduled') }}: {{ $job->scheduled_at ? \Carbon\Carbon::parse($job->scheduled_at)->translatedFormat('d M Y, h:i A') : $job->created_at->translatedFormat('d M Y') }}</p>
+                                        <h3 class="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white mt-1 truncate">{{ $lead?->customer_name ?? __('Installation Site') }}</h3>
+                                        <p class="text-xs text-[#64748B] mt-0.5">{{ __('Scheduled') }}: {{ $job->scheduled_at ? \Carbon\Carbon::parse($job->scheduled_at)->translatedFormat('d M Y, h:i A') : $job->created_at->translatedFormat('d M Y') }}</p>
                                     </div>
 
-                                    <a href="{{ route('jcr.create-job', $job) }}" 
-                                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                                        <span>{{ __('Sign JCR') }}</span>
-                                    </a>
+                                    @if($lead?->phone)
+                                        <a href="tel:{{ $lead->phone }}" 
+                                           class="tech-icon-btn bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[#1E3A8A] dark:text-blue-400"
+                                           aria-label="{{ __('Call Customer') }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                        </a>
+                                    @endif
                                 </div>
 
-                                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
-                                    <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
-                                        <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site Address:') }}</strong>
-                                        <span>{{ $lead?->site_address ?? $lead?->address ?? __('Address not specified') }}</span>
+                                {{-- Key-Value data display --}}
+                                <div class="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1 text-xs">
+                                    <div class="tech-kv-row">
+                                        <span class="tech-kv-label">{{ __('Site Address') }}</span>
+                                        <span class="tech-kv-value">{{ $lead?->site_address ?? $lead?->address ?? __('—') }}</span>
                                     </div>
                                     @if($lead?->phone)
-                                        <div class="flex items-center gap-2">
-                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Customer Phone:') }}</strong>
-                                            <a href="tel:{{ $lead->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">{{ $lead->phone }}</a>
+                                        <div class="tech-kv-row">
+                                            <span class="tech-kv-label">{{ __('Phone') }}</span>
+                                            <span class="tech-kv-value">
+                                                <a href="tel:{{ $lead->phone }}" class="text-[#1E3A8A] dark:text-blue-400 font-bold hover:underline">{{ $lead->phone }}</a>
+                                            </span>
                                         </div>
                                     @endif
                                     @if($job->installation_notes)
-                                        <div class="text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200/40 dark:border-slate-700/40">
-                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Notes:') }}</strong>
-                                            <span>{{ $job->installation_notes }}</span>
+                                        <div class="tech-kv-row" style="border-bottom: none !important;">
+                                            <span class="tech-kv-label">{{ __('Work Notes') }}</span>
+                                            <span class="tech-kv-value text-left" style="text-align: left !important;">{{ $job->installation_notes }}</span>
                                         </div>
                                     @endif
                                 </div>
                             </div>
 
-                            {{-- Update Status Form --}}
-                            <form method="POST" action="{{ route('technician.jobs.updateStatus', $job) }}" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                @csrf
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{{ __('Update Status') }}</label>
-                                        <select name="status" class="w-full text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2">
-                                            <option value="pending" @selected($job->status === 'pending')>{{ __('Pending') }}</option>
-                                            <option value="scheduled" @selected($job->status === 'scheduled')>{{ __('Scheduled') }}</option>
-                                            <option value="assigned" @selected($job->status === 'assigned')>{{ __('Assigned (In Progress)') }}</option>
-                                            <option value="completed" @selected($job->status === 'completed')>{{ __('Completed') }}</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center justify-between mb-1">
-                                            <label for="job-notes-{{ $job->id }}" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">{{ __('Work Notes') }}</label>
-                                            <x-voice-mic-button target="#job-notes-{{ $job->id }}" />
+                            {{-- Mobile Primary Action: JCR Sign-off & Status Update --}}
+                            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                                <a href="{{ route('jcr.create-job', $job) }}" 
+                                   class="tech-btn-primary" 
+                                   style="background-color: #1E3A8A !important; color: #ffffff !important;">
+                                    <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                                    <span class="text-white font-semibold">{{ __('Submit and Complete JCR') }}</span>
+                                </a>
+
+                                <form method="POST" action="{{ route('technician.jobs.updateStatus', $job) }}" class="space-y-3">
+                                    @csrf
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="tech-label">{{ __('Job Status *') }}</label>
+                                            <select name="status" class="tech-input text-xs font-semibold">
+                                                <option value="pending" @selected($job->status === 'pending')>{{ __('Pending') }}</option>
+                                                <option value="scheduled" @selected($job->status === 'scheduled')>{{ __('Scheduled') }}</option>
+                                                <option value="assigned" @selected($job->status === 'assigned')>{{ __('In Progress') }}</option>
+                                                <option value="completed" @selected($job->status === 'completed')>{{ __('Completed') }}</option>
+                                            </select>
                                         </div>
-                                        <input type="text" id="job-notes-{{ $job->id }}" name="notes" value="{{ $job->installation_notes }}" placeholder="{{ __('Findings or notes...') }}"
-                                               class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <label for="job-notes-{{ $job->id }}" class="tech-label mb-0">{{ __('Update Notes') }}</label>
+                                                <x-voice-mic-button target="#job-notes-{{ $job->id }}" />
+                                            </div>
+                                            <input type="text" id="job-notes-{{ $job->id }}" name="notes" value="{{ $job->installation_notes }}" placeholder="{{ __('Findings or notes...') }}"
+                                                   class="tech-input text-xs">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex justify-end">
-                                    <button type="submit" 
-                                            class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
-                                            style="color: #ffffff !important;">
-                                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Save Status') }}</span>
-                                    </button>
-                                </div>
-                            </form>
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="tech-btn-secondary w-full sm:w-auto">
+                                            <span>{{ __('Save Status') }}</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     @empty
-                        <div class="col-span-full rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center text-xs sm:text-sm text-slate-400">
+                        <div class="col-span-full rounded-2xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center text-xs sm:text-sm text-[#64748B]">
                             {{ __('No active installation jobs assigned right now.') }}
                         </div>
                     @endforelse
@@ -1594,82 +1636,84 @@
         </div>
 
         {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- 4. ULTRA-CRISP MOBILE BOTTOM DOCK (Hidden on Laptop, Visible on Mobile) --}}
+        {{-- 4. ULTRA-CRISP MOBILE BOTTOM NAVIGATION (Height: 68px + safe-area, 5 core tabs) --}}
         {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <nav aria-label="{{ __('Field sections') }}" class="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <nav aria-label="{{ __('Field sections') }}" class="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(15,23,42,0.08)]">
             <div class="w-full max-w-md mx-auto flex items-center justify-between gap-1">
                 
-                {{-- Overview Tab --}}
+                {{-- Home / Overview Tab --}}
                 <button type="button" @click="switchTab('overview')"
                         :aria-current="currentTab === 'overview' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'overview' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'overview' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Home') }}</span>
+                        class="flex-1 h-auto min-h-[48px] py-1 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition cursor-pointer select-none tech-nav-tab"
+                        :class="currentTab === 'overview' ? 'text-[#1E3A8A] dark:text-blue-400 font-bold active' : 'text-[#64748B] hover:text-slate-800 dark:hover:text-slate-200 inactive'">
+                    <div class="relative">
+                        <svg class="w-6 h-6 pointer-events-none shrink-0" :fill="currentTab === 'overview' ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                    </div>
+                    <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Home') }}</span>
                 </button>
 
                 {{-- Projects Tab --}}
                 <button type="button" @click="switchTab('projects')"
                         :aria-current="currentTab === 'projects' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'projects' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'projects' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Projects') }}</span>
+                        class="flex-1 h-auto min-h-[48px] py-1 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition cursor-pointer select-none tech-nav-tab"
+                        :class="currentTab === 'projects' ? 'text-[#1E3A8A] dark:text-blue-400 font-bold active' : 'text-[#64748B] hover:text-slate-800 dark:hover:text-slate-200 inactive'">
+                    <div class="relative">
+                        <svg class="w-6 h-6 pointer-events-none shrink-0" :fill="currentTab === 'projects' ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
+                        @if($assignedProjects->count() > 0)
+                            <span class="absolute -top-1 -right-2 px-1.5 py-0.2 min-w-[18px] h-[18px] rounded-full bg-[#1E3A8A] text-white text-[10px] font-bold flex items-center justify-center">
+                                {{ $assignedProjects->count() }}
+                            </span>
+                        @endif
+                    </div>
+                    <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Projects') }}</span>
                 </button>
 
                 {{-- Jobs Tab --}}
                 <button type="button" @click="switchTab('jobs')"
                         :aria-current="currentTab === 'jobs' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'jobs' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'jobs' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Jobs') }}</span>
+                        class="flex-1 h-auto min-h-[48px] py-1 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition cursor-pointer select-none tech-nav-tab"
+                        :class="currentTab === 'jobs' ? 'text-[#1E3A8A] dark:text-blue-400 font-bold active' : 'text-[#64748B] hover:text-slate-800 dark:hover:text-slate-200 inactive'">
+                    <div class="relative">
+                        <svg class="w-6 h-6 pointer-events-none shrink-0" :fill="currentTab === 'jobs' ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
+                        @if($activeJobs->count() > 0)
+                            <span class="absolute -top-1 -right-2 px-1.5 py-0.2 min-w-[18px] h-[18px] rounded-full bg-[#F59E0B] text-[#78350F] text-[10px] font-bold flex items-center justify-center">
+                                {{ $activeJobs->count() }}
+                            </span>
+                        @endif
+                    </div>
+                    <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Jobs') }}</span>
                 </button>
 
                 {{-- Surveys Tab --}}
                 <button type="button" @click="switchTab('surveys')"
                         :aria-current="currentTab === 'surveys' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'surveys' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'surveys' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Surveys') }}</span>
+                        class="flex-1 h-auto min-h-[48px] py-1 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition cursor-pointer select-none tech-nav-tab"
+                        :class="currentTab === 'surveys' ? 'text-[#1E3A8A] dark:text-blue-400 font-bold active' : 'text-[#64748B] hover:text-slate-800 dark:hover:text-slate-200 inactive'">
+                    <div class="relative">
+                        <svg class="w-6 h-6 pointer-events-none shrink-0" :fill="currentTab === 'surveys' ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+                        @if($activeSurveys->count() > 0)
+                            <span class="absolute -top-1 -right-2 px-1.5 py-0.2 min-w-[18px] h-[18px] rounded-full bg-[#16A34A] text-white text-[10px] font-bold flex items-center justify-center">
+                                {{ $activeSurveys->count() }}
+                            </span>
+                        @endif
+                    </div>
+                    <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Surveys') }}</span>
                 </button>
 
-                {{-- Workers Tab --}}
-                <button type="button" @click="switchTab('workers')"
-                        :aria-current="currentTab === 'workers' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'workers' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'workers' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Crew') }}</span>
-                </button>
-
-                {{-- Quotes Tab --}}
-                <button type="button" @click="switchTab('quotations')"
-                        :aria-current="currentTab === 'quotations' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
-                        :class="currentTab === 'quotations' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'quotations' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Quotes') }}</span>
-                </button>
-
-                {{-- Allowances Tab --}}
+                {{-- Allowances / Field Claims Tab --}}
                 <button type="button" @click="switchTab('allowances')"
                         :aria-current="currentTab === 'allowances' ? 'page' : 'false'"
-                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none relative"
-                        :class="currentTab === 'allowances' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                        :style="currentTab === 'allowances' ? 'color: var(--crm-accent, #2563eb);' : ''">
-                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm4.5 6h.008v.008h-.008V15z"/></svg>
-                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Allowances') }}</span>
-                    @if(isset($pendingClaimsCount) && $pendingClaimsCount > 0)
-                        <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-amber-500"></span>
-                    @endif
+                        class="flex-1 h-auto min-h-[48px] py-1 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition cursor-pointer select-none relative tech-nav-tab"
+                        :class="currentTab === 'allowances' ? 'text-[#1E3A8A] dark:text-blue-400 font-bold active' : 'text-[#64748B] hover:text-slate-800 dark:hover:text-slate-200 inactive'">
+                    <div class="relative">
+                        <svg class="w-6 h-6 pointer-events-none shrink-0" :fill="currentTab === 'allowances' ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm4.5 6h.008v.008h-.008V15z"/></svg>
+                        @if(isset($pendingClaimsCount) && $pendingClaimsCount > 0)
+                            <span class="absolute -top-1 -right-2 px-1.5 py-0.2 min-w-[18px] h-[18px] rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center">
+                                {{ $pendingClaimsCount }}
+                            </span>
+                        @endif
+                    </div>
+                    <span class="text-[11px] font-medium leading-tight pointer-events-none">{{ __('Claims') }}</span>
                 </button>
 
             </div>
@@ -1758,19 +1802,19 @@
     </div>
 
     {{-- TECHNICIAN ADD FIELD CREW WORKER MODAL (NO WAGE / COST INPUTS) --}}
-    <div x-show="showAddWorkerModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div @click.away="showAddWorkerModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+    <div x-show="showAddWorkerModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div @click.away="showAddWorkerModal = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-8 h-8 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Register New Field Worker') }}</h3>
-                        <p class="text-[11px] text-slate-400">{{ __('Add a worker to field crew for site attendance and tasks') }}</p>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ __('Register New Field Worker') }}</h3>
+                        <p class="text-[11px] text-slate-400 truncate">{{ __('Add a worker to field crew for site attendance and tasks') }}</p>
                     </div>
                 </div>
-                <button type="button" @click="showAddWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+                <x-close-button @click="showAddWorkerModal = false" class="shrink-0" />
             </div>
 
             <form method="POST" action="{{ route('workers.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4">
@@ -1817,12 +1861,12 @@
                     <textarea id="worker_notes" name="notes" rows="2" placeholder="{{ __('e.g. Aadhaar / emergency contact / remarks...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
-                <div class="pt-2 flex items-center justify-between">
-                    <button type="button" @click="showAddWorkerModal = false" class="btn-secondary text-xs">
+                <div class="pt-2 flex items-center justify-between gap-2">
+                    <button type="button" @click="showAddWorkerModal = false" class="btn-secondary text-xs flex-1 sm:flex-initial justify-center">
                         {{ __('Cancel') }}
                     </button>
-                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
-                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex-1 sm:flex-initial flex items-center justify-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 !text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                         <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Save Field Worker') }}</span>
                     </button>
                 </div>
@@ -1831,19 +1875,19 @@
     </div>
 
     {{-- QUOTE EXISTING CLIENT MODAL --}}
-    <div x-show="showExistingQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div @click.away="showExistingQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+    <div x-show="showExistingQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div @click.away="showExistingQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-8 h-8 shrink-0 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Quote Existing Client') }}</h3>
-                        <p class="text-[11px] text-slate-400">{{ __('Select an existing registered client or lead') }}</p>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ __('Quote Existing Client') }}</h3>
+                        <p class="text-[11px] text-slate-400 truncate">{{ __('Select an existing registered client or lead') }}</p>
                     </div>
                 </div>
-                <button type="button" @click="showExistingQuoteModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+                <x-close-button @click="showExistingQuoteModal = false" class="shrink-0" />
             </div>
 
             <div class="space-y-4 mt-4">
@@ -1861,14 +1905,14 @@
                     {{ __('Tip: If you do not see the customer in this list, click "All Clients" or add them as a new customer.') }}
                 </div>
 
-                <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" @click="showExistingQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
+                <div class="pt-3 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="showExistingQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer flex-1 sm:flex-initial text-center justify-center">
                         {{ __('Cancel') }}
                     </button>
                     <button type="button" 
                             :disabled="!selectedLeadIdForQuote"
                             @click="if(selectedLeadIdForQuote) { window.location.href = '/leads/' + selectedLeadIdForQuote + '/quote'; }"
-                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
+                            class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer flex-1 sm:flex-initial" 
                             style="color: #ffffff !important; background-color: #2563eb !important;">
                         <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Proceed to Quotation') }}</span>
                         <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
@@ -1879,19 +1923,19 @@
     </div>
 
     {{-- REGISTER NEW CLIENT & CREATE QUOTE MODAL --}}
-    <div x-show="showNewLeadQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div @click.away="showNewLeadQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+    <div x-show="showNewLeadQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div @click.away="showNewLeadQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-8 h-8 shrink-0 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12-10a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('New Client & Quotation Builder') }}</h3>
-                        <p class="text-[11px] text-slate-400">{{ __('Enter client details to create lead and launch quotation') }}</p>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ __('New Client & Quotation Builder') }}</h3>
+                        <p class="text-[11px] text-slate-400 truncate">{{ __('Enter client details to create lead and launch quotation') }}</p>
                     </div>
                 </div>
-                <button type="button" @click="showNewLeadQuoteModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+                <x-close-button @click="showNewLeadQuoteModal = false" class="shrink-0" />
             </div>
 
             <form method="POST" action="{{ route('leads.store') }}" class="space-y-4 mt-4">
@@ -1949,14 +1993,14 @@
                     <textarea id="lead_notes" name="notes" rows="2" placeholder="e.g. 8-channel IP CCTV setup with 2TB HDD, cabling estimate 120m..." class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
-                <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" @click="showNewLeadQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
+                <div class="pt-3 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="showNewLeadQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer flex-1 sm:flex-initial text-center justify-center">
                         {{ __('Cancel') }}
                     </button>
                     <button type="submit" 
-                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
+                            class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer flex-1 sm:flex-initial" 
                             style="color: #ffffff !important; background-color: #2563eb !important;">
-                        <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Create Client & Build Quote') }}</span>
+                        <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Create & Quote') }}</span>
                         <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                     </button>
                 </div>
@@ -1965,19 +2009,19 @@
     </div>
 
     {{-- TECHNICIAN ADD ALLOWANCE / TRAVEL EXPENSE MODAL --}}
-    <div x-show="showAddAllowanceModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div @click.away="showAddAllowanceModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+    <div x-show="showAddAllowanceModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div @click.away="showAddAllowanceModal = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-8 h-8 shrink-0 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Log Travel & Site Work Allowance') }}</h3>
-                        <p class="text-[11px] text-slate-400">{{ __('Submitted directly to Admin for approval and salary addition') }}</p>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ __('Log Travel & Site Work Allowance') }}</h3>
+                        <p class="text-[11px] text-slate-400 truncate">{{ __('Submitted directly to Admin for approval and salary addition') }}</p>
                     </div>
                 </div>
-                <x-close-button @click="showAddAllowanceModal = false" />
+                <x-close-button @click="showAddAllowanceModal = false" class="shrink-0" />
             </div>
 
             <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">

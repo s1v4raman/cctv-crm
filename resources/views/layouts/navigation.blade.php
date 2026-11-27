@@ -338,8 +338,10 @@
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*')) aria-current="page" @endif
                        title="Employees">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <circle cx="12" cy="7" r="4.5"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Employees</span>
                     </a>
@@ -398,14 +400,14 @@
                         </a>
 
                         @if(auth()->user()->isAdmin())
-                        {{-- User Accounts & Settings (User & Gear Settings icon) --}}
+                        {{-- User Accounts & Settings (Two-person team icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('admin.users.index') }}" 
                            class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.users.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif>
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-                                <path d="M3 21v-2a6 6 0 0 1 10.3-4.3"/>
-                                <circle cx="18" cy="17" r="2.2"/>
-                                <path d="M18 13.5v1.2M18 19.3v1.2M14.5 17h1.2M20.3 17h1.2M15.5 14.5l.8.8M19.7 18.7l.8.8M15.5 19.5l.8-.8M19.7 15.3l.8-.8"/>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                             </svg>
                             <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">User Accounts &amp; Settings</span>
                         </a>
@@ -431,7 +433,28 @@
 
     {{-- Sidebar Bottom: Comfortable User Profile & Quick Logout --}}
     <div class="crm-sidebar-footer shrink-0 p-3 border-t border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors">
-        <div class="flex items-center justify-between gap-1.5" :class="sidebarCollapsed ? 'lg:flex-col lg:justify-center lg:gap-2' : ''">
+        {{-- Mobile Phone Only for Technician: Option B Logout button matching Image 3 --}}
+        @if(auth()->user()->isTechnician())
+            <div class="lg:hidden">
+                <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 w-full">
+                    @csrf
+                    <button type="submit" 
+                            id="tech-mobile-nav-logout-btn"
+                            aria-label="{{ __('Log Out') }}"
+                            class="btn-icon sidebar-logout-btn w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-rose-500/10 active:scale-[0.99] transition cursor-pointer group text-left">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/25 shrink-0 transition shadow-xs">
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-bold text-slate-100 group-hover:text-white transition tracking-wide">{{ __('Log Out') }}</span>
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        {{-- Desktop view & Non-technician mobile view --}}
+        <div class="items-center justify-between gap-1.5 {{ auth()->user()->isTechnician() ? 'hidden lg:flex' : 'flex' }}" :class="sidebarCollapsed ? 'lg:flex-col lg:justify-center lg:gap-2' : ''">
             <div class="flex items-center gap-2.5 min-w-0 flex-1" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
                 @if(Auth::user()->avatar_url)
                     <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">

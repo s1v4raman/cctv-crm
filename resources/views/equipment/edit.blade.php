@@ -250,6 +250,8 @@
                 mInput.value = detectedMac;
                 mInput.dispatchEvent(new Event('input', { bubbles: true }));
                 mInput.dispatchEvent(new Event('change', { bubbles: true }));
+                mInput.classList.add('ring-2', 'ring-emerald-500');
+                setTimeout(() => mInput.classList.remove('ring-2', 'ring-emerald-500'), 1500);
             }
 
             // 2. Strictly extract and assign Serial Number (NEVER assign pure MAC or EAN overwriting existing serial)
@@ -274,6 +276,8 @@
                 sInput.value = detectedSerial;
                 sInput.dispatchEvent(new Event('input', { bubbles: true }));
                 sInput.dispatchEvent(new Event('change', { bubbles: true }));
+                sInput.classList.add('ring-2', 'ring-emerald-500');
+                setTimeout(() => sInput.classList.remove('ring-2', 'ring-emerald-500'), 1500);
             }
 
             // 3. Auto-fill Product / Model Name into equipment_name_input & Select Catalog Model

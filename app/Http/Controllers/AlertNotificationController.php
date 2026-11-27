@@ -172,6 +172,11 @@ class AlertNotificationController extends Controller
         ]);
 
         $settings = \App\Models\GatewaySetting::getSettings();
+        $rawSmtpPassword = trim((string) ($validated['smtp_password'] ?? ''));
+        if (preg_match('/^[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}$/', $rawSmtpPassword)) {
+            $rawSmtpPassword = str_replace(' ', '', $rawSmtpPassword);
+        }
+
         $settings->update([
             'active_sms_gateway'            => $validated['active_sms_gateway'],
             'twilio_account_sid'            => $validated['twilio_account_sid'] ?? null,
@@ -196,12 +201,14 @@ class AlertNotificationController extends Controller
             'smtp_mailer'                   => $validated['smtp_mailer'] ?? 'smtp',
             'smtp_host'                     => $validated['smtp_host'] ?? null,
             'smtp_port'                     => $validated['smtp_port'] ?? 587,
-            'smtp_username'                 => $validated['smtp_username'] ?? null,
-            'smtp_password'                 => $validated['smtp_password'] ?? null,
+            'smtp_username'                 => trim((string) ($validated['smtp_username'] ?? '')),
+            'smtp_password'                 => $rawSmtpPassword ?: null,
             'smtp_encryption'               => $validated['smtp_encryption'] ?? 'tls',
             'smtp_from_address'             => $validated['smtp_from_address'] ?? null,
             'smtp_from_name'                => $validated['smtp_from_name'] ?? null,
         ]);
+
+        \App\Services\MailConfigService::applyDynamicMailConfig();
 
         return back()->with('status', "✅ Gateway, SMTP Mail & Online Payment settings updated successfully!");
     }

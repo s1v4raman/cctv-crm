@@ -39,5 +39,12 @@ class AppServiceProvider extends ServiceProvider
         ) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        // Apply saved SMTP Gateway configuration dynamically across all email dispatches
+        try {
+            \App\Services\MailConfigService::applyDynamicMailConfig();
+        } catch (\Throwable $e) {
+            // Silently ignore during migration/console setup before database tables exist
+        }
     }
 }

@@ -1,21 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="tech-top-header sm:h-auto sm:border-none sm:p-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div class="flex items-center gap-3">
-                <a aria-label="{{ __('Back') }}" href="{{ route('technician.dashboard') }}" class="p-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700 shadow-sm transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <a aria-label="{{ __('Back') }}" href="{{ route('technician.dashboard') }}" class="tech-icon-btn rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 shadow-sm transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <div>
+                <div class="min-w-0">
                     <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider
-                            {{ $siteSurvey->status === 'completed' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
-                            {{ $siteSurvey->status === 'completed' ? '✓ ' . __('Completed') : '⏳ ' . __('Pending On-Site Visit') }}
+                        <span class="tech-badge {{ $siteSurvey->status === 'completed' ? 'tech-badge-completed' : 'tech-badge-assigned' }}">
+                            {{ $siteSurvey->status === 'completed' ? __('Completed') : __('Pending Visit') }}
                         </span>
                         <span class="text-xs text-slate-400 font-mono">{{ __('Survey #:id', ['id' => $siteSurvey->id]) }}</span>
                     </div>
-                    <h1 class="text-xl font-black text-white font-heading tracking-tight mt-0.5">
+                    <h1 class="text-lg sm:text-2xl font-bold text-white tracking-tight mt-0.5 truncate">
                         {{ __('Site Survey: :customer', ['customer' => $siteSurvey->lead->customer_name]) }}
                     </h1>
                 </div>
@@ -25,49 +24,57 @@
                 <x-language-switch />
                 @if($siteSurvey->contact_phone || $siteSurvey->lead->phone)
                     <a href="tel:{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}" 
-                       class="btn-md px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
-                        <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        <span>{{ __('Call Contact') }}</span>
+                       class="tech-btn-secondary !h-10 sm:!h-10 text-xs px-3"
+                       style="height: 40px !important; min-height: 40px !important;">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span>{{ __('Call') }}</span>
                     </a>
                 @endif
                 @if($siteSurvey->site_address || $siteSurvey->lead->site_address)
                     <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($siteSurvey->site_address ?: $siteSurvey->lead->site_address) }}" 
                        target="_blank" 
-                       class="btn-md px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
-                        <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        <span>{{ __('Open in Maps') }}</span>
+                       class="tech-btn-secondary !h-10 sm:!h-10 text-xs px-3"
+                       style="height: 40px !important; min-height: 40px !important;">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>{{ __('Navigate') }}</span>
                     </a>
                 @endif
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 bg-[#060913] min-h-screen text-slate-200" style="background-color: #060913;">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="tech-mobile-scope py-4 sm:py-6 bg-[#F8FAFC] dark:bg-slate-950 min-h-screen text-slate-800 dark:text-slate-200">
+        <div class="tech-mobile-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Customer & Site Overview Card --}}
-            <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" style="background-color: #0f172a;">
-                <h3 class="text-xs font-extrabold text-amber-400 uppercase tracking-wider mb-3">{{ __('Premises & Contact Details') }}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                    <div>
-                        <span class="text-slate-500 block uppercase text-[11px] font-bold">{{ __('Client / Site Name') }}</span>
-                        <span class="font-extrabold text-white text-sm font-heading">{{ $siteSurvey->lead->customer_name }}</span>
+            {{-- Customer & Site Overview Card (16px radius, key-value display) --}}
+            <div class="tech-card crm-card bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-[#1E3A8A] dark:text-blue-400 uppercase tracking-wider">{{ __('Premises & Contact Details') }}</h3>
+                </div>
+                <div class="space-y-1 text-xs">
+                    <div class="tech-kv-row">
+                        <span class="tech-kv-label">{{ __('Client / Site') }}</span>
+                        <span class="tech-kv-value font-bold text-slate-900 dark:text-white">{{ $siteSurvey->lead->customer_name }}</span>
                     </div>
-                    <div>
-                        <span class="text-slate-500 block uppercase text-[11px] font-bold">{{ __('Contact Person & Phone') }}</span>
-                        <span class="font-bold text-slate-200">{{ $siteSurvey->contact_person ?: $siteSurvey->lead->customer_name }}</span>
-                        <span class="text-amber-400 font-mono block">{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}</span>
+                    <div class="tech-kv-row">
+                        <span class="tech-kv-label">{{ __('Contact & Phone') }}</span>
+                        <span class="tech-kv-value">
+                            {{ $siteSurvey->contact_person ?: $siteSurvey->lead->customer_name }}
+                            @if($siteSurvey->contact_phone || $siteSurvey->lead->phone)
+                                &bull; <a href="tel:{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}" class="text-[#1E3A8A] dark:text-blue-400 font-mono">{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}</a>
+                            @endif
+                        </span>
                     </div>
-                    <div>
-                        <span class="text-slate-500 block uppercase text-[11px] font-bold">{{ __('Installation Address') }}</span>
-                        <span class="font-medium text-slate-300">{{ $siteSurvey->site_address ?: ($siteSurvey->lead->site_address ?: __('Address not provided')) }}</span>
+                    <div class="tech-kv-row" style="border-bottom: none !important;">
+                        <span class="tech-kv-label">{{ __('Installation Site') }}</span>
+                        <span class="tech-kv-value text-slate-700 dark:text-slate-300">{{ $siteSurvey->site_address ?: ($siteSurvey->lead->site_address ?: __('Address not provided')) }}</span>
                     </div>
                 </div>
 
                 @if($siteSurvey->visit_notes && $siteSurvey->status !== 'completed')
-                    <div class="p-3.5 rounded-xl bg-[#060913] border border-amber-500/30 text-xs">
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">{{ __('Instructions & Customer Scope from Admin:') }}</span>
-                        <p class="text-slate-200 font-medium whitespace-pre-line">{{ $siteSurvey->visit_notes }}</p>
+                    <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 block mb-1">{{ __('Instructions from Office:') }}</span>
+                        <p class="text-slate-800 dark:text-slate-200 font-medium whitespace-pre-line">{{ $siteSurvey->visit_notes }}</p>
                     </div>
                 @endif
             </div>
@@ -143,82 +150,79 @@
                 <form method="POST" action="{{ route('technician.surveys.complete', $siteSurvey) }}" enctype="multipart/form-data" class="space-y-6" id="tech-survey-form">
                     @csrf
 
-                    <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" style="background-color: #0f172a;">
-                        <div class="flex items-center gap-2 pb-3 border-b border-slate-800">
-                            
-                            <h2 class="text-base font-extrabold text-white font-heading">{{ __('Technical Findings & Recommendations') }}</h2>
+                    <div class="tech-card crm-card bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 space-y-4">
+                        <div class="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ __('Technical Findings & Recommendations') }}</h2>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="survey_cameras" class="block text-sm font-semibold text-slate-200">{{ __('Recommended Cameras') }} *</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="survey_cameras" class="tech-label">{{ __('Recommended Cameras *') }}</label>
                                     <x-voice-mic-button target="#survey_cameras" />
                                 </div>
                                 <input id="survey_cameras" aria-label="{{ __('Recommended Cameras') }}" type="number" name="camera_count_recommended" required min="1" placeholder="{{ __('e.g. 4') }}" value="{{ old('camera_count_recommended', $siteSurvey->camera_count_recommended ?: 4) }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                @error('camera_count_recommended') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
+                                    class="tech-input text-sm">
+                                @error('camera_count_recommended') <span class="tech-error-text">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="survey_cable" class="block text-sm font-semibold text-slate-200">{{ __('Estimated Cable Length (Mtr)') }} *</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="survey_cable" class="tech-label">{{ __('Estimated Cable Length (Mtr) *') }}</label>
                                     <x-voice-mic-button target="#survey_cable" />
                                 </div>
                                 <input id="survey_cable" aria-label="{{ __('Estimated Cable Length (Mtr)') }}" type="number" name="cable_length_estimate" required min="1" step="0.5" placeholder="{{ __('e.g. 90') }}" value="{{ old('cable_length_estimate', $siteSurvey->cable_length_estimate ?: 50) }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                @error('cable_length_estimate') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
+                                    class="tech-input text-sm">
+                                @error('cable_length_estimate') <span class="tech-error-text">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="survey_dvr" class="block text-sm font-semibold text-slate-200">{{ __('DVR / NVR Placement') }} *</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="survey_dvr" class="tech-label">{{ __('DVR / NVR Placement *') }}</label>
                                     <x-voice-mic-button target="#survey_dvr" />
                                 </div>
                                 <input id="survey_dvr" aria-label="{{ __('DVR / NVR Placement') }}" type="text" name="dvr_location" required placeholder="{{ __('e.g. 1st Floor Server Room') }}" value="{{ old('dvr_location', $siteSurvey->dvr_location ?: 'Server Room / Office') }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                @error('dvr_location') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
+                                    class="tech-input text-sm">
+                                @error('dvr_location') <span class="tech-error-text">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="survey_power" class="block text-sm font-semibold text-slate-200">{{ __('Power Sockets & UPS Availability') }}</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="survey_power" class="tech-label">{{ __('Power Sockets & UPS Availability') }}</label>
                                     <x-voice-mic-button target="#survey_power" />
                                 </div>
                                 <input id="survey_power" aria-label="{{ __('Power Sockets & UPS Availability') }}" type="text" name="power_availability" placeholder="{{ __('e.g. 2x 230V Sockets available, connected to 1KVA UPS') }}" value="{{ old('power_availability', $siteSurvey->power_availability) }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
+                                    class="tech-input text-sm">
                             </div>
                             <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="survey_challenges" class="block text-sm font-semibold text-slate-200">{{ __('Site Obstacles & Challenges') }}</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="survey_challenges" class="tech-label">{{ __('Site Obstacles & Challenges') }}</label>
                                     <x-voice-mic-button target="#survey_challenges" />
                                 </div>
-                                <input id="survey_challenges" aria-label="{{ __('Site Obstacles & Challenges') }}" type="text" name="challenges" placeholder="{{ __('e.g. High false ceiling, masonry drilling required for outdoor entry') }}" value="{{ old('challenges', $siteSurvey->challenges) }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
+                                <input id="survey_challenges" aria-label="{{ __('Site Obstacles & Challenges') }}" type="text" name="challenges" placeholder="{{ __('e.g. High false ceiling, masonry drilling required') }}" value="{{ old('challenges', $siteSurvey->challenges) }}"
+                                    class="tech-input text-sm">
                             </div>
                         </div>
 
                         <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label for="survey_notes" class="block text-sm font-semibold text-slate-200">{{ __('Detailed On-Site Observations & Recommendations') }} *</label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="survey_notes" class="tech-label">{{ __('Detailed Observations & Recommendations *') }}</label>
                                 <x-voice-mic-button target="#survey_notes" />
                             </div>
-                            <textarea id="survey_notes" aria-label="{{ __('Detailed On-Site Observations & Recommendations') }}" name="visit_notes" required rows="3" placeholder="{{ __('Describe camera coverage angles, conduit routing, and storage requirements...') }}"
-                                class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('visit_notes', $siteSurvey->visit_notes) }}</textarea>
-                            @error('visit_notes') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
+                            <textarea id="survey_notes" aria-label="{{ __('Detailed Observations & Recommendations') }}" name="visit_notes" required rows="3" placeholder="{{ __('Describe camera coverage angles, conduit routing, and storage requirements...') }}"
+                                class="tech-textarea text-sm">{{ old('visit_notes', $siteSurvey->visit_notes) }}</textarea>
+                            @error('visit_notes') <span class="tech-error-text">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
                     {{-- On-Site Photo Upload Card --}}
-                    <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" x-data="photoUploader()" style="background-color: #0f172a;">
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                            <div class="flex items-center gap-2">
-                                <div>
-                                    <h2 class="text-base font-extrabold text-white font-heading">{{ __('Upload Site Photos & Camera Angles') }}</h2>
-                                    <p class="text-xs text-slate-400">{{ __('Capture premises, entrance blind spots, server rack, and cable pathways') }}</p>
-                                </div>
+                    <div class="tech-card crm-card bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 space-y-4" x-data="photoUploader()">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ __('Site Photos & Evidence') }}</h2>
+                                <p class="text-xs text-[#64748B]">{{ __('Capture premises, entrance blind spots, server rack, and cable pathways') }}</p>
                             </div>
                         </div>
 
@@ -230,42 +234,43 @@
                         <input type="file" x-ref="galleryInput" multiple accept="image/*" class="hidden" @change="handleFiles($event)">
 
                         {{-- Interactive Upload & Camera Zone --}}
-                        <div class="border-2 border-dashed border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 text-center bg-[#060913] transition">
-                            <div class="w-12 h-12 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center mx-auto mb-3 border border-blue-500/30">
-                                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[#1E3A8A] rounded-2xl p-6 text-center bg-[#F8FAFC] dark:bg-slate-900 transition">
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1E3A8A] dark:text-blue-400 flex items-center justify-center mx-auto mb-3 border border-blue-200 dark:border-blue-800">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
                             
-                            <p class="text-xs font-bold text-white mb-1">{{ __('Take Photos or Choose from Gallery') }}</p>
-                            <p class="text-[11px] text-slate-400 mb-4">{{ __('Supports PNG, JPG, JPEG up to 5MB each (Multiple photos allowed)') }}</p>
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">{{ __('Take Photos or Choose from Gallery') }}</p>
+                            <p class="text-xs text-[#64748B] mb-4">{{ __('Supports PNG, JPG, JPEG up to 5MB each (Multiple photos allowed)') }}</p>
 
                             {{-- Dual Action Buttons: Take Photo & Select Images --}}
-                            <div class="flex flex-wrap items-center justify-center gap-3">
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                                 <button type="button" @click="openCamera()"
-                                        class="btn-md inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition transform active:scale-95 cursor-pointer">
-                                    <svg class="w-4 h-4 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    <span>{{ __('Take Photo (Camera)') }}</span>
+                                        class="tech-btn-primary sm:w-auto px-5"
+                                        style="background-color: #1E3A8A !important; color: #ffffff !important;">
+                                    <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>{{ __('Capture Photo') }}</span>
                                 </button>
 
                                 <button type="button" @click="$refs.galleryInput.click()"
-                                        class="btn-md inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs shadow-sm transition transform active:scale-95 cursor-pointer">
-                                    <svg class="w-4 h-4 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    <span>{{ __('Select from Gallery / Files') }}</span>
+                                        class="tech-btn-secondary sm:w-auto px-5">
+                                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>{{ __('Choose from Gallery') }}</span>
                                 </button>
                             </div>
                         </div>
 
-                        {{-- Preview Grid --}}
+                        {{-- Preview Grid: 2-column photo grid on mobile with 12px gutter --}}
                         <template x-if="previews.length > 0">
                             <div class="space-y-2 pt-2">
                                 <div class="flex items-center justify-between">
-                                    <p class="text-xs font-bold text-slate-300">{{ __('Ready to Upload') }} (<span x-text="previews.length"></span> {{ __('photos') }})</p>
-                                    <button type="button" @click="clearAll()" class="text-[11px] text-rose-400 hover:underline">{{ __('Clear all') }}</button>
+                                    <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Ready to Upload') }} (<span x-text="previews.length"></span> {{ __('photos') }})</p>
+                                    <button type="button" @click="clearAll()" class="text-xs text-[#DC2626] font-medium hover:underline">{{ __('Clear all') }}</button>
                                 </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="tech-photo-grid">
                                     <template x-for="(item, index) in previews" :key="index">
-                                        <div class="rounded-xl overflow-hidden border border-slate-700 shadow-sm bg-[#060913] relative">
-                                            <img :src="item.url" class="w-full h-28 object-cover">
-                                            <input aria-label="{{ __('Photo caption...') }}" type="text" :name="'captions[' + index + ']'" placeholder="{{ __('Photo caption...') }}" class="w-full text-[11px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
+                                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900 relative">
+                                            <img :src="item.url" class="tech-photo-thumb">
+                                            <input aria-label="{{ __('Photo caption...') }}" type="text" :name="'captions[' + index + ']'" placeholder="{{ __('Photo caption...') }}" class="w-full text-xs p-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white border-t border-slate-200 dark:border-slate-700 focus:outline-none">
                                             <x-close-button size="sm" tone="dark" label="{{ __('Remove photo') }}" @click="removePhoto(index)" class="absolute top-1.5 right-1.5" />
                                         </div>
                                     </template>
@@ -276,12 +281,11 @@
                         {{-- In-Browser Live Webcam / Camera Modal (Desktop & Fallback) --}}
                         <div x-show="cameraModalOpen" x-cloak
                              class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                            <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative"
+                            <div class="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative"
                                  @click.away="closeCamera()">
-                                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 002 2v8a2 2 0 002 2z"/></svg>
-                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         {{ __('Live Camera Viewfinder') }}
                                     </h3>
                                     <x-close-button tone="dark" label="{{ __('Close camera') }}" @click="closeCamera()" />
@@ -292,12 +296,13 @@
                                     <canvas x-ref="canvasElement" class="hidden"></canvas>
                                 </div>
 
-                                <div class="flex items-center justify-between pt-2">
-                                    <button type="button" @click="closeCamera()" class="btn-md px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800">
+                                <div class="flex items-center justify-between pt-2 gap-2">
+                                    <button type="button" @click="closeCamera()" class="tech-btn-secondary text-xs sm:w-auto px-4">
                                         {{ __('Close') }}
                                     </button>
-                                    <button type="button" @click="snapFromWebcam()" class="btn-md px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg inline-flex items-center gap-2 cursor-pointer">
-                                        <svg class="w-4 h-4 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <button type="button" @click="snapFromWebcam()" class="tech-btn-primary text-xs sm:w-auto px-5"
+                                            style="background-color: #1E3A8A !important; color: #ffffff !important;">
+                                        <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                         <span>{{ __('Capture & Add Photo') }}</span>
                                     </button>
                                 </div>
@@ -305,14 +310,15 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-2">
-                        <a href="{{ route('technician.dashboard') }}" class="btn-md inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-xs hover:text-white hover:bg-slate-800 transition">
-                            <svg class="w-3.5 h-3.5 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    {{-- Bottom Primary Action: 52px height, full-width on mobile --}}
+                    <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4">
+                        <a href="{{ route('technician.dashboard') }}" class="tech-btn-secondary w-full sm:w-auto">
                             <span>{{ __('Cancel') }}</span>
                         </a>
-                        <button type="submit" class="btn-md inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition">
-                            <svg class="w-4 h-4 text-black dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>{{ __('Complete Site Survey & Upload Photos') }}</span>
+                        <button type="submit" class="tech-btn-primary w-full sm:w-auto"
+                                style="background-color: #1E3A8A !important; color: #ffffff !important;">
+                            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>{{ __('Submit and Complete Survey') }}</span>
                         </button>
                     </div>
                 </form>

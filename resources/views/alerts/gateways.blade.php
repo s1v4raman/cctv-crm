@@ -283,8 +283,9 @@
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-words">Send transaction receipts, dispatch schedules, and PDF quotations via official company email.</p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto">
+                                    <button type="button" onclick="applyMailPreset('gmail-ssl')" class="btn-secondary text-xs h-[32px] px-3 font-semibold text-emerald-700 dark:text-emerald-400">Gmail (SSL 465 - Recommended)</button>
+                                    <button type="button" onclick="applyMailPreset('gmail-tls')" class="btn-secondary text-xs h-[32px] px-3">Gmail (TLS 587)</button>
                                     <button type="button" onclick="applyMailPreset('outlook')" class="btn-secondary text-xs h-[32px] px-3">Office 365</button>
-                                    <button type="button" onclick="applyMailPreset('gmail')" class="btn-secondary text-xs h-[32px] px-3">Gmail</button>
                                 </div>
                             </div>
 
@@ -346,6 +347,17 @@
                                     <input aria-label="Sender Display Name (From Name)" type="text" name="smtp_from_name" id="smtp_from_name" value="{{ $settings->smtp_from_name }}"
                                            placeholder="CCTV Security Engineering"
                                            class="crm-input">
+                                </div>
+                            </div>
+
+                            {{-- Gmail SMTP Guidance & Troubleshooting Notice --}}
+                            <div class="mt-3 p-3.5 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg text-xs space-y-2">
+                                <div class="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
+                                    <span>💡 Google Gmail SMTP Instructions & Troubleshooting</span>
+                                </div>
+                                <div class="space-y-1.5 text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
+                                    <p><strong>1. Error 535 ("Username and Password not accepted / BadCredentials"):</strong> Google does NOT allow standard account passwords for SMTP. You <strong>MUST</strong> use a 16-character <strong>Google App Password</strong>. Enable 2-Step Verification on your Google Account, visit <a href="https://myaccount.google.com/apppasswords" target="_blank" class="underline text-blue-600 dark:text-blue-400 font-bold">Google App Passwords</a>, create a password for "Mail", and paste the 16 characters into the SMTP Password field.</p>
+                                    <p><strong>2. Error "Connection timed out on Port 587":</strong> Cloud hosts (like Render) frequently block port 587. Click the <strong>Gmail (SSL 465 - Recommended)</strong> button above to use Port <strong>465</strong> with <strong>SSL</strong>, which connects directly and avoids timeouts.</p>
                                 </div>
                             </div>
                         </div>
@@ -458,7 +470,12 @@
                             document.getElementById('smtp_host').value = 'smtp.office365.com';
                             document.getElementById('smtp_port').value = 587;
                             document.getElementById('smtp_encryption').value = 'tls';
-                        } else if (type === 'gmail') {
+                        } else if (type === 'gmail-ssl' || type === 'gmail') {
+                            document.getElementById('smtp_mailer').value = 'smtp';
+                            document.getElementById('smtp_host').value = 'smtp.gmail.com';
+                            document.getElementById('smtp_port').value = 465;
+                            document.getElementById('smtp_encryption').value = 'ssl';
+                        } else if (type === 'gmail-tls') {
                             document.getElementById('smtp_mailer').value = 'smtp';
                             document.getElementById('smtp_host').value = 'smtp.gmail.com';
                             document.getElementById('smtp_port').value = 587;

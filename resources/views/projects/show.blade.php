@@ -3229,45 +3229,51 @@
         @endif
 
         {{-- Log Material & Cable Consumption Modal --}}
-        <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-            <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden my-auto">
-                <div class="px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-                    <div>
-                        <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+        <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh] sm:max-h-[90vh] overflow-hidden my-0 sm:my-auto">
+                <div class="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 gap-2">
+                    <div class="min-w-0 flex-1">
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2 truncate">
                             <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
-                            <span>Log Material / Cable Used</span>
+                            <span class="truncate">Log Material / Cable Used</span>
                         </h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">Record actual meters laid or hardware installed for a specific task</p>
                     </div>
-                    <x-close-button @click="consumeModalOpen = false" />
+                    <x-close-button @click="consumeModalOpen = false" class="shrink-0" />
                 </div>
 
                 {{-- Two-Step Navigation Tabs --}}
-                <div class="px-6 py-2.5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 shrink-0">
+                <div class="px-4 sm:px-6 py-2 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 shrink-0">
                     <button type="button" @click="consumeStep = 1" 
-                            class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
+                            class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2 sm:px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
                             :class="consumeStep === 1 
                                 ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 shadow-xs ring-1 ring-blue-500/20' 
                                 : 'text-slate-500 dark:text-slate-400 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/60'">
-                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold"
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
                               :class="consumeStep === 1 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'">
                             1
                         </span>
-                        <span class="truncate">Step 1: Task & Material</span>
+                        <span class="truncate">
+                            <span class="sm:hidden">1. Task &amp; Material</span>
+                            <span class="hidden sm:inline">Step 1: Task &amp; Material</span>
+                        </span>
                     </button>
 
-                    <div class="w-3 h-px bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+                    <div class="w-2 sm:w-3 h-px bg-slate-200 dark:bg-slate-700 shrink-0"></div>
 
                     <button type="button" @click="nextConsumeStep()" 
-                            class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
+                            class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2 sm:px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
                             :class="consumeStep === 2 
                                 ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 shadow-xs ring-1 ring-blue-500/20' 
                                 : 'text-slate-500 dark:text-slate-400 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/60'">
-                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold"
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
                               :class="consumeStep === 2 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'">
                             2
                         </span>
-                        <span class="truncate">Step 2: Notes & Stock</span>
+                        <span class="truncate">
+                            <span class="sm:hidden">2. Notes &amp; Stock</span>
+                            <span class="hidden sm:inline">Step 2: Notes &amp; Stock</span>
+                        </span>
                     </button>
                 </div>
 
@@ -3275,7 +3281,7 @@
                     @csrf
                     <input type="hidden" name="redirect_tab" :value="currentTab === 'tasks' ? 'tasks' : 'materials'">
 
-                    <div class="p-6 overflow-y-auto space-y-4 flex-1">
+                    <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
                         {{-- Step 1 Error Alert --}}
                         <div x-show="consumeStep1Error" x-text="consumeStep1Error" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium"></div>
 
@@ -3301,15 +3307,15 @@
                                         <p class="text-[11px] leading-relaxed">
                                             Materials and cable meters must be allocated against a specific project milestone or task.
                                         </p>
-                                        <div class="flex items-center gap-2 pt-1">
+                                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1 w-full">
                                             <button type="button" 
                                                     @click="consumeModalOpen = false; taskModalOpen = true" 
-                                                    class="btn-md px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
+                                                    class="btn-md px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center justify-center gap-1 cursor-pointer w-full sm:w-auto">
                                                 <span>Create First Task</span>
                                             </button>
                                             <button type="button" 
                                                     @click="consumeModalOpen = false; templateModalOpen = true" 
-                                                    class="btn-md px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                                                    class="btn-md px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer w-full sm:w-auto text-center justify-center">
                                                 Apply Workflow Template
                                             </button>
                                         </div>
@@ -3348,7 +3354,7 @@
                             </div>
 
                             {{-- Quantity and Unit --}}
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label for="f-quantity-used" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Quantity Used *</label>
                                     <input id="f-quantity-used" type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
@@ -3380,7 +3386,7 @@
                             </div>
 
                             {{-- Wastage & Drum / Reel # --}}
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label for="f-wastage-quantity" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Scrap / Cut Wastage</label>
                                     <input id="f-wastage-quantity" type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
@@ -3414,25 +3420,28 @@
                     </div>
 
                     {{-- Sticky Modal Footer with Step Navigation Buttons --}}
-                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-                        <div x-show="consumeStep === 1" class="w-full flex items-center justify-between">
-                            <button type="button" @click="consumeModalOpen = false" class="btn-secondary text-xs">
+                    <div class="px-4 sm:px-6 py-3.5 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+                        <div x-show="consumeStep === 1" class="w-full flex items-center gap-2">
+                            <button type="button" @click="consumeModalOpen = false" class="btn-secondary text-xs flex-1 sm:flex-initial sm:w-auto justify-center">
                                 Cancel
                             </button>
-                            <button type="button" @click="nextConsumeStep()" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
-                                <span>Next: Notes & Stock</span>
+                            <button type="button" @click="nextConsumeStep()" class="btn-primary text-xs shadow-md inline-flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial sm:w-auto">
+                                <span class="sm:hidden">Next: Notes</span>
+                                <span class="hidden sm:inline">Next: Notes &amp; Stock</span>
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </button>
                         </div>
 
-                        <div x-show="consumeStep === 2" class="w-full flex items-center justify-between">
-                            <button type="button" @click="consumeStep = 1" class="btn-secondary text-xs inline-flex items-center gap-1.5 cursor-pointer">
+                        <div x-show="consumeStep === 2" class="w-full flex items-center gap-2">
+                            <button type="button" @click="consumeStep = 1" class="btn-secondary text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial sm:w-auto">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                <span>Back to Step 1</span>
+                                <span class="sm:hidden">Back</span>
+                                <span class="hidden sm:inline">Back to Step 1</span>
                             </button>
-                            <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
+                            <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial sm:w-auto">
                                 <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
-                                <span>Record Consumption</span>
+                                <span class="sm:hidden">Save Log</span>
+                                <span class="hidden sm:inline">Record Consumption</span>
                             </button>
                         </div>
                     </div>
@@ -3441,11 +3450,11 @@
         </div>
 
         {{-- Upload Document / Delivery Challan Modal --}}
-        <div x-show="documentModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="documentModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Upload Document / Delivery Challan</h3>
-                    <x-close-button @click="documentModalOpen = false" />
+        <div x-show="documentModalOpen" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="documentModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Upload Document / Delivery Challan</h3>
+                    <x-close-button @click="documentModalOpen = false" class="shrink-0" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.documents.store', $project) }}" enctype="multipart/form-data" class="space-y-4"
@@ -4027,11 +4036,11 @@
         </div>
 
         {{-- Add Custom Task Modal --}}
-        <div x-show="taskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="taskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Custom Project Task</h3>
-                    <x-close-button @click="taskModalOpen = false" />
+        <div x-show="taskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="taskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Add Custom Project Task</h3>
+                    <x-close-button @click="taskModalOpen = false" class="shrink-0" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5" x-data="formSteps">
@@ -4226,11 +4235,11 @@
         </div>
 
         {{-- Edit Task Details Modal --}}
-        <div x-show="editTaskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="editTaskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Edit Project Task</h3>
-                    <x-close-button @click="editTaskModalOpen = false" />
+        <div x-show="editTaskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="editTaskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-t-2xl sm:rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto my-0 sm:my-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Edit Project Task</h3>
+                    <x-close-button @click="editTaskModalOpen = false" class="shrink-0" />
                 </div>
 
                 <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5" x-data="formSteps">

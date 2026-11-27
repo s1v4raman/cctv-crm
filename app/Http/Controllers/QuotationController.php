@@ -778,13 +778,17 @@ class QuotationController extends Controller
             $settings = \App\Models\GatewaySetting::getSettings();
             $smtpUser = trim((string) $request->input('smtp_username'));
             $isGmail = str_contains(strtolower($smtpUser), '@gmail.com');
+            $rawPass = trim((string) $request->input('smtp_password'));
+            if (preg_match('/^[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}\s+[a-zA-Z]{4}$/', $rawPass)) {
+                $rawPass = str_replace(' ', '', $rawPass);
+            }
             $settings->update([
                 'smtp_mailer'       => 'smtp',
                 'smtp_host'         => $request->input('smtp_host') ?: ($isGmail ? 'smtp.gmail.com' : 'smtp.gmail.com'),
-                'smtp_port'         => (int) ($request->input('smtp_port') ?: 587),
-                'smtp_encryption'   => $request->input('smtp_encryption') ?: 'tls',
+                'smtp_port'         => (int) ($request->input('smtp_port') ?: ($isGmail ? 465 : 587)),
+                'smtp_encryption'   => $request->input('smtp_encryption') ?: ($isGmail ? 'ssl' : 'tls'),
                 'smtp_username'     => $smtpUser,
-                'smtp_password'     => trim((string) $request->input('smtp_password')),
+                'smtp_password'     => $rawPass,
                 'smtp_from_address' => $smtpUser,
                 'smtp_from_name'    => $settings->smtp_from_name ?: config('app.name', 'Precision IT Systems'),
             ]);

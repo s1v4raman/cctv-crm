@@ -39,24 +39,24 @@
      x-cloak
      data-lan-ip="{{ $lanIp }}"
      @keydown.escape.window="if (isOpen) closeModal()"
-     class="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+     class="fixed inset-0 z-50 bg-slate-900/60 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
 
-    <div class="crm-card bg-white dark:bg-slate-900 rounded-lg sm:rounded-[4px] max-w-xl w-full p-4 sm:p-6 border border-slate-200 dark:border-slate-800 my-auto flex flex-col space-y-4">
+    <div class="crm-card bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-[4px] max-w-xl w-full p-4 sm:p-6 border border-slate-200 dark:border-slate-800 my-0 sm:my-auto flex flex-col space-y-4 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
 
         {{-- Modal Top Header Bar --}}
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-3">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-2">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <div class="w-9 h-9 rounded-lg sm:rounded-[4px] border border-slate-200 dark:border-slate-700 text-[var(--crm-accent,#2563eb)] flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
                 </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
                         <span>{{ __('Hardware Barcode Scanner & Analysis') }}</span>
                     </h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Scan EAN, S/N, and MAC in one session, review and save') }}</p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">{{ __('Scan EAN, S/N, and MAC in one session, review and save') }}</p>
                 </div>
             </div>
-            <x-close-button @click="closeModal()" :label="__('Close')" />
+            <x-close-button @click="closeModal()" :label="__('Close')" class="shrink-0" />
         </div>
 
         {{-- Plain Text Tabs with 2px Underline --}}
@@ -259,13 +259,13 @@
                 <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
                     {{ __('Hardware Serial Number, Barcode, or MAC Address') }} <span class="text-rose-500">*</span>
                 </label>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <input type="text" x-model="lookupInput"
                            placeholder="{{ __('Type or scan barcode (e.g. SN-88412)...') }}"
                            @keydown.enter.prevent="executeLookup()"
-                           class="flex-1 h-[52px] sm:h-[38px] text-xs sm:text-sm rounded-lg sm:rounded-[4px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3 font-mono">
+                           class="flex-1 h-11 sm:h-[38px] text-xs sm:text-sm rounded-lg sm:rounded-[4px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3 font-mono">
                     <button type="button" @click="executeLookup()" :disabled="isLoading"
-                            class="btn-primary h-[52px] sm:h-[38px] px-4 rounded-lg sm:rounded-[4px] text-xs sm:text-sm font-bold cursor-pointer shrink-0 disabled:opacity-50">
+                            class="btn-primary h-11 sm:h-[38px] px-5 rounded-lg sm:rounded-[4px] text-xs sm:text-sm font-bold cursor-pointer shrink-0 disabled:opacity-50 justify-center">
                         <span x-show="!isLoading">{{ __('Analyze') }}</span>
                         <span x-show="isLoading">{{ __('Searching...') }}</span>
                     </button>

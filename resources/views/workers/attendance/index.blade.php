@@ -154,35 +154,17 @@
                     </div>
                 </div>
 
-                {{-- Right: Primary Action Buttons (Mark & Bulk Attendance) + More Menu --}}
+                {{-- Right: Primary Action Buttons (Strictly Mark Attendance & Log Work Output only) --}}
                 <div class="flex items-center gap-2 w-full sm:w-auto sm:ml-auto mt-2 sm:mt-0">
                     <button type="button" onclick="openAttendanceModal()" class="ld-accent flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer" style="min-height: 38px;">
                         <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                         <span class="whitespace-nowrap !text-white" style="color: #ffffff !important;">{{ __('Mark Attendance') }}</span>
                     </button>
 
-                    <button type="button" onclick="openBulkAttendanceModal('{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}')" class="ld-outline flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer" style="min-height: 38px;">
-                        <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                        <span class="whitespace-nowrap">{{ __('Bulk Attendance') }}</span>
-                    </button>
-
                     <button type="button" onclick="openWorkOutputModal()" class="ld-outline flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/40" style="min-height: 38px;">
                         <svg class="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
                         <span class="whitespace-nowrap">{{ __('Log Work Output') }}</span>
                     </button>
-
-                    <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                        <button type="button" class="ld-outline btn-icon !inline-flex items-center justify-center p-2 rounded-xl shrink-0 cursor-pointer" style="min-height: 38px; width: 38px;" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
-                            <svg class="w-4 h-4 icon-solid shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
-                        </button>
-                        <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
-                            @if(auth()->user()->isAdmin())
-                                <a href="{{ route('wages.index') }}" class="plain-link">{{ __('Open Sunday Payday Console') }}</a>
-                            @endif
-                            <a href="{{ route('workers.index') }}" class="plain-link">{{ __('View All Registered Workers') }}</a>
-                            <button type="button" @click="menu = null; $nextTick(() => window.print())">{{ __('Print View') }}</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
